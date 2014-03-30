@@ -1,0 +1,20 @@
+---
+layout: default
+---
+
+<article>
+    <div class="pure-u-1">
+        <section class="content">
+            <section class="post">
+                <header class = "post-header">
+                    {% if page.title %}
+                        <h2 class="post-title">{{ post.title }}</h2>
+                    {% endif %}
+                </header>
+                <div class = "post-description">
+                {{ content }}
+                </div>
+            </section>
+        </section>
+    </div>
+</article>

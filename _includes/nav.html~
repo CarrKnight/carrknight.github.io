@@ -1,0 +1,14 @@
+<nav class="pure-menu pure-menu-open pure-menu-horizontal pure-menu-blackbg">
+    <ul>
+        <li><a href="{{ site.baseurl }}/index.html">Index</a></li>
+        <li><a href="{{ site.baseurl }}/about.html">About</a></li>
+        <li><a href="{{ site.baseurl }}/index.html">CV</a></li>
+        <li><a href="{{ site.baseurl }}/index.html">Papers</a></li>
+        <li><a href="{{ site.baseurl }}/index.html">Blogs</a></li>
+        <!-- other items ... -->
+    </ul>
+</nav>        
+
+
+
+
