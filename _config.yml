@@ -1,5 +1,5 @@
 name: Ernesto Carrella
-markdown: redcarpet
+markdown: kramdown
 pygments: true
 baseurl:  
 timezone: America/Chicago

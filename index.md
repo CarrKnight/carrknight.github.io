@@ -11,8 +11,9 @@ Smarter people use computational models to push the boundaries of economics. [Th
 
 But what if you want to shrewdly maximize long term unemployability? 
 You cold try to do what I do. Build agent based-models about ideas that were obsolete 30 years ago. I deal with **economic cybernetics**. Which [Pickering defines as](https://www.uni-due.de/~bj0063/doc/Pickering.pdf):
->The world, understood cybernetically, was a world of goal-oriented feedback mechanisms with learning.
->Cybernetics,then, took computer-controlled gun control and layered it in an ontologically  indiscriminate fashion across the academic disciplinary board.
+
+> The world, understood cybernetically, was a world of goal-oriented feedback mechanisms with learning.
+> Cybernetics,then, took computer-controlled gun control and layered it in an ontologically  indiscriminate fashion across the academic disciplinary board.
 
 It's defined more in depth in [Machine Dreams](http://www.amazon.com/Machine-Dreams-Economics-Becomes-Science/dp/0521775264).  And yes, the best definitions come from history books and are in past tense.
 

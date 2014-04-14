@@ -1,0 +1,43 @@
+<html><head>
+  <SCRIPT src="http://java.com/js/dtjava.js"></SCRIPT>
+<script>
+    function launchApplication(jnlpfile) {
+        dtjava.launch(            {
+                url : 'MacroIIDiscrete.jnlp'
+            },
+            {
+                javafx : '2.2+'
+            },
+            {}
+        );
+        return false;
+    }
+</script>
+
+<script>
+    function javafxEmbed_MacroIIDiscrete_id() {
+        dtjava.embed(
+            {
+                id : 'MacroIIDiscrete_id',
+                url : 'MacroIIDiscrete.jnlp',
+                placeholder : 'javafx-app-placeholder',
+                width : '60%',
+                height : '80%'
+            },
+            {
+                javafx : '2.2+'
+            },
+            {}
+        );
+    }
+    <!-- Embed FX application into web page once page is loaded -->
+    dtjava.addOnloadCallback(javafxEmbed_MacroIIDiscrete_id);
+</script>
+
+</head><body>
+<h2>Test page for <b>Oil Distribution</b></h2>
+  <b>Webstart:</b> <a href='MacroIIDiscrete.jnlp' onclick="return launchApplication('MacroIIDiscrete.jnlp');">click to launch this app as webstart</a><br><hr><br>
+
+  <!-- Applet will be inserted here -->
+  <div id='javafx-app-placeholder'></div>
+</body></html>
