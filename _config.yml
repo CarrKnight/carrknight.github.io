@@ -3,3 +3,5 @@ markdown: kramdown
 pygments: true
 baseurl:  
 timezone: America/Chicago
+description: A few notes on agent based models.
+url: carrknight.github.io
