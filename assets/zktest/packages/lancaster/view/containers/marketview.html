@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2014 to Ernesto Carrella.
+  ~ This is open source on MIT license. Isn't this jolly?
+  -->
+<!--
+  ~ the placeholder for more interesting market stuff
+  -->
+<div>
+    <ul>
+        <li>
+            price = {{price}}
+        </li>
+        <li>
+            quantity = {{quantity}}
+        </li>
+    </ul>
+    <div id="parent">
+        <div id="one">
+            <h2> Price-Quantity plot </h2>
+            <beveridgeplot presentation = "presentation"></beveridgeplot>
+        </div >
+        <div id="two">
+            <h2> Price time series </h2>
+            <priceplot presentation = "presentation"></priceplot>
+        </div>
+    </div>
+    <div style="clear: both"></div> <!-- This goes after the last floated element - no floating elements are allowed on either side of this. -->
+
+
+</div>
+

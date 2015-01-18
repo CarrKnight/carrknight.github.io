@@ -1,0 +1,32 @@
+    body {
+      font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+      margin: 0;
+      padding: 24px;
+    }
+
+    paper-slider {
+      width: 100%;
+    }
+
+    section {
+      padding: 20px 0;
+      background-color: #f0f0f0;
+    }
+
+    section > div {
+      padding: 14px;
+    }
+
+    .red_highlight{
+        font-size: 1.5em;
+        color: red;
+    }
+
+    .hidden{
+        visibility: hidden;
+    }
+
+    .green_highlight{
+        font-size: 1.5em;
+        color: green;
+    }

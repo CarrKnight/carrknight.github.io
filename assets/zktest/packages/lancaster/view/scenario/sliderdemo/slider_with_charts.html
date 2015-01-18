@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2015 to Ernesto Carrella.
+  ~ This is open source on MIT license. Isn't this jolly?
+  -->
+<section>
+    <controlbar-paper model-presentation="presentation"
+                      period="100"></controlbar-paper>
+    <div>
+        <span ng-if="!ready">Press play to see how the PID solves it <br>
+        </span>
+
+        <zk-seller-simple presentation="agent"></zk-seller-simple>
+
+        <br>
+        <div center horizontal layout>
+            <div>Price {{price}}$</div>
+            <paper-slider min="0" bind-max="100" bind-value="price" pin="true"></paper-slider>
+        </div>
+
+
+    </div>
+
+</section>
+
+  

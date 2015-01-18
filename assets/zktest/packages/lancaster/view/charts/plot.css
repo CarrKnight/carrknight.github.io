@@ -1,0 +1,50 @@
+.price-chart {
+     width: 90%;
+
+	}
+
+/***
+ *      __   _  _  __  ____
+ *     / _\ ( \/ )(  )/ ___)
+ *    /    \ )  (  )( \___ \
+ *    \_/\_/(_/\_)(__)(____/
+ */
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+
+
+
+.datapoints {
+    fill: rgb(213,94,0);
+}
+
+.beveline {
+   stroke : black;
+   stroke-width : 2;
+}
+
+
+
+
+.selectable:hover
+{
+    stroke : orange;
+    stroke-width : 4;
+
+}
+
+.selectable circle:hover
+{
+    fill: orange;
+}

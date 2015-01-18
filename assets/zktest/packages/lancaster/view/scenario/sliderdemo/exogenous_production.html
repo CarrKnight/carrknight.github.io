@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2015 to Ernesto Carrella.
+  ~ This is open source on MIT license. Isn't this jolly?
+  -->
+
+<section>
+    <controlbar-paper model-presentation="presentation"
+                      period="50"></controlbar-paper>
+    <div>
+        <span ng-if="!ready">Press play and then try to find the right
+            target
+        </span>
+        <br>
+        <span ng-if="ready"> Price : {{price}} <span ng-class="cssClass">
+            {{equality}}
+        </span>
+                {{wage}} : Wage
+        </span>
+        <br>
+
+    </div>
+    <div center horizontal layout>
+        <div>Target {{target}}$</div>
+        <paper-slider min="0" bind-max="100" bind-value="target" pin="true"></paper-slider>
+    </div>
+
+
+</section>

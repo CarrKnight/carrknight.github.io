@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2014 to Ernesto Carrella.
+  ~ This is open source on MIT license. Isn't this jolly?
+  -->
+<!--
+  ~ This is the control bar component: a button and the daily counter
+  -->
+<div class="control">
+
+  <button type="button" ng-click="startOrPause()">
+    {{playLabel}}</button>
+  <button type="button" ng-click="step()">
+    Step Once</button>
+  day: {{day}}
+</div>
+<div class="clear"></div>

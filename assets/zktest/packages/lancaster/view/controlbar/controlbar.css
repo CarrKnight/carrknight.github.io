@@ -1,0 +1,14 @@
+
+    /* mostly stolen from here: http://stackoverflow.com/a/17629860/975904 */
+.tile_div button {
+    display: block;
+    float: left;
+    margin-right: 5px;
+    text-align: center;
+}
+
+
+
+.clear {
+    clear: both;
+}

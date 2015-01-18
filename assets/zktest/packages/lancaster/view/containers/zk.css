@@ -1,0 +1,28 @@
+parent {
+    width: 100%;
+
+}
+div#one {
+    border: 0px;
+    padding: 0px;
+
+    width: 33%;
+    float: left;
+}
+div#two {
+    border: 0px;
+    padding: 0px;
+
+    width: 33%;
+
+    float: right;
+}
+
+div#three {
+    border: 0px;
+    padding: 0px;
+
+    width: 33%;
+
+    float: right;
+}

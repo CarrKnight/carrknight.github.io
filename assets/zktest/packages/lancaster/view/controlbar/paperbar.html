@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2015 to Ernesto Carrella.
+  ~ This is open source on MIT license. Isn't this jolly?
+  -->
+
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<paper-button raised class="colored" ng-click="startOrPause()">
+    <core-icon icon="play-arrow" ng-if="!running"></core-icon>
+    <core-icon icon="pause" ng-if="running"></core-icon>
+    {{playLabel}}
+</paper-button>
+</body>
+</html>

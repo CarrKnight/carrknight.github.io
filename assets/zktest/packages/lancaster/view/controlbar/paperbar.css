@@ -1,0 +1,10 @@
+ paper-button[raised].colored {
+      color: #4285f4;
+    }
+core-icon {
+      margin-right: 4px;
+    }
+
+paper-button.hover:hover {
+      background: #eee;
+    }

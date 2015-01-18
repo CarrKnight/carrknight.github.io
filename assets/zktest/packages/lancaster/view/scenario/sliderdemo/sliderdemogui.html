@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2015 to Ernesto Carrella.
+  ~ This is open source on MIT license. Isn't this jolly?
+  -->
+<section>
+  <div>
+    <span ng-if="!ready">Try to set the "correct" cheese price </span>
+  <ul ng-if="ready">
+    <li>You had 50 kilos of cheese to sell</li>
+    <li >You attracted enough customers to sell
+      <span ng-class="colorCustomers"> {{customersAttracted}}</span> kilos of cheese</li>
+    <li ng-if="shortage" class="red_highlight" > Some customers that would
+      have paid for cheese didn't find any.
+    </li>
+    <li ng-if="unsoldInventory" class="red_highlight" > Some cheese
+      spoiled unsold
+      .</li>
+    <li ng-if="equilibrium" class="green_highlight" > Congratulations!
+      .</li>
+
+  </ul>
+  <div center horizontal layout>
+    <div>Price {{price}}$</div>
+    <paper-slider min="0" bind-max="100" bind-value="price" pin="true"></paper-slider>
+  </div>
+
+
+</div>
+</section>
+
+  

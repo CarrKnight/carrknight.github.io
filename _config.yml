@@ -1,6 +1,6 @@
 name: Ernesto Carrella
 markdown: kramdown
-pygments: true
+highlighter: pygments
 baseurl:  
 timezone: America/Chicago
 description: A few notes on agent based models.

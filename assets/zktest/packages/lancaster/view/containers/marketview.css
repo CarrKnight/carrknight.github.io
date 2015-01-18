@@ -1,0 +1,19 @@
+parent {
+    width: 100%;
+
+}
+div#one {
+    border: 0px;
+    padding: 0px;
+
+    width: 50%;
+    float: left;
+}
+div#two {
+    border: 0px;
+    padding: 0px;
+
+    width: 50%;
+
+    float: right;
+}
