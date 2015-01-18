@@ -32,7 +32,7 @@ This a simple [control](http://en.wikipedia.org/wiki/Control_theory) problem sol
 
 Now let's look under the hood of the model. There is a fixed daily supply of cheese and a fixed daily demand. The PID controller keeps changing price until inflow and outflow are the same. You can trace its attempts over the familiar demand-supply diagram:
 
-<simple-seller-quantity> </simple-seller-quantity>
+<slider-demo-charts-gui></slider-demo-charts-gui>
 
 You can complicate this: what happens if there are multiple sellers competing? What if sellers need to keep inventory targets? What if the number of customers attracted is not known, only actual sales? You can take a look at the papers, but the basics stay the same.
 
