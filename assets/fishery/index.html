@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Google Maps Screwing Around</title>
+
+    <link rel="stylesheet" href="styles/pure.css">
+    <link rel="stylesheet" href="styles/blog.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class = "pure-skin-carrknight">
+<h1 id="agent-based-fishing">Agent based fishing</h1>
+<p><em>Conservation notice: this is a simple model I cobbled up in about a week both as a <a href="http://www.scaledagileframework.com/spikes/">spike</a> to test the capabilities of google maps APIs and as a demo for a post-doc job. <a href="https://github.com/CarrKnight/FisheriesTest">The code</a> is open-source on MIT license. It was programmed in pure dart.</em></p>
+<p>Carelessly define a fishery as an area in the sea where fishing is done.<br>Biomass is the amount of fish available in it. Capacity is the maximum biomass possible. Untapped, a fishery&#39;s biomass grows logistically until it reaches capacity.<br>Try to hover over the fishery to see its details. The more opaque, the fuller it is:</p>
+<p>
+<div class="sim" id="lonely" > </div>
+
+<p>There is a fixed number of fishermen in this model.Fishermen are heterogeneous in their ability which I define as the percentage of biomass they are able to extract in a day. This is randomly distributed $\sim U(0\%,0.5\%]$.<br>Unchecked, fishermen can consume a fishery entirely. See it for yourself:</p>
+<p>
+<div class="sim" id="overfishing"> </div>
+
+<p>With multiple fisheries, fishermen prefer <em>ceteris paribus</em> a higher biomass. Fishermen only know the biomass of the fishery they last visited. They also share information in a very simple social network. Imagine the agents being in a line, each learning the biomass of the fishery their left neighbor visited the previous day.<br>It is a rudimentary way to create some inertia in an agent-based model, but it is still pretty effective as the next example shows.</p>
+<p>
+
+<div class="sim" id="richest"> </div>
+
+<p>Let&#39;s add distance and costs. A fisherman $i$ expected profit from choosing fishery $j$ is:<br>$100\$ <em> \text{Biomass}_j </em> \text{Ability}<em>i - \text{Distance}</em>{j} * \text{Oil Price}$<br>Where 100\$ is the sale price for one unit of biomass fished, $\text{Biomass}_j$ is the fisherman&#39;s predicted biomass of fishery $j$ and distance is kilometers between the center of the fishery and the fisherman&#39;s home port.</p>
+<p>Modifying the $\text{Oil Price}$ is  a crude but effective way of modifying fishermen&#39;s behavior. With free oil we replicate the previous example where fishermen go where the biomass is more plentiful. The more we raise the oil price the more fishermen prefer fishing close at home. Raise the oil price too much and nobody goes fishing. Notice also how fishermen with higher ability can sustain larger oil prices than inefficient competitors.</p>
+<p>
+<div class="sim" id="gaspolicy"> </div>
+
+</p>
+<p>As a policy, changing oil prices has limits. It incentivizes fishermen to aggregate in the closest fisheries rather than dispersing and it doesn&#39;t have much effect if the richest fisheries are the one closest to port.<br>An additional policy lever is to levy a fixed daily tariff for each fishery. This is a fixed cost any fisherman has to pay to use the fishery. This allows for far more flexible policies</p>
+<p>
+<div class="sim" id="final"> </div>
+
+<h2 id="optimal-policy">Optimal Policy</h2>
+<p>todo</p>
+
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="application/dart" src="main.dart"></script>
+<script src="packages/browser/dart.js"></script>
+</body>
+</html>
