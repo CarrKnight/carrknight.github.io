@@ -1,0 +1,412 @@
+{
+  "default": {
+    "constants": {
+      "DEFAULT_PROPORTIONAL": 0.1,
+      "DEFAULT_INTEGRATIVE": 0.1,
+      "DEFAULT_DERIVATIVE": 0
+    },
+    "scenario": {
+      "OneMarketCompetition": {
+        "hrPricingInitialization": {
+          "hrPricingStrategy": "PID_MAXIMIZER_HR",
+          "FIXED_PRICE_HR": {
+            "value": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            }
+          },
+          "FIXED_TARGET_HR": {
+            "offset": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            },
+            "columnName": "pricer",
+            "flowTarget": 1,
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0
+          },
+          "MARGINAL_MAXIMIZER_HR": {
+            "offset": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            },
+            "currentTarget": 1,
+            "delta": 1,
+            "updateProbability": 0.04761904761,
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0
+          },
+          "PID_MAXIMIZER_HR": {
+            "offset": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            },
+            "currentTarget": 1,
+            "delta": 1,
+            "updateProbability": 0.04761904761,
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0,
+            "averagePIDPeriod": 20,
+            "PIMultiplier": 100,
+            "sigmoidCenter": 0
+          },
+          "STICKY_STOCKOUT_QUOTA_BUYER":
+          {
+            "offset": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            },
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0,
+            "averagePIDPeriod": 20
+          }
+        },
+        "hrQuotaInitialization": {
+          "hrQuotaStrategy": "BUY_ALL",
+          "BUY_ALL": {},
+          "MARSHALLIAN_QUOTA": {
+            "offset": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            },
+            "currentTarget": 1,
+            "delta": 1,
+            "updateProbability": 0.04761904761,
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0,
+            "averagePIDPeriod": 20,
+            "PIMultiplier": 100,
+            "sigmoidCenter": 1
+          },
+          "KEYNESIAN_QUOTA": {
+            "offset": 1,
+            "columnName": "quota",
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0
+          },
+          "KEYNESIAN_STOCKOUT_QUOTA": {
+            "offset": 1,
+            "columnName": "quota",
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0
+          }
+        },
+        "salesPricingInitialization": {
+          "salesPricingStrategy": "STOCKOUT_SALES",
+          "FIXED_PRICE": {
+            "value": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            }
+          },
+          "BUFFER_PID": {
+            "offset": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            },
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0
+          },
+          "STOCKOUT_SALES": {
+            "offset": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            },
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.5
+            },
+            "d": 0
+          },
+          "PROFIT_MAXIMIZER_PRICING": {
+            "delegate": {
+              "p": {
+                "link": "default.constants.DEFAULT_PROPORTIONAL"
+              },
+              "i": {
+                "link": "default.constants.DEFAULT_INTEGRATIVE"
+              },
+              "d": {
+                "link": "default.constants.DEFAULT_DERIVATIVE"
+              },
+              "averagePIDPeriod": 20,
+              "PIMultiplier": 100
+            },
+            "initialPrice": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            }
+          }
+        },
+        "competitors": 1,
+        "productionFunction": {
+          "class": "LinearProductionFunction",
+          "library": "lancaster.model",
+          "constructor": "FromDB",
+          "multiplier": 1,
+          "consumeInput": true
+        },
+        "laborMarket": {
+          "class": "ExogenousBuyerMarket",
+          "library": "lancaster.model",
+          "constructor": "LinearFromDB",
+          "intercept": 0,
+          "slope": 1,
+          "goodType": "labor",
+          "moneyType": "money"
+        },
+        "goodMarket": {
+          "class": "ExogenousSellerMarket",
+          "library": "lancaster.model",
+          "constructor": "LinearFromDB",
+          "intercept": 100,
+          "slope": -1,
+          "goodType": "gas",
+          "moneyType": "money"
+        }
+      }
+    },
+    "strategy": {
+      "PIDAdaptive": {
+        "class": "PIDAdaptive",
+        "library": "lancaster.model",
+        "constructor": "DefaultSellerFromDB",
+        "p": {
+          "link": "defalt.constants.DEFAULT_PROPORTIONAL"
+        },
+        "i": {
+          "link": "defalt.constants.DEFAULT_INTEGRATIVE"
+        },
+        "d": {
+          "link": "defalt.constants.DEFAULT_DERIVATIVE"
+        },
+        "offset": 0,
+        "columnName": "pricer",
+        "flowTarget": 1,
+        "inventoryTarget": 1
+      },
+      "BufferInventoryAdaptive": {
+        "class": "BufferInventoryAdaptive",
+        "library": "lancaster.model",
+        "constructor": "SimpleSellerFromDB",
+        "optimalInventory": 100,
+        "criticalInventory": 10,
+        "offset": 100,
+        "p": {
+          "link": "defalt.constants.DEFAULT_PROPORTIONAL"
+        },
+        "i": {
+          "link": "defalt.constants.DEFAULT_INTEGRATIVE"
+        },
+        "d": {
+          "link": "defalt.constants.DEFAULT_DERIVATIVE"
+        },
+        "columnName": "pricer"
+      },
+      "LastPricePredictor": {
+        "class": "LastPricePredictor",
+        "library": "lancaster.model",
+        "constructor": "FromDB"
+      },
+      "FixedSlopePredictor": {
+        "class": "FixedSlopePredictor",
+        "library": "lancaster.model",
+        "constructor": "FromDB",
+        "slope": 0
+      },
+      "KalmanPricePredictor": {
+        "class": "KalmanPricePredictor",
+        "library": "lancaster.model",
+        "constructor": "FromDB",
+        "xColumnName": "testX",
+        "initialSlope": 0,
+        "burnoutRate": 100,
+        "yColumnName": "offeredPrice",
+        "forgettingRate": 0.99,
+        "maxTrace": 10
+      },
+      "MarginalMaximizer": {
+        "class": "MarginalMaximizer",
+        "library": "lancaster.model",
+        "constructor": "FromDB",
+        "currentTarget": 1,
+        "delta": 1,
+        "updateProbability": 0.04761904761
+      },
+      "PIDMaximizer": {
+        "class": "PIDMaximizer",
+        "library": "lancaster.model",
+        "constructor": "FromDB",
+        "currentTarget": 1,
+        "delta": 1,
+        "averagePIDPeriod": 20,
+        "PIMultiplier": 100,
+        "sigmoidCenter": 1,
+        "delegate": {
+          "p": {
+            "link": "default.constants.DEFAULT_PROPORTIONAL"
+          },
+          "i": {
+            "link": "default.constants.DEFAULT_INTEGRATIVE"
+          },
+          "d": {
+            "link": "default.constants.DEFAULT_DERIVATIVE"
+          }
+        }
+      },
+      "PIDMaximizerFacade": {
+        "initialPrice": 1,
+        "delegate": {}
+      },
+      "FixedValue": {
+        "class": "FixedValue",
+        "library": "lancaster.model",
+        "constructor": "FromDB",
+        "value": 1000
+      },
+      "LinearProductionFunction": {
+        "class": "LinearProductionFunction",
+        "library": "lancaster.model",
+        "constructor": "FromDB",
+        "multiplier": 1,
+        "consumeInput": true
+      },
+      "ExponentialProductionFunction": {
+        "class": "ExponentialProductionFunction",
+        "library": "lancaster.model",
+        "constructor": "FromDB",
+        "multiplier": 1,
+        "exponent": 1,
+        "freebie": 0
+      }
+    },
+    "market": {
+      "ExogenousBuyerMarket": {
+        "class": "ExogenousBuyerMarket",
+        "library": "lancaster.model",
+        "constructor": "LinearFromDB",
+        "intercept": 0,
+        "slope": 1,
+        "goodType": "gas",
+        "moneyType": "money"
+      },
+      "ExogenousSellerMarket": {
+        "class": "ExogenousSellerMarket",
+        "library": "lancaster.model",
+        "constructor": "LinearFromDB",
+        "intercept": 100,
+        "slope": -1,
+        "goodType": "gas",
+        "moneyType": "money",
+        "laborType": "labor",
+        "inelasticPrice": 1
+      }
+    },
+    "agent": {
+      "ZeroKnowledgeTrader": {
+        "depreciationRate": 0,
+        "dailyInflow": 0,
+        "pidSellerPricing": {
+          "offset": 100
+        },
+        "pidBuyerPricing": {
+          "offset": 0,
+          "flowTarget": 10
+        },
+        "pidBufferSeller": {}
+      }
+    }
+  },
+  "run": {
+    "scenario": "OneMarketCompetition",
+    "seed": "milliseconds"
+  }
+}

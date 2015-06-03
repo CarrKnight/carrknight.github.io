@@ -1,0 +1,90 @@
+{
+  "run": {
+    "seed": 1425512269841,
+    "scenario": "OneMarketCompetition"
+  },
+  "default": {
+    "scenario": {
+      "OneMarketCompetition": {
+        "competitors": 1,
+        "laborMarket": {
+          "class": "ExogenousBuyerMarket",
+          "library": "lancaster.model",
+          "constructor": "InfinitelyElasticFromDB",
+          "inelasticPrice": 1,
+          "goodType": "labor",
+          "moneyType": "money"
+        },
+        "goodMarket": {
+          "class": "ExogenousSellerMarket",
+          "library": "lancaster.model",
+          "constructor": "LinearFromDB",
+          "intercept": 100,
+          "slope": -1,
+          "goodType": "gas",
+          "moneyType": "money"
+        },
+        "productionFunction": {
+          "class": "ExponentialProductionFunction",
+          "library": "lancaster.model",
+          "constructor": "FromDB",
+          "multiplier": 0.5,
+          "exponent": 0.6,
+          "freebie": -1
+        },
+        "salesPricingInitialization": {
+          "salesPricingStrategy": "STOCKOUT_SALES",
+          "STOCKOUT_SALES": {
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.2
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.2
+            },
+            "d": 0,
+            "offset": {
+              "type": "uniform",
+              "min": 10,
+              "max": 30
+            },
+            "columnName": "pricer"
+          }
+        },
+        "hrPricingInitialization": {
+          "hrPricingStrategy": "FIXED_PRICE_HR",
+          "FIXED_PRICE_HR": {
+            "value": 1
+          }
+        },
+        "hrQuotaInitialization": {
+          "hrQuotaStrategy": "MARSHALLIAN_QUOTA",
+          "MARSHALLIAN_QUOTA": {
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.2
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.2
+            },
+            "d": 0,
+            "averagePIDPeriod": 20,
+            "PIMultiplier": 100,
+            "sigmoidCenter": 1,
+            "currentTarget": {
+              "type": "uniform",
+              "min": 30,
+              "max": 40
+            }
+          }
+        }
+      }
+    }
+  }
+}
