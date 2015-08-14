@@ -4,7 +4,7 @@ title: Short Bio
 ---
 
 
-My name is Ernesto Carrella. I am a Post-Doc at the  [Oxford University Centre for the Environment](http://ouce.ox.ac.uk), working under [Richard Bailey](http://www.richardmbailey.com/) on an agent-based model of fishery management. I earned my Ph.D from the [Department of Computational Social Science] at George Mason University.
+My name is Ernesto Carrella. I am a Post-Doc at the  [Oxford University Centre for the Environment](http://www.ouce.ox.ac.uk), working under [Richard Bailey](http://www.richardmbailey.com/) on an agent-based model of fishery management. I earned my Ph.D from the [Department of Computational Social Science] at George Mason University.
 
 
 My personal work is on economics. I do that with agent-based models. This methodology combines unrealistic economic assumptions with approximative computational techniques. A step forward.
