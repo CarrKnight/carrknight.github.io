@@ -1,0 +1,92 @@
+{
+  "run": {
+    "seed": 1425512269841,
+    "scenario": "OneMarketCompetition"
+  },
+  "default": {
+    "scenario": {
+      "OneMarketCompetition": {
+        "competitors": 1,
+        "laborMarket": {
+          "class": "ExogenousBuyerMarket",
+          "library": "lancaster.model",
+          "constructor": "InfinitelyElasticFromDB",
+          "inelasticPrice": 1,
+          "goodType": "labor",
+          "moneyType": "money"
+        },
+        "goodMarket": {
+          "class": "ExogenousSellerMarket",
+          "library": "lancaster.model",
+          "constructor": "LinearFromDB",
+          "intercept": 100,
+          "slope": -1,
+          "goodType": "gas",
+          "moneyType": "money"
+        },
+        "productionFunction": {
+          "class": "ExponentialProductionFunction",
+          "library": "lancaster.model",
+          "constructor": "FromDB",
+          "multiplier": 0.5,
+          "exponent": 0.6,
+          "freebie": -1
+        },
+        "salesPricingInitialization": {
+          "salesPricingStrategy": "PROFIT_MAXIMIZER_PRICING",
+          "PROFIT_MAXIMIZER_PRICING": {
+            "delegate": {
+              "p": {
+                "type": "uniform",
+                "min": 0.05,
+                "max": 0.2
+              },
+              "i": {
+                "type": "uniform",
+                "min": 0.05,
+                "max": 0.2
+              },
+              "d": 0,
+              "sigmoidCenter": 1.0,
+              "averagePIDPeriod" : 20,
+              "PIMultiplier": 100
+            },
+            "initialPrice": {
+              "type": "uniform",
+              "min": 0,
+              "max": 100
+            }
+          }
+        },
+        "hrPricingInitialization": {
+          "hrPricingStrategy": "FIXED_PRICE_HR",
+          "FIXED_PRICE_HR": {
+            "value": 1
+          }
+        },
+        "hrQuotaInitialization": {
+          "hrQuotaStrategy": "KEYNESIAN_STOCKOUT_QUOTA",
+          "KEYNESIAN_STOCKOUT_QUOTA": {
+            "offset": {
+              "type": "uniform",
+              "min": 1,
+              "max": 100
+            },
+            "p": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.2
+            },
+            "i": {
+              "type": "uniform",
+              "min": 0.05,
+              "max": 0.2
+            },
+            "d" : 0,
+            "columnName": "quota"
+          }
+        }
+      }
+    }
+  }
+}
