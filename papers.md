@@ -10,7 +10,7 @@ Traders find prices by trial and error. Each day they try a price, if they sold 
 
 Producers also work by trial and error, choosing daily production by hill-climbing. Never really liked this part but I needed to show how to integrate production. God forbids somebody starts thinking I am writing financial models.
 
-You can have some old slides [here]({{ site.baseurl }}/assets/EEA.pdf), but JASSS is open source so just read the paper.  
+You can have a pretty pdf version [here]({{ site.baseurl }}/assets/EEA.pdf) since the JASSS doesn't use mathjax.  If you want slides your best bet is to go through the dissertation slides [here]({{ site.baseurl }}/assets/defense/presentation.html)  since they are interactive and clearer.
 Code is [here](https://github.com/CarrKnight/MacroIIDiscrete).
 
 ### Sticky Prices Microfoundations in a Supply Chain Agent Based Model
