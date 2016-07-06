@@ -1,31 +1,31 @@
-Date,Link,Description
-2-Jul-15,http://carrknight.github.io/assets/oxfish/friends/friends.html,A quick summary of trial-and-error behavior of agents and how imitation effectivness changes over social networks and exploration parameters
-22-Jul-15,http://carrknight.github.io/assets/oxfish/mpas/mpas.html,“Fishing the line” emerges as a behavior out of trial-and-error agents when an MPA is implemented together with diffusing biology
-30-Jul-15,http://carrknight.github.io/assets/oxfish/bycatch/bycatch.html,"2 species sea: one of them is profitable, the other is endangered and carries a fine. Through trial and error agents learn quickly to avoid areas where the endangered specie is"
-5-Aug-15,http://carrknight.github.io/assets/oxfish/gas.html,High gas prices drive the acquisition of fuel efficient gear
-14-Aug-15,http://carrknight.github.io/assets/oxfish/effort.html,"Effort, as in probability of going out, as a function of market prices and viceversa"
-19-Aug-15,http://carrknight.github.io/assets/oxfish/lambda.html,A test of how fishers would value an additional ITQ quota with some examples of price reservation dispersion
-25-Aug-15,http://carrknight.github.io/assets/oxfish/market.html,Preliminary results on the distributive effects of the ITQ market
-3-Sep-15,http://carrknight.github.io/assets/oxfish/decisions/wheretofish.html,A slow-mo version of how fishers choose where to go tow and a small comparison with how it is done in other models. Plus a cautionary tale about looking for one great heuristic
-8-Sep-15,http://carrknight.github.io/assets/oxfish/weather/weather.html,Mini-demo of agents reacting to high winds
-8-Sep-15,http://carrknight.github.io/assets/oxfish/gaslocation/gaslocation.html,Gas price affect where you go fishing
-25-Sep-15,http://carrknight.github.io/assets/oxfish/opportunity.html,Opportunity costs can drive fishers behavior geographically when one specie is protected by ITQ and the other one isn't
-1-Oct-15,http://carrknight.github.io/assets/oxfish/habitat/habitat.html,Forcing gear that doesn't work in rocky areas creates fishing the line
-9-Oct-15,http://carrknight.github.io/assets/oxfish/itqs/itqs.html,Two species ITQ where one specie have a much curtailed quota will generate the right kind of quota prices
-15-Oct-15,http://carrknight.github.io/assets/oxfish/corollaries.html,Two species ITQ and their incentive to change gear and fishing location
-27-Oct-15,http://carrknight.github.io/assets/oxfish/revenge.html, Comparison between ITQ and TACs and their effect on fisher locations; technical efficiency and inequality
-13-Nov-15,http://carrknight.github.io/assets/oxfish/osmose.html, OSMOSE simulation and integration with our model
-30-Nov-15, http://carrknight.github.io/assets/oxfish/bayes.html, An example of how to use Bayesian Optimization to find parameters in the model that optimize a score function
-8-Dec-15, http://carrknight.github.io/assets/oxfish/qbme.html, How to use optimizer to find interesting runs and how social networks can be made to evolve over time
-5-Jan-16, http://carrknight.github.io/assets/oxfish/optimal_mpa.html , How the optimizer maximizes the policy score when all it can do is set an MPA
-13-Jan-16, http://carrknight.github.io/assets/oxfish/race.html, An example of race to fish in our model and how ITQs solves it
-15-Feb-16,http://carrknight.github.io/assets/oxfish/heterogeneous.html, Two different fleet subject to different rules
-26-Feb-16,http://carrknight.github.io/assets/oxfish/mapping.html, How the model reads in California's map
-02-Mar-16,http://carrknight.github.io/assets/oxfish/demography.html, A demographic pyramid of a simulated Dover Sole over the year
-13-Mar-16,http://carrknight.github.io/assets/oxfish/selectivity.html, Optimizing catches by selecting the gear with the right selectivity
-24-Mar-16,http://carrknight.github.io/assets/oxfish/target.html, Changing utility functions to induce a change
-30-Apr-16,http://carrknight.github.io/assets/oxfish/proposal.html,A discussion on how to fit the model to real data
-24-May-16,http://carrknight.github.io/assets/oxfish/hyperstability.html,An example of how the model exhibits hyperstability but it is possible to use an optimizer to find parameters for which the opposite is true
-06-Jun-16,http://carrknight.github.io/assets/oxfish/prez/manchester.html#/,Slidedeck for Manchester presentation
-27-Jun-16,http://carrknight.github.io/assets/oxfish/heatmap.html,An example of kernel heatmaps to be used in the future
-04-Jul-16,http://carrknight.github.io/assets/oxfish/heatmap2.html,An example of nearest neighbor regressions applied to location choices
+Date,Title,Link,Description
+2015-07-02,Friends,http://carrknight.github.io/assets/oxfish/friends/friends.html,A quick summary of trial-and-error behavior of agents and how imitation effectivness changes over social networks and exploration parameters
+2015-07-22,MPAs,http://carrknight.github.io/assets/oxfish/mpas/mpas.html,“Fishing the line” emerges as a behavior out of trial-and-error agents when an MPA is implemented together with diffusing biology
+2015-07-30,Bycatch,http://carrknight.github.io/assets/oxfish/bycatch/bycatch.html,"2 species sea: one of them is profitable, the other is endangered and carries a fine. Through trial and error agents learn quickly to avoid areas where the endangered specie is"
+2015-08-05,Gas and gear,http://carrknight.github.io/assets/oxfish/gas.html,High gas prices drive the acquisition of fuel efficient gear
+2015-08-14,Effort,http://carrknight.github.io/assets/oxfish/effort.html,"Effort, as in probability of going out, as a function of market prices and viceversa"
+2015-08-19,Lambda,http://carrknight.github.io/assets/oxfish/lambda.html,A test of how fishers would value an additional ITQ quota with some examples of price reservation dispersion
+2015-08-25,ITQ Market,http://carrknight.github.io/assets/oxfish/market.html,Preliminary results on the distributive effects of the ITQ market
+2015-09-03,Where to fish,http://carrknight.github.io/assets/oxfish/decisions/wheretofish.html,A slow-mo version of how fishers choose where to go tow and a small comparison with how it is done in other models. Plus a cautionary tale about looking for one great heuristic
+2015-09-08,Weather,http://carrknight.github.io/assets/oxfish/weather/weather.html,Mini-demo of agents reacting to high winds
+2015-09-08,Gas and location,http://carrknight.github.io/assets/oxfish/gaslocation/gaslocation.html,Gas price affect where you go fishing
+2015-09-25,ITQ opportunity costs,http://carrknight.github.io/assets/oxfish/opportunity.html,Opportunity costs can drive fishers behavior geographically when one specie is protected by ITQ and the other one isn't
+2015-10-01,Habitat,http://carrknight.github.io/assets/oxfish/habitat/habitat.html,Forcing gear that doesn't work in rocky areas creates fishing the line
+2015-10-09,Two species ITQ,http://carrknight.github.io/assets/oxfish/itqs/itqs.html,Two species ITQ where one specie have a much curtailed quota will generate the right kind of quota prices
+2015-10-15,Two species ITQ and gear,http://carrknight.github.io/assets/oxfish/corollaries.html,Two species ITQ and their incentive to change gear and fishing location
+2015-10-27,Two species ITQ and location,http://carrknight.github.io/assets/oxfish/revenge.html, Comparison between ITQ and TACs and their effect on fisher locations; technical efficiency and inequality
+2015-11-13,Osmose,http://carrknight.github.io/assets/oxfish/osmose.html, OSMOSE simulation and integration with our model
+2015-11-30,Bayes Optimization, http://carrknight.github.io/assets/oxfish/bayes.html, An example of how to use Bayesian Optimization to find parameters in the model that optimize a score function
+2015-12-08,QBME, http://carrknight.github.io/assets/oxfish/qbme.html, How to use optimizer to find interesting runs and how social networks can be made to evolve over time
+2016-01-05,Optimal MPA, http://carrknight.github.io/assets/oxfish/optimal_mpa.html , How the optimizer maximizes the policy score when all it can do is set an MPA
+2016-01-13,Race to fish, http://carrknight.github.io/assets/oxfish/race.html, An example of race to fish in our model and how ITQs solves it
+2016-02-15,Heterogeneous fleets,http://carrknight.github.io/assets/oxfish/heterogeneous.html, Two different fleet subject to different rules
+2016-02-26,California ,http://carrknight.github.io/assets/oxfish/mapping.html, How the model reads in California's map
+2016-03-02,Population pyramid,http://carrknight.github.io/assets/oxfish/demography.html, A demographic pyramid of a simulated Dover Sole over the year
+2016-03-13,Optimal Selectivity,http://carrknight.github.io/assets/oxfish/selectivity.html, Optimizing catches by selecting the gear with the right selectivity
+2016-03-24,Change in utility,http://carrknight.github.io/assets/oxfish/target.html, Changing utility functions to induce a change
+2016-04-30,Data fit proposal,http://carrknight.github.io/assets/oxfish/proposal.html,A discussion on how to fit the model to real data
+2016-05-24,Hyperstability,http://carrknight.github.io/assets/oxfish/hyperstability.html,An example of how the model exhibits hyperstability but it is possible to use an optimizer to find parameters for which the opposite is true
+2016-06-06,Manchester presentation,http://carrknight.github.io/assets/oxfish/prez/manchester.html,Slidedeck for Manchester presentation
+2016-06-27,Kernel heatmaps – aperitivo,http://carrknight.github.io/assets/oxfish/heatmap.html,An example of kernel heatmaps to be used in the future
+2016-07-04,NN heatmaps – location choice,http://carrknight.github.io/assets/oxfish/heatmap2.html,An example of nearest neighbor regressions applied to location choices
