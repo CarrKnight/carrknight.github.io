@@ -27,5 +27,5 @@ Date,Title,Link,Description
 2016-04-30,Data fit proposal,http://carrknight.github.io/assets/oxfish/proposal.html,A discussion on how to fit the model to real data
 2016-05-24,Hyperstability,http://carrknight.github.io/assets/oxfish/hyperstability.html,An example of how the model exhibits hyperstability but it is possible to use an optimizer to find parameters for which the opposite is true
 2016-06-06,Manchester presentation,http://carrknight.github.io/assets/oxfish/prez/manchester.html,Slidedeck for Manchester presentation
-2016-06-27,Kernel heatmaps – aperitivo,http://carrknight.github.io/assets/oxfish/heatmap.html,An example of kernel heatmaps to be used in the future
-2016-07-04,NN heatmaps – location choice,http://carrknight.github.io/assets/oxfish/heatmap2.html,An example of nearest neighbor regressions applied to location choices
+2016-06-27,Kernel heatmaps,http://carrknight.github.io/assets/oxfish/heatmap.html,An example of kernel heatmaps to be used in the future
+2016-07-04,NN Heatmaps,http://carrknight.github.io/assets/oxfish/heatmap2.html,An example of nearest neighbor regressions applied to location choices
