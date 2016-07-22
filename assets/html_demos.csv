@@ -29,3 +29,4 @@ Date,Title,Link,Description
 2016-06-06,Manchester presentation,http://carrknight.github.io/assets/oxfish/prez/manchester.html,Slidedeck for Manchester presentation
 2016-06-27,Kernel heatmaps,http://carrknight.github.io/assets/oxfish/heatmap.html,An example of kernel heatmaps to be used in the future
 2016-07-04,NN Heatmaps,http://carrknight.github.io/assets/oxfish/heatmap2.html,An example of nearest neighbor regressions applied to location choices
+2016-07-22,Planning vs Searching,http://carrknight.github.io/assets/oxfish/plan_vs_search.html, I introduce here the new framework over which agents make decisions the details are still to fill in but this is what we'll be working with next
