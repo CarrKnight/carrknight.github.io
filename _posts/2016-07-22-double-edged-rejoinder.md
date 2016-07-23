@@ -1,6 +1,6 @@
 ---
 layout: default
-title:  "My Dissertation Defense"
+title:  "Double Edged Rejoinder"
 date:   2016-07-22 12:00:00
 categories: abm
 --- 
