@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Ernesto Carrella" />
+  <title>Pfeiffer Presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lisa_files/reveal.js-3.3.0/css/reveal.css"/>
+
+
+
+<link rel="stylesheet" href="lisa_files/reveal.js-3.3.0/css/theme/white.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'lisa_files/reveal.js-3.3.0/css/print/pdf.css' : 'lisa_files/reveal.js-3.3.0/css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+    <!--[if lt IE 9]>
+    <script src="lisa_files/reveal.js-3.3.0/lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Pfeiffer Presentation</h1>
+    <h2 class="author">Ernesto Carrella</h2>
+    <h3 class="date">September 9, 2016</h3>
+</section>
+
+<section class="slide level2">
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58894263-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!---
+devtools::install_github("jjallaire/revealjs")
+http://gfycat.com/cajax/get/OldfashionedKindIrishsetter
+-->
+</section>
+<section id="the-state-of-the-art" class="slide level2">
+<h1>The State of the Art</h1>
+<ul>
+<li class="fragment">Random Utility Models
+<ul>
+<li class="fragment">Statistically Efficient</li>
+<li class="fragment">Easily Generalizable</li>
+<li class="fragment">Policy-Brittle</li>
+</ul></li>
+<li class="fragment">Dynamic Programming
+<ul>
+<li class="fragment">Strongly Rational</li>
+<li class="fragment">Computationally Expensive</li>
+<li class="fragment">Ad hoc</li>
+</ul></li>
+</ul>
+</section>
+<section id="the-one-agent-problem" class="slide level2">
+<h1>The One Agent Problem</h1>
+<ul>
+<li class="fragment">Find the most profitable spot to fish</li>
+<li class="fragment">Constraints:
+<ul>
+<li class="fragment">No biomass information</li>
+<li class="fragment">Environment changes over time</li>
+</ul></li>
+<li class="fragment">Subproblems:
+<ul>
+<li class="fragment">How to explore</li>
+<li class="fragment">Explore-Exploit Tradeoff</li>
+</ul></li>
+</ul>
+</section>
+<section id="one-agent-sample-run" class="slide level2">
+<h1>One Agent sample run</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/WhisperedUnlinedJenny-poster.jpg">
+<source src="http://zippy.gfycat.com/WhisperedUnlinedJenny.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/WhisperedUnlinedJenny.mp4" type="video/mp4">
+</video>
+</section>
+<section id="explore-exploit" class="slide level2">
+<h1>Explore-Exploit</h1>
+<ul>
+<li class="fragment">How to explore
+<ul>
+<li class="fragment">Tow at a nearby cell from subjective best</li>
+<li class="fragment">Random Hill-Climbing</li>
+</ul></li>
+<li class="fragment">When to explore
+<ul>
+<li class="fragment">Stochastically choose to explore next trip with probability <span class="math inline">\(p\)</span></li>
+<li class="fragment">Adjust <span class="math inline">\(p\)</span> if exploration is often (un)succesful</li>
+</ul></li>
+<li class="fragment">Why not more nuanced bandit algorithms?</li>
+</ul>
+</section>
+<section id="explore-exploit-imitate" class="slide level2">
+<h1>Explore-Exploit-Imitate</h1>
+<ul>
+<li class="fragment">Other boats consume biomass</li>
+<li class="fragment">You can use other boats information</li>
+<li class="fragment">How to imitate?</li>
+<li class="fragment">With probability <span class="math inline">\(p\)</span> explore, with probability <span class="math inline">\(i\)</span> imitate a competitor otherwise exploit</li>
+</ul>
+</section>
+<section id="two-agents-sample-run" class="slide level2">
+<h1>Two Agents sample run</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/VengefulUglyAlaskanmalamute-poster.jpg">
+<source src="http://zippy.gfycat.com/VengefulUglyAlaskanmalamute.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/VengefulUglyAlaskanmalamute.mp4" type="video/mp4">
+</video>
+</section>
+<section id="many-agents" class="slide level2">
+<h1>Many Agents</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/LonelySpiritedFallowdeer-poster.jpg">
+<source src="http://zippy.gfycat.com/LonelySpiritedFallowdeer.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/LonelySpiritedFallowdeer.mp4" type="video/mp4">
+</video>
+</section>
+<section id="oil-prices" class="slide level2">
+<h1>Oil Prices</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/RarePoorGoldfinch-poster.jpg">
+<source src="http://zippy.gfycat.com/RarePoorGoldfinch.webm" type="video/webm">
+<source src="http://fat.gfycat.com/RarePoorGoldfinch.mp4" type="video/mp4">
+</video>
+</section>
+<section id="fish-the-line-part-1" class="slide level2">
+<h1>Fish the Line (part 1)</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/IdealisticMildCrustacean-poster.jpg">
+<source src="http://zippy.gfycat.com/IdealisticMildCrustacean.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/IdealisticMildCrustacean.mp4" type="video/mp4">
+</video>
+</section>
+<section id="fish-the-line-part-2" class="slide level2">
+<h1>Fish the Line (part 2)</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/RipeAffectionateAfricanmolesnake-poster.jpg">
+<source src="http://zippy.gfycat.com/RipeAffectionateAfricanmolesnake.webm" type="video/webm">
+<source src="http://fat.gfycat.com/RipeAffectionateAfricanmolesnake.mp4" type="video/mp4">
+</video>
+<!-- ## Fish the Rocky Line (part 1) -->
+<!-- <video width="700" height="525" controls  poster="http://thumbs.gfycat.com/UnequaledInformalAmericanbulldog-poster.jpg"> -->
+<!-- <source src="http://fat.gfycat.com/UnequaledInformalAmericanbulldog.webm" type="video/webm"> -->
+<!-- <source src="http://fat.gfycat.com/UnequaledInformalAmericanbulldog.mp4" type="video/mp4"> -->
+<!-- </video>  -->
+<!-- ## Fish the Rocky Line (part 2) -->
+<!-- <video width="700" height="525" controls  poster="http://thumbs.gfycat.com/ParallelWigglyJabiru-poster.jpg"> -->
+<!-- <source src="http://fat.gfycat.com/ParallelWigglyJabiru.webm" type="video/webm"> -->
+<!-- <source src="http://fat.gfycat.com/ParallelWigglyJabiru.mp4" type="video/mp4"> -->
+<!-- </video>  -->
+</section>
+<section id="target-switching" class="slide level2">
+<h1>Target Switching</h1>
+<p><img src="lisa_files/figure-revealjs/ebbs-1.png" width="1024" /></p>
+</section>
+<section id="gear-selection" class="slide level2">
+<h1>Gear Selection</h1>
+<p><img src="lisa_files/figure-revealjs/directed_tech_change-1.png" width="1024" /></p>
+</section>
+<section id="simulating-quotas" class="slide level2">
+<h1>Simulating Quotas</h1>
+<ul>
+<li class="fragment">TAC: Total Allowable Catch</li>
+<li class="fragment">ITQ: Individual Tradeable Quota</li>
+</ul>
+</section>
+<section id="single-species-tac-vs-itq-mileage" class="slide level2">
+<h1>Single Species TAC vs ITQ (mileage)</h1>
+<p><img src="lisa_files/figure-revealjs/unnamed-chunk-1-1.png" width="1024" /></p>
+</section>
+<section id="single-species-tac-vs-itq-catchability" class="slide level2">
+<h1>Single Species TAC vs ITQ (catchability)</h1>
+<p><img src="lisa_files/figure-revealjs/unnamed-chunk-2-1.png" width="1024" /></p>
+</section>
+<section id="north-south-world" class="slide level2">
+<h1>North-South world</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/OrneryWealthyAsianpiedstarling-poster.jpg">
+<source src="http://zippy.gfycat.com/OrneryWealthyAsianpiedstarling.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/OrneryWealthyAsianpiedstarling.mp4" type="video/mp4">
+</video>
+</section>
+<section id="location-choices" class="slide level2">
+<h1>Location choices</h1>
+<p><img src="lisa_files/figure-revealjs/location_itq-1.png" width="1024" /></p>
+</section>
+<section id="itq-incentivates-geography" class="slide level2">
+<h1>ITQ incentivates geography</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/MellowQuestionableKitty-poster.jpg">
+<source src="http://zippy.gfycat.com/MellowQuestionableKitty.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/MellowQuestionableKitty.mp4" type="video/mp4">
+</video>
+<!-- ## Well-Mixed World -->
+<!-- <video width="700" height="525" controls  poster="http://thumbs.gfycat.com/OldfashionedKindIrishsetter-poster.jpg"> -->
+<!-- <source src="http://zippy.gfycat.com/OldfashionedKindIrishsetter.webm" type="video/webm"> -->
+<!-- <source src="http://zippy.gfycat.com/OldfashionedKindIrishsetter.mp4" type="video/mp4"> -->
+<!-- </video> -->
+<!-- ## TAC Gear -->
+<!-- - Quotas are distributed 90% reds, 10% blue -->
+<!-- - -->
+<!-- ```{r,include=TRUE} -->
+<!-- directory<-paste(main_directory,"/gear/",sep="") -->
+<!-- earlyBlue<-read.csv(paste(directory,"tac_start_blue.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- lateBlue<-read.csv(paste(directory,"tac_final_blue.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- earlyRed<-read.csv(paste(directory,"tac_start_red.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- lateRed<-read.csv(paste(directory,"tac_final_red.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- plot1<- -->
+<!--   ggplot()+geom_histogram(aes(x=earlyBlue$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(values = c("#00BFFF"),guide = FALSE,name="Blue Catchability") + -->
+<!--   ggtitle("Blue Catchability Year 1") +ylab("Frequency") + xlab("Catchability") -->
+<!-- plot2<- -->
+<!--   ggplot()+geom_histogram(aes(x=lateBlue$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(guide = FALSE,values = c("#0000FF"),name="Blue Catchability") + -->
+<!--   ggtitle("Blue Catchability Year 20") +ylab("Frequency") + xlab("Catchability") -->
+<!-- plot3<- -->
+<!--   ggplot()+geom_histogram(aes(x=earlyRed$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(guide = FALSE, values = c("#FF4500"),name="Red Catchability") + -->
+<!--   ggtitle("Red Catchability Year 1") +ylab("Frequency") + xlab("Catchability") -->
+<!-- plot4<- -->
+<!--   ggplot()+geom_histogram(aes(x=lateRed$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(guide = FALSE, values = c("#FF0000"),name="Red Catchability") + -->
+<!--   ggtitle("Red Catchability Year 20")  +ylab("Frequency") + xlab("Catchability") -->
+<!-- library(gridExtra) -->
+<!-- grid.arrange(plot1, plot3, plot2,plot4,ncol=2,top="TAC") -->
+<!-- #library(cowplot) -->
+<!-- #plot_grid(plot1, plot2, align='hv',ncol=1) -->
+<!-- ``` -->
+<!-- ## TAC Efficiency -->
+<!-- ```{r,include=TRUE} -->
+<!-- reds<-read.csv(paste(directory,"tac_red_landings.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- blues<-read.csv(paste(directory,"tac_blue_landings.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- landings<-data.frame(blues=blues$V1,reds=reds$V1,year=1:50) -->
+<!-- landings<-melt(landings,id.vars="year") -->
+<!-- ggplot()+geom_line(data=landings,aes(x=year,y=value,col=variable),lwd=1.5) + -->
+<!--     geom_hline(yintercept = 4500*100,lty=2,col="red") + -->
+<!--   geom_hline(yintercept = 500*100,lty=2,col="blue")  + scale_color_manual(values=c("blue","red"),labels=c("blues","reds"),name="Landings") + -->
+<!--   ylab("Landings") + xlab("Year") + scale_x_discrete() + ggtitle("Yearly Landings Versus Quotas Allocated") -->
+<!-- ``` -->
+<!-- ## ITQ Gear -->
+<!-- ```{r start_histogram} -->
+<!-- directory<-paste(main_directory,"/gear/",sep="") -->
+<!-- earlyBlue<-read.csv(paste(directory,"itq_start_blue.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- lateBlue<-read.csv(paste(directory,"itq_final_blue.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- earlyRed<-read.csv(paste(directory,"itq_start_red.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- lateRed<-read.csv(paste(directory,"itq_final_red.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- plot1<- -->
+<!--   ggplot()+geom_histogram(aes(x=earlyBlue$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(values = c("#00BFFF"),guide = FALSE,name="Blue Catchability") + -->
+<!--   ggtitle("Blue Catchability Year 1") +ylab("Frequency") + xlab("Catchability") -->
+<!-- plot2<- -->
+<!--   ggplot()+geom_histogram(aes(x=lateBlue$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(guide = FALSE,values = c("#0000FF"),name="Blue Catchability") + -->
+<!--   ggtitle("Blue Catchability Year 20") +ylab("Frequency") + xlab("Catchability") -->
+<!-- plot3<- -->
+<!--   ggplot()+geom_histogram(aes(x=earlyRed$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(guide = FALSE, values = c("#FF4500"),name="Red Catchability") + -->
+<!--   ggtitle("Red Catchability Year 1") +ylab("Frequency") + xlab("Catchability") -->
+<!-- plot4<- -->
+<!--   ggplot()+geom_histogram(aes(x=lateRed$V1,fill=factor(1)),col="black",binwidth=0.001) + -->
+<!--   coord_cartesian(ylim=c(0,60),xlim=c(0.001,0.02))  + -->
+<!--   scale_fill_manual(guide = FALSE, values = c("#FF0000"),name="Red Catchability") + -->
+<!--   ggtitle("Red Catchability Year 20")  +ylab("Frequency") + xlab("Catchability") -->
+<!-- library(gridExtra) -->
+<!-- grid.arrange(plot1, plot3, plot2,plot4,ncol=2,top="ITQ") -->
+<!-- ``` -->
+<!-- ## ITQ efficiency -->
+<!-- ```{r end_histogram} -->
+<!-- reds<-read.csv(paste(directory,"itq_red_landings.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- blues<-read.csv(paste(directory,"itq_blue_landings.csv",sep=""), -->
+<!--                     header=FALSE,colClasses = "numeric") -->
+<!-- landings<-data.frame(blues=blues$V1,reds=reds$V1,year=1:50) -->
+<!-- landings<-melt(landings,id.vars="year") -->
+<!-- ggplot()+geom_line(data=landings,aes(x=year,y=value,col=variable),lwd=1.5) + -->
+<!--     geom_hline(yintercept = 4500*100,lty=2,col="red") + -->
+<!--   geom_hline(yintercept = 500*100,lty=2,col="blue")  + scale_color_manual(values=c("blue","red"),labels=c("blues","reds"),name="Landings") + -->
+<!--   ylab("Landings") + xlab("Year") + scale_x_discrete() + ggtitle("Yearly Landings Versus Quotas Allocated") -->
+<!-- ``` -->
+</section>
+<section id="optimise-policies" class="slide level2">
+<h1>Optimise Policies</h1>
+</section>
+<section id="optimal-tac" class="slide level2">
+<h1>Optimal TAC</h1>
+<p><img src="lisa_files/figure-revealjs/bayes_tac-1.png" width="1024" /></p>
+</section>
+<section id="optimal-itq" class="slide level2">
+<h1>Optimal ITQ</h1>
+<p><img src="lisa_files/figure-revealjs/bayes_itq-1.png" width="1024" /></p>
+</section>
+<section id="well-mixed-world" class="slide level2">
+<h1>Well-Mixed World</h1>
+<p><img src="lisa_files/figure-revealjs/bayes_mixed-1.png" width="1024" /></p>
+</section>
+<section id="osmose" class="slide level2">
+<h1>OSMOSE</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/ColdCautiousAmericanquarterhorse-poster.jpg">
+<source src="http://zippy.gfycat.com/ColdCautiousAmericanquarterhorse.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/ColdCautiousAmericanquarterhorse.mp4" type="video/mp4">
+</video>
+</section>
+<section id="california" class="slide level2">
+<h1>California</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/MediocreGorgeousBasenji-poster.jpg">
+<source src="http://zippy.gfycat.com/MediocreGorgeousBasenji.webm" type="video/webm">
+<source src="http://fat.gfycat.com/MediocreGorgeousBasenji.mp4" type="video/mp4">
+</video>
+</section>
+<section id="state-of-california" class="slide level2">
+<h1>State of California</h1>
+<ul>
+<li class="fragment">Biomass properly distributed</li>
+<li class="fragment">Gear and boats parametrized</li>
+<li class="fragment">Quotas correct, trading simplified</li>
+<li class="fragment">Not fitted to logbook data yet</li>
+<li class="fragment">Weather and fish movement missing</li>
+</ul>
+</section>
+<section id="winners-and-losers" class="slide level2">
+<h1>Winners and Losers</h1>
+<p><img src="lisa_files/figure-revealjs/winners-1.png" width="1024" /></p>
+</section>
+<section id="winners-and-losers-with-policy" class="slide level2">
+<h1>Winners and Losers (with policy)</h1>
+<p><img src="lisa_files/figure-revealjs/winners2-1.png" width="1024" /></p>
+</section>
+    </div>
+  </div>
+
+  <script src="lisa_files/reveal.js-3.3.0/lib/js/head.min.js"></script>
+  <script src="lisa_files/reveal.js-3.3.0/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>
