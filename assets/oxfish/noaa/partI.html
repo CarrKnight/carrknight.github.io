@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Ernesto Carrella" />
+  <meta name="dcterms.date" content="2016-01-18" />
+  <title>Technical Presentation 1: Model Methodology</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="partI_small_files/reveal.js-3.3.0/css/reveal.css"/>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #2a211c; color: #bdae9d; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #2a211c; color: #bdae9d; border-right: 1px solid #bdae9d; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #bdae9d; background-color: #2a211c; }
+code > span.kw { color: #43a8ed; font-weight: bold; } /* Keyword */
+code > span.dt { text-decoration: underline; } /* DataType */
+code > span.dv { color: #44aa43; } /* DecVal */
+code > span.bn { color: #44aa43; } /* BaseN */
+code > span.fl { color: #44aa43; } /* Float */
+code > span.ch { color: #049b0a; } /* Char */
+code > span.st { color: #049b0a; } /* String */
+code > span.co { color: #0066ff; font-style: italic; } /* Comment */
+code > span.al { color: #ffff00; } /* Alert */
+code > span.fu { color: #ff9358; font-weight: bold; } /* Function */
+code > span.er { color: #ffff00; font-weight: bold; } /* Error */
+code > span.wa { color: #ffff00; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #049b0a; } /* SpecialChar */
+code > span.vs { color: #049b0a; } /* VerbatimString */
+code > span.ss { color: #049b0a; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #43a8ed; font-weight: bold; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { font-weight: bold; } /* Preprocessor */
+code > span.at { } /* Attribute */
+code > span.do { color: #0066ff; font-style: italic; } /* Documentation */
+code > span.an { color: #0066ff; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.co { color: #0066ff; font-weight: bold; font-style: italic; } /* Comment */
+code > span.in { color: #0066ff; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="partI_small_files/reveal.js-3.3.0/css/theme/white.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'partI_small_files/reveal.js-3.3.0/css/print/pdf.css' : 'partI_small_files/reveal.js-3.3.0/css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+    <!--[if lt IE 9]>
+    <script src="partI_small_files/reveal.js-3.3.0/lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Technical Presentation 1: Model Methodology</h1>
+    <h2 class="author">Ernesto Carrella</h2>
+    <h3 class="date">January 18, 2016</h3>
+</section>
+
+<section class="slide level2">
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58894263-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</section>
+<section id="this-presentation" class="slide level2">
+<h1>This presentation</h1>
+<ul>
+<li class="fragment">Vertical Slice</li>
+<li class="fragment">Horizontal Slice</li>
+</ul>
+</section>
+<section id="vertical-slice" class="slide level2">
+<h1>Vertical Slice</h1>
+</section>
+<section id="objectives" class="slide level2">
+<h1>Objectives</h1>
+<ul>
+<li class="fragment">Policy Simulator
+<ul>
+<li class="fragment">Agents Flexibility</li>
+<li class="fragment">Model Flexibility</li>
+</ul></li>
+</ul>
+</section>
+<section id="the-state-of-the-art" class="slide level2">
+<h1>The State of the Art</h1>
+<ul>
+<li class="fragment">Random Utility Models
+<ul>
+<li class="fragment">Statistically Efficient</li>
+<li class="fragment">Easily Generalizable</li>
+<li class="fragment">Policy-Brittle</li>
+</ul></li>
+<li class="fragment">Dynamic Programming
+<ul>
+<li class="fragment">Strongly Rational</li>
+<li class="fragment">Computationally Expensive</li>
+<li class="fragment">Ad hoc</li>
+</ul></li>
+</ul>
+<!-- ## Problem -->
+<!-- * Modular fishing agent-based model  -->
+<!-- * Where to fish? -->
+<!-- * Decisions are: -->
+<!--     * Geographical -->
+<!--     * Repeated -->
+<!--     * Myopic -->
+<!--     * Uninformed -->
+</section>
+<section id="the-one-agent-problem" class="slide level2">
+<h1>The One Agent Problem</h1>
+<p><img src="clipart/IMG_001.png" alt="one armed bandit" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="the-one-agent-problem-1" class="slide level2">
+<h1>The One Agent Problem</h1>
+<ul>
+<li class="fragment">Find the most profitable spot to fish</li>
+<li class="fragment">Constraints:
+<ul>
+<li class="fragment">No biomass information</li>
+<li class="fragment">No model knowledge</li>
+<li class="fragment">Environment changes over time</li>
+</ul></li>
+<li class="fragment">Subproblems:
+<ul>
+<li class="fragment">How to explore</li>
+<li class="fragment">Explore-Exploit Tradeoff</li>
+</ul></li>
+</ul>
+</section>
+<section id="explore-or-exploit" class="slide level2">
+<h1>Explore or Exploit ?</h1>
+<p><img src="clipart/IMG_002.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="explore-or-exploit-1" class="slide level2">
+<h1>Explore or Exploit ?</h1>
+<p><img src="clipart/IMG_003.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="explore-exploit" class="slide level2">
+<h1>Explore-Exploit</h1>
+<ul>
+<li class="fragment">Stochastically choose to explore next trip with probability <span class="math inline">\(p\)</span></li>
+<li class="fragment">Explore in the neighborhood of where you currently go</li>
+</ul>
+</section>
+<section id="one-agent-world" class="slide level2">
+<h1>One Agent world</h1>
+<p><img src="clipart/search_start.png" width="700px" height="525px" /></p>
+</section>
+<section id="one-agent-sample-run" class="slide level2">
+<h1>One Agent sample run</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/WhisperedUnlinedJenny-poster.jpg">
+<source src="http://zippy.gfycat.com/WhisperedUnlinedJenny.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/WhisperedUnlinedJenny.mp4" type="video/mp4">
+</video>
+</section>
+<section id="scaling-issues" class="slide level2">
+<h1>Scaling issues</h1>
+<p><img src="search_california.png" alt="" /></p>
+</section>
+<section id="scaling-issues-1" class="slide level2">
+<h1>Scaling issues</h1>
+<p><img src="clipart/IMG_004.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="scaling-issues-2" class="slide level2">
+<h1>Scaling issues</h1>
+<p><img src="clipart/IMG_005.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="lenfer-cest-les-autres" class="slide level2">
+<h1>L’enfer, c’est les autres</h1>
+<ul>
+<li class="fragment">Other boats consume biomass</li>
+<li class="fragment">You can use other boats information</li>
+<li class="fragment">How to imitate?</li>
+<li class="fragment">With probability <span class="math inline">\(p\)</span> explore, otherwise copy somebody who’s doing better</li>
+</ul>
+</section>
+<section id="two-agents-sample-run" class="slide level2">
+<h1>Two Agents sample run</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/VengefulUglyAlaskanmalamute-poster.jpg">
+<source src="http://zippy.gfycat.com/VengefulUglyAlaskanmalamute.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/VengefulUglyAlaskanmalamute.mp4" type="video/mp4">
+</video>
+</section>
+<section id="many-agents" class="slide level2">
+<h1>Many Agents</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/LonelySpiritedFallowdeer-poster.jpg">
+<source src="http://zippy.gfycat.com/LonelySpiritedFallowdeer.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/LonelySpiritedFallowdeer.mp4" type="video/mp4">
+</video>
+</section>
+<section id="cui-prodest" class="slide level2">
+<h1>Cui prodest?</h1>
+<ul>
+<li class="fragment">Model free</li>
+<li class="fragment">Adaptive</li>
+</ul>
+</section>
+<section id="oil-prices" class="slide level2">
+<h1>Oil Prices</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/RarePoorGoldfinch-poster.jpg">
+<source src="http://zippy.gfycat.com/RarePoorGoldfinch.webm" type="video/webm">
+<source src="http://fat.gfycat.com/RarePoorGoldfinch.mp4" type="video/mp4">
+</video>
+</section>
+<section id="fish-the-line-part-1" class="slide level2">
+<h1>Fish the Line (part 1)</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/IdealisticMildCrustacean-poster.jpg">
+<source src="http://zippy.gfycat.com/IdealisticMildCrustacean.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/IdealisticMildCrustacean.mp4" type="video/mp4">
+</video>
+</section>
+<section id="fish-the-line-part-2" class="slide level2">
+<h1>Fish the Line (part 2)</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/RipeAffectionateAfricanmolesnake-poster.jpg">
+<source src="http://zippy.gfycat.com/RipeAffectionateAfricanmolesnake.webm" type="video/webm">
+<source src="http://fat.gfycat.com/RipeAffectionateAfricanmolesnake.mp4" type="video/mp4">
+</video>
+</section>
+<section id="fish-the-rocky-line-part-1" class="slide level2">
+<h1>Fish the Rocky Line (part 1)</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/UnequaledInformalAmericanbulldog-poster.jpg">
+<source src="http://fat.gfycat.com/UnequaledInformalAmericanbulldog.webm" type="video/webm">
+<source src="http://fat.gfycat.com/UnequaledInformalAmericanbulldog.mp4" type="video/mp4">
+</video>
+</section>
+<section id="fish-the-rocky-line-part-2" class="slide level2">
+<h1>Fish the Rocky Line (part 2)</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/ParallelWigglyJabiru-poster.jpg">
+<source src="http://fat.gfycat.com/ParallelWigglyJabiru.webm" type="video/webm">
+<source src="http://fat.gfycat.com/ParallelWigglyJabiru.mp4" type="video/mp4">
+</video>
+</section>
+<section id="target-switching" class="slide level2">
+<h1>Target Switching</h1>
+<p><img src="partI_small_files/figure-revealjs/ebbs-1.png" width="1000" /></p>
+</section>
+<section id="gear-selection" class="slide level2">
+<h1>Gear Selection</h1>
+<p><img src="partI_small_files/figure-revealjs/directed_tech_change-1.png" width="1000" /></p>
+</section>
+<section id="horizontal-slice" class="slide level2">
+<h1>Horizontal Slice</h1>
+</section>
+<section id="biology" class="slide level2">
+<h1>Biology</h1>
+</section>
+<section id="abstract-model" class="slide level2">
+<h1>Abstract Model</h1>
+<ul>
+<li class="fragment"><p>Each cell a logistic box <span class="math display">\[ B_{t+1} = B_t \left( 1 + h \left( 1 - \frac{B_t}{K}\right) \right) \]</span></p></li>
+<li class="fragment"><p>Biomass moves</p></li>
+</ul>
+</section>
+<section id="biomass-smoothing" class="slide level2">
+<h1>Biomass smoothing</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/TediousFlickeringAlligatorsnappingturtle-poster.jpg">
+<source src="http://zippy.gfycat.com/TediousFlickeringAlligatorsnappingturtle.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/TediousFlickeringAlligatorsnappingturtle.mp4" type="video/mp4">
+</video>
+</section>
+<section id="osmose" class="slide level2">
+<h1>OSMOSE</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/ColdCautiousAmericanquarterhorse-poster.jpg">
+<source src="http://zippy.gfycat.com/ColdCautiousAmericanquarterhorse.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/ColdCautiousAmericanquarterhorse.mp4" type="video/mp4">
+</video>
+</section>
+<section id="california" class="slide level2">
+<h1>California</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/MediocreGorgeousBasenji-poster.jpg">
+<source src="http://zippy.gfycat.com/MediocreGorgeousBasenji.webm" type="video/webm">
+<source src="http://fat.gfycat.com/MediocreGorgeousBasenji.mp4" type="video/mp4">
+</video>
+</section>
+<section id="fisher-profits" class="slide level2">
+<h1>Fisher profits</h1>
+<ul>
+<li class="fragment">Maximize <span class="math inline">\(\frac{\profits}{\text{Hours out}}\)</span></li>
+<li class="fragment">Gas costs main expenditure</li>
+<li class="fragment">Three questions
+<ul>
+<li class="fragment">When to go out?</li>
+<li class="fragment">Where to go?</li>
+<li class="fragment">When to come back?</li>
+</ul></li>
+</ul>
+</section>
+<section id="simplifying-assumptions" class="slide level2">
+<h1>Simplifying assumptions</h1>
+<ul>
+<li class="fragment">Fixed probability of going out</li>
+<li class="fragment">Fixed sale price</li>
+<li class="fragment">Fixed social networks</li>
+</ul>
+</section>
+<section id="decision-making" class="slide level2">
+<h1>Decision-Making</h1>
+</section>
+<section id="bandit-problems" class="slide level2">
+<h1>Bandit Problems</h1>
+<p><img src="clipart/IMG_004.png" alt="one armed bandit" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="bandit-algorithms" class="slide level2">
+<h1>Bandit Algorithms</h1>
+<ul>
+<li class="fragment">Multi-armed bandit problem:
+<ul>
+<li class="fragment">Choose between <span class="math inline">\(K\)</span> slot machines</li>
+<li class="fragment">Make most money</li>
+</ul></li>
+<li class="fragment">Each spot on the map a slot machine</li>
+</ul>
+</section>
+<section id="broad-strategies" class="slide level2">
+<h1>3 Broad Strategies</h1>
+<ul>
+<li class="fragment">Bandit Algorithms</li>
+<li class="fragment">Imitation</li>
+<li class="fragment">Inference</li>
+</ul>
+</section>
+<section id="bandit-algorithms-1" class="slide level2">
+<h1>Bandit Algorithms</h1>
+<ul>
+<li class="fragment">Pure trial and error</li>
+<li class="fragment">Degrade linearly with <span class="math inline">\(K\)</span></li>
+<li class="fragment">Can be discretized</li>
+</ul>
+</section>
+<section id="bandit-algorithms-2" class="slide level2">
+<h1>Bandit Algorithms</h1>
+<ul>
+<li class="fragment"><span class="math inline">\(\epsilon\)</span>-Greedy</li>
+<li class="fragment">UCB-1 Algorithm</li>
+<li class="fragment">Boltzmann Exploration</li>
+</ul>
+</section>
+<section id="epsilon-greedy" class="slide level2">
+<h1><span class="math inline">\(\epsilon\)</span>-Greedy</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># store the empirical means in an array</span>
+means&lt;-<span class="kw">numeric</span>(K)
+<span class="co"># keep making choices</span>
+while(<span class="ot">TRUE</span>)
+{
+  <span class="co"># with probability epsilon, make random choice</span>
+  if random &lt;<span class="st"> </span>epsilon
+    x &lt;-<span class="st"> </span>random from <span class="dv">1</span> to K
+  else
+  <span class="co"># otherwise choose option with highest empirical mean</span>
+    x &lt;-<span class="st"> </span><span class="kw">which.max</span>(means)
+  <span class="co"># choose x and get a random reward</span>
+  reward&lt;-<span class="st"> </span><span class="kw">play</span>(x)
+  <span class="co"># update means</span>
+  means[x]&lt;-<span class="st"> </span>update means[x] with reward
+}</code></pre></div>
+</section>
+<section id="epsilon-greedy---example" class="slide level2">
+<h1><span class="math inline">\(\epsilon\)</span>-Greedy - example</h1>
+<video controls width="700" height="525"  poster="http://thumbs.gfycat.com/IckyRichBrocketdeer-poster.jpg">
+<source src="http://zippy.gfycat.com/IckyRichBrocketdeer.webm" type="video/webm">
+<source src="http://fat.gfycat.com/IckyRichBrocketdeer.mp4" type="video/mp4">
+</video>
+</section>
+<section id="ucb-1-algorithm" class="slide level2">
+<h1>UCB-1 Algorithm</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># store the empirical means</span>
+means&lt;-<span class="kw">numeric</span>(K)
+<span class="co"># store times each option was played</span>
+ns&lt;-array[K]
+<span class="co">#keep track of how many games played</span>
+t&lt;-<span class="dv">0</span>
+<span class="co"># first play one game for each possible option</span>
+for( x in <span class="dv">1</span>:i)
+{
+  reward&lt;-<span class="kw">play</span>(x)
+  ns[x]&lt;-ns[x]+<span class="dv">1</span>
+  means[x]&lt;-<span class="st"> </span>update means[x] with reward
+  t&lt;-t<span class="dv">+1</span>
+}
+<span class="co"># now choose the arm with the maximum upper confidence bound</span>
+while(true)
+{
+  x&lt;-<span class="st"> </span><span class="kw">which.max</span>(means[x] +<span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">2</span>*<span class="kw">log</span>(t)/ns[x]))
+  reward&lt;-<span class="st"> </span><span class="kw">play</span>(x)
+  ns[x]&lt;-ns[x]+<span class="dv">1</span>
+  means[x]&lt;-<span class="st"> </span>update means[x] with reward
+  t&lt;-t<span class="dv">+1</span>
+}</code></pre></div>
+</section>
+<section id="ucb-1-algorithm---example" class="slide level2">
+<h1>UCB-1 Algorithm - example</h1>
+<video controls width="700" height="525"  poster="http://thumbs.gfycat.com/CreepyHandyCopepod-poster.jpg">
+<source src="http://zippy.gfycat.com/CreepyHandyCopepod.webm" type="video/webm">
+<source src="http://fat.gfycat.com/CreepyHandyCopepod.mp4" type="video/mp4">
+</video>
+</section>
+<section id="when-to-use" class="slide level2">
+<h1>When to use?</h1>
+<ul>
+<li class="fragment">Anecdotally very high regret with <span class="math inline">\(K&gt;=50\)</span></li>
+<li class="fragment">Map size 50x50</li>
+<li class="fragment">Weak Exploration:
+<ul>
+<li class="fragment">Can only explore one slot machine at a time</li>
+<li class="fragment">All machines are independent of one another</li>
+</ul></li>
+<li class="fragment">Improvements:
+<ul>
+<li class="fragment">Parallelize exploration</li>
+<li class="fragment">Add structure</li>
+</ul></li>
+</ul>
+</section>
+<section id="parallel-exploration" class="slide level2">
+<h1>Parallel exploration</h1>
+<p><img src="clipart/IMG_005.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="parallel-exploration-1" class="slide level2">
+<h1>Parallel exploration</h1>
+<ul>
+<li class="fragment">Exploring one slot machine at a time is very slow</li>
+<li class="fragment">ABM: multiple agents competing</li>
+<li class="fragment">Sharing information as parallelization</li>
+<li class="fragment">Population optimization:
+<ul>
+<li class="fragment">Effective</li>
+<li class="fragment">Somewhat unrealistic</li>
+<li class="fragment">Weak to dynamic problems</li>
+</ul></li>
+</ul>
+</section>
+<section id="parallel-exploration-2" class="slide level2">
+<h1>Parallel exploration</h1>
+<ul>
+<li class="fragment">Gravitational Search</li>
+<li class="fragment">Particle Swarm Optimization</li>
+<li class="fragment">Explore-Exploit-Imitate</li>
+<li class="fragment">Social Annealing</li>
+</ul>
+</section>
+<section id="gravitational-search" class="slide level2">
+<h1>Gravitational Search</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># peek at everyone&#39;s profits and normalize them</span>
+masses&lt;-<span class="st"> </span>(profits-min_profits)/(max_profits-min_profits)
+<span class="co"># single out the top Z most profitable competitors</span>
+best&lt;-<span class="kw">order</span>(masses)[<span class="dv">1</span>:Z]
+<span class="co"># accelerate as if driven by &quot;gravity&quot; towards the best</span>
+acceleration&lt;-<span class="st"> </span>acceleration+<span class="st"> </span><span class="kw">sum</span>(g *<span class="st"> </span>masses[me]*masses[best]/<span class="kw">distance</span>(me,best))
+acceleration&lt;-<span class="st"> </span>acceleration/masses[me]
+<span class="co"># move (with some friction)</span>
+velocity&lt;-<span class="st"> </span>velocity *<span class="st"> </span><span class="kw">runif</span>() +<span class="st"> </span>acceleration
+position&lt;-position +<span class="st"> </span>velocity
+<span class="kw">play</span>(position)</code></pre></div>
+</section>
+<section id="gravitational-search---demo" class="slide level2">
+<h1>Gravitational Search - Demo</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/AntiqueMarriedFlea-poster.jpg">
+<source src="http://zippy.gfycat.com/AntiqueMarriedFlea.webm" type="video/webm">
+<source src="http://zippy.gfycat.com/AntiqueMarriedFlea.mp4" type="video/mp4">
+</video>
+</section>
+<section id="social-annealing" class="slide level2">
+<h1>Social Annealing</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># if you are doing less well than the average then explore</span>
+if(profits[me]&lt;<span class="kw">mean</span>(profits))
+  <span class="co"># shock your position by delta</span>
+  position &lt;-<span class="st"> </span>position +<span class="st"> </span><span class="kw">runif</span>(<span class="dt">min=</span>-delta,<span class="dt">max=</span>delta)
+<span class="kw">play</span>(position)</code></pre></div>
+</section>
+<section id="social-annealing---demo" class="slide level2">
+<h1>Social Annealing - Demo</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/DarkMistyImago-poster.jpg">
+<source src="http://zippy.gfycat.com/DarkMistyImago.webm" type="video/webm">
+<source src="http://fat.gfycat.com/DarkMistyImago.mp4" type="video/mp4">
+</video>
+</section>
+<section id="adding-structure" class="slide level2">
+<h1>Adding Structure</h1>
+<p><img src="clipart/IMG_007.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="structure-by-features" class="slide level2">
+<h1>Structure by features</h1>
+<p><img src="clipart/IMG_006.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="adding-structure-1" class="slide level2">
+<h1>Adding structure</h1>
+<ul>
+<li class="fragment">Exploring one arm at a time is very slow</li>
+<li class="fragment">Assume some “spatial” correlation
+<ul>
+<li class="fragment">Describe each observation in terms of features <span class="math inline">\(f\)</span> <span class="math display">\[ d(a,b) = \sum_i \frac{|f_i(a)-f_i(b)|}{h_i} \]</span></li>
+</ul></li>
+<li class="fragment">Recursive supervised learning</li>
+<li class="fragment">Heatmaps</li>
+</ul>
+</section>
+<section id="algorithms-to-add-structure" class="slide level2">
+<h1>Algorithms to add structure</h1>
+<ul>
+<li class="fragment">Nearest Neighbour</li>
+<li class="fragment">Kernel Regression</li>
+<li class="fragment">Kernel Transduction</li>
+<li class="fragment">Kalman Filters</li>
+<li class="fragment">Geographical Regression</li>
+<li class="fragment">Ad hoc bayes</li>
+</ul>
+</section>
+<section id="nearest-neighbors" class="slide level2">
+<h1>Nearest Neighbors</h1>
+<p><img src="partI_small_files/figure-revealjs/nearest-neighbor-1.png" width="1000" /></p>
+</section>
+<section id="nearest-neighbors---how" class="slide level2">
+<h1>Nearest Neighbors - How</h1>
+<ul>
+<li class="fragment">Predict the “closest” known example <span class="math display">\[ d(a,b) = \sum_i \frac{|f_i(a)-f_i(b)|}{h_i} \]</span></li>
+<li class="fragment">Implement through k-d tree
+<ul>
+<li class="fragment">Search: <span class="math inline">\(O(\log N)\)</span></li>
+<li class="fragment">Insertion: <span class="math inline">\(O(\log N)\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="nearest-neighbors---demo" class="slide level2">
+<h1>Nearest Neighbors - Demo</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/ClearAmusingArrowcrab-poster.jpg">
+<source src="http://zippy.gfycat.com/ClearAmusingArrowcrab.webm" type="video/webm">
+<source src="http://fat.gfycat.com/ClearAmusingArrowcrab.mp4" type="video/mp4">
+</video>
+</section>
+<section id="kernel-regression" class="slide level2">
+<h1>Kernel Regression</h1>
+<p><img src="partI_small_files/figure-revealjs/rbf-kernel-1.png" width="1000" /></p>
+</section>
+<section id="kernel-regression---how" class="slide level2">
+<h1>Kernel Regression - How</h1>
+<ul>
+<li class="fragment">Predict a weighted average of known observations</li>
+<li class="fragment">Weight proportional to distance <span class="math display">\[ y^* = \frac{\sum_i K(x_i,x^*)y_i}{\sum_i K(x_i,x^*)} \]</span></li>
+<li class="fragment">Degrades faster:
+<ul>
+<li class="fragment">Search: <span class="math inline">\(O(NF)\)</span></li>
+<li class="fragment">Insertion: <span class="math inline">\(O(1)\)</span></li>
+<li class="fragment">Rollout memory: <span class="math inline">\(N=100\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="kernel-regression---demo" class="slide level2">
+<h1>Kernel Regression - Demo</h1>
+<video width="700" height="525" controls poster="http://thumbs.gfycat.com/LightScarceDegu-poster.jpg">
+<source src="http://zippy.gfycat.com/LightScarceDegu.webm" type="video/webm">
+<source src="http://fat.gfycat.com/LightScarceDegu.mp4" type="video/mp4">
+</video>
+</section>
+<section id="ad-hoc-bayes" class="slide level2">
+<h1>Ad hoc Bayes</h1>
+<p><img src="partI_small_files/figure-revealjs/easy-bayes-1.png" width="1000" /></p>
+</section>
+<section id="ad-hoc-bayes---how" class="slide level2">
+<h1>Ad hoc Bayes - How</h1>
+<p><span class="math display">\[ \text{Pr}(\text{good}|x) =  \frac{\text{Pr}(\text{x}|\text{good})\text{Pr}(\text{good}) }{
+\text{Pr}(\text{x}|\text{good})\text{Pr}(\text{good}) + \text{Pr}(\text{x}|\text{bad})\text{Pr}(\text{bad})
+} \]</span></p>
+<ul>
+<li class="fragment">Easy if prior and posterior are normal</li>
+<li class="fragment">Ad-Hoc but fast
+<ul>
+<li class="fragment">Search: <span class="math inline">\(O(1)\)</span></li>
+<li class="fragment">Insertion: <span class="math inline">\(O(K)\)</span></li>
+</ul></li>
+<li class="fragment">To my great chagrin</li>
+</ul>
+</section>
+<section id="easy-bayes---demo" class="slide level2">
+<h1>Easy Bayes - Demo</h1>
+<video width="700" height="525" controls  poster="http://thumbs.gfycat.com/SaneImpishConch-poster.jpg">
+<source src="http://fat.gfycat.com/SaneImpishConch.webm" type="video/webm">
+<source src="http://giant.gfycat.com/SaneImpishConch.mp4" type="video/mp4">
+</video>
+</section>
+<section id="comparison" class="slide level2">
+<h1>Comparison</h1>
+<p><img src="comparison.png" alt="first step" style="width: 1000px; height: 600px"/></p>
+</section>
+<section id="conclusion" class="slide level2">
+<h1>Conclusion</h1>
+<ul>
+<li class="fragment">Adaptive Model</li>
+<li class="fragment">Set policies and see how agents respond</li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="partI_small_files/reveal.js-3.3.0/lib/js/head.min.js"></script>
+  <script src="partI_small_files/reveal.js-3.3.0/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>
