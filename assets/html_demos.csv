@@ -1,4 +1,4 @@
-Date,Title,Link,Description,
+﻿Date,Title,Link,Description,
 2015-07-02,Friends,http://carrknight.github.io/assets/oxfish/friends/friends.html,A quick summary of trial-and-error behavior of agents and how imitation effectivness changes over social networks and exploration parameters,
 2015-07-22,MPAs,http://carrknight.github.io/assets/oxfish/mpas/mpas.html,“Fishing the line” emerges as a behavior out of trial-and-error agents when an MPA is implemented together with diffusing biology,
 2015-07-30,Bycatch,http://carrknight.github.io/assets/oxfish/bycatch/bycatch.html,"2 species sea: one of them is profitable, the other is endangered and carries a fine. Through trial and error agents learn quickly to avoid areas where the endangered specie is",
@@ -36,3 +36,4 @@ Date,Title,Link,Description,
 2016-11-01,MPA Shapes,http://carrknight.github.io/assets/oxfish/shapes.html,Experiment with running optimization over MPA shapes of any size,
 2017-01-06,Endogenous Discovery of Policies,http://carrknight.github.io/assets/oxfish/shodan_test.html, Using reinforcement learning to generate a feedback controller from scratch to regulate the fishery,
 2017-01-12,A worked example of fitting Poseidon,http://carrknight.github.io/assets/oxfish/fit_example.html,How to find the behavioural parameters that best fit the data,
+2017-01-24,Avoiding the line,http://carrknight.github.io/assets/oxfish/synth1.html,An example of imposing both an MPA and an ITQ and see people avoiding the line
