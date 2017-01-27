@@ -37,3 +37,4 @@
 2017-01-06,Endogenous Discovery of Policies,http://carrknight.github.io/assets/oxfish/shodan_test.html, Using reinforcement learning to generate a feedback controller from scratch to regulate the fishery,
 2017-01-12,A worked example of fitting Poseidon,http://carrknight.github.io/assets/oxfish/fit_example.html,How to find the behavioural parameters that best fit the data,
 2017-01-24,Avoiding the line,http://carrknight.github.io/assets/oxfish/synth1.html,An example of imposing both an MPA and an ITQ and see people avoiding the line
+2017-01-27,An example of indirect inference,http://carrknight.github.io/assets/oxfish/indirect_inference.html, A worked example of how indirect inference would be used to fit behavioural rules and rank which algorithm is more realistic
