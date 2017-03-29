@@ -3268,32 +3268,33 @@ $1:function(a){var z,y,x,w,v,u,t,s,r,q,p,o,n,m,l
 z=J.d5(a,"\n")
 y=new H.e5(z,[H.aj(z,0)])
 for(z=new H.b9(y,y.gj(y),0,null),x=this.a,w=J.G(x);z.m();){v=J.d7(z.d)
-if(v.length!==0){u=C.d.cv(v,".html")
-t="is it html "+u
-H.bA(t)
-s=w.bf(x)
-r=v.split("=")
-if(0>=r.length)return H.e(r,0)
-q=r[0]
-r=v.split("=")
-if(1>=r.length)return H.e(r,1)
-p=J.d4(r[1],"-",":")
-if(u)p=C.d.ae(p,0,p.length-5)
+u=v.length
+if(u!==0){t=C.d.cv(v,".html")
+s="is it html "+t
+H.bA(s)
+if(t)v=C.d.ae(v,0,u-5)
+r=w.bf(x)
+u=v.split("=")
+if(0>=u.length)return H.e(u,0)
+q=u[0]
+u=v.split("=")
+if(1>=u.length)return H.e(u,1)
+p=J.d4(u[1],"-",":")
 o=H.a(q)+" "+p
-t="time line is "+o
-H.bA(t)
+s="time line is "+o
+H.bA(s)
 n=P.dh(o)
-J.d0(s).textContent=n.cZ().i(0)
-r=document
-m=r.createElement("a")
+J.d0(r).textContent=n.cZ().i(0)
+u=document
+m=u.createElement("a")
 m.textContent="Dashboard"
 l="http://carrknight.github.io/poseidon/dashboards/"+v
-J.bC(m,u?l+".html":l+".png")
-s.insertCell(-1).appendChild(m)
-m=r.createElement("a")
+J.bC(m,t?l+".html":l+".png")
+r.insertCell(-1).appendChild(m)
+m=u.createElement("a")
 m.textContent="Test Reports"
 J.bC(m,"http://carrknight.github.io/poseidon/reports/"+v+"/index.html")
-s.insertCell(-1).appendChild(m)}}}}},1]]
+r.insertCell(-1).appendChild(m)}}}}},1]]
 setupProgram(dart,0)
 J.m=function(a){if(typeof a=="number"){if(Math.floor(a)==a)return J.bV.prototype
 return J.bU.prototype}if(typeof a=="string")return J.aq.prototype
