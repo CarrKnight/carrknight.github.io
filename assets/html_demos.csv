@@ -42,3 +42,4 @@
 2017-02-17,Random Utility Model,http://carrknight.github.io/poseidon/rum.html,Coded in the classic random utility model agent; what we called sometimes statistical agents; i want to use them to generate synthetic logbooks,
 2017-02-22,Enforcement,http://carrknight.github.io/poseidon/enforcement.html,Enforcement can now be imperfect and we can observe how agents react if they only care about money,
 2017-03-01,Strategic Ecology,http://carrknight.github.io/poseidon/replicator.html, Here I use a replicator function (last resort of the lazy social scientist) to simulate agents changing their strategies over time and show how policies can influence the proportion of strategies left,
+2017-03-31,Premature Calibration,http://carrknight.github.io/poseidon/calicali.html, Fit catchability and hold-size by minimizing distance to known 2010 landings and profit numbers; works okay but will need to be redone when logbook data shows up,
