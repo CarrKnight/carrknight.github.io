@@ -1,4 +1,4 @@
-﻿Date,Title,Link,Description,
+Date,Title,Link,Description,
 2015-07-02,Friends,http://carrknight.github.io/poseidon/friends/friends.html,A quick summary of trial-and-error behavior of agents and how imitation effectivness changes over social networks and exploration parameters,
 2015-07-22,MPAs,http://carrknight.github.io/poseidon/mpas/mpas.html,“Fishing the line” emerges as a behavior out of trial-and-error agents when an MPA is implemented together with diffusing biology,
 2015-07-30,Bycatch,http://carrknight.github.io/poseidon/bycatch/bycatch.html,"2 species sea: one of them is profitable, the other is endangered and carries a fine. Through trial and error agents learn quickly to avoid areas where the endangered specie is",
@@ -46,3 +46,4 @@
 2017-04-05,A 2 fleet narrative,http://carrknight.github.io/poseidon/narrative.html, A retelling of the heterogeneous fleet demo; this time using layered policies ,
 2017-04-07,Climate Change,http://carrknight.github.io/poseidon/climate.html, A progressive movement of biomass and capacity towards the north-west corner of the map and how policies cope or fail to cope with it ,
 2017-04-10,PID Taxation,http://carrknight.github.io/poseidon/pid_remake.html, If you cannot set quotas and you cannot put MPAs but you have a handle on ex-vessel prices and can observe landings then you can still do policy ,
+2017-05-11,Discards,http://carrknight.github.io/poseidon/discards.html,What happens to the price of quotas if observers are not on the boat?,
