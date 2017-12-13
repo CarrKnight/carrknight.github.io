@@ -54,3 +54,5 @@ Date,Title,Link,Description,
 2017-06-30, Fixed Gear,http://carrknight.github.io/poseidon/fixedgear.html,The policy relevant paper simulating the sablefish fixed gear fishery in all of its splendor plus some data degradation
 2017-07-13,Indonesia Minimum Model,http://carrknight.github.io/poseidon/minimum_indonesia.html,Our first slice of Indonesia with an obvious discard rate observation
 2017-11-30,Calibrated Selex Curve,http://carrknight.github.io/poseidon/selex.html,A simple experiment in calibrating selex curve to a 1D fixed boxcar model; it has its weaknesses but it's relatively straightforward to model
+2017-12-13,Minimum Indonesia Model with Boxcars,http://carrknight.github.io/poseidon/boxcar_indonesia.html,The second slice of 
+Indonesia this time with boxcar biology
