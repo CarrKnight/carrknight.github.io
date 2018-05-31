@@ -13,13 +13,21 @@ How to find optimal policies in a complex system? Build an agent-based model and
 Now test your policy levers against the adaptive agents trying to use a smart searching algorithm (we settled on [Bayesian Optimization](https://www.cs.ox.ac.uk/people/nando.defreitas/publications/BayesOptLoop.pdf))
 The model will predict where the pair (policy,adaptive agents) will end up going and we can use it to make regulations that are either robust to adaptation or leverage adaptation to better maximize welfare.
 
-Forthcoming on Sustainability Science; appendix draft available [here](http://carrknight.github.io/poseidon/appendix.html). Code available on GPL license, [here](https://github.com/CarrKnight/POSEIDON)
+Forthcoming on Sustainability Science; appendix draft available [here]({{ site.baseurl }}poseidon/appendix.html). Code available on GPL license, [here](https://github.com/CarrKnight/POSEIDON)
 
 
 
 ### Repeated discrete choices in geographical agent based models with an application to fisheries
 
+A collection of algorithms to simulate fishing by commercial vessels.
+Started as a description of what we made in POSEIDON but then spun-off into its own library.
 
+The key design principle here is to try and be adaptive without overfitting to interviews and data.  
+The problem is the Lucas critique: if I just transpose fixed heuristics (from data or from interviews) into my model we can't assume they are valid when policy changes.
+In econ the answer is to focus on optimal decision making at all times. That can't work in fisheries because the dynamic program is intractable.  
+So let's focus on general, adaptive heuristics and see which ones work better and is less brittle.
+
+R&R in Environmental Modelling & Software. Draft available [here]({{ site.baseurl }}/poseidon/algorithms.html). Code available on open source MIT license, [here](https://github.com/CarrKnight/discrete-choosers).
 
 
 ## Economics and PID Controllers
