@@ -5,9 +5,9 @@ title: Papers
 
 ## Fisheries + POSEIDON
 
-### A computational approach to managing coupled human-environmental systems: the POSEIDON model of ocean fisheries
+### A computational approach to managing coupled human-environmental systems: the POSEIDON model of ocean fisheries; 
 
-The main paper about POSEIDON: a generic agent-based model of fisheries.
+The main paper about POSEIDON: a generic agent-based model of fisheries. Open access, [here](https://rdcu.be/VcVb).
 
 How to find optimal policies in a complex system? Build an agent-based model and focus on adaptive agents that respond and often bypass the rules you impose. 
 Now test your policy levers against the adaptive agents trying to use a smart searching algorithm (we settled on [Bayesian Optimization](https://www.cs.ox.ac.uk/people/nando.defreitas/publications/BayesOptLoop.pdf))
