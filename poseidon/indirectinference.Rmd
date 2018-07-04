@@ -1,0 +1,2944 @@
+---
+title: "Indirect inference through prediction"
+date: "`r Sys.Date()`"
+abstract: "By recasting indirect inference estimation as a prediction rather than a minimization and by using regularized regressions, we can bypass the three major problems of estimation: selecting the summary statistics, defining the distance function and minimizing it numerically. By substituting regression with classification we can extend this approach to model selection as well. We present three examples: a statistical fit, the parametrization of a simple real business cycle model and heuristics selection in a fishery agent-based model. The outcome is a method that automatically chooses summary statistics, weighs them and use them to parametrize models without running any direct minimization."
+author:
+- name: Ernesto Carrella^[Corresponding author:ernesto.carrella@ouce.ox.ac.uk]
+  affiliation: School of Geography and the Environment, University of Oxford, South Parks Road, Oxford, OX1 3QY, UK.
+- name: Richard M. Bailey
+  affiliation: School of Geography and the Environment, University of Oxford, South Parks Road, Oxford, OX1 3QY, UK.
+- name: Jens Koed Madsen
+  affiliation: School of Geography and the Environment, University of Oxford, South Parks Road, Oxford, OX1 3QY, UK.  
+header-includes:
+ - \usepackage{algorithmic}
+ - \usepackage{algorithm}
+output: 
+  bookdown::pdf_document2:
+    keep_tex: true
+#   bookdown::word_document2:
+# #    number_sections: true
+#     fig_caption: true
+  # bookdown::html_document2:
+  #     toc: true
+  #     toc_depth: 3
+  #     theme: "readable"
+  #     highlight: haddock
+  #     number_sections: true
+  #     self_contained: true
+bibliography: ["library.bib"]
+biblio-style: "apalike"
+link-citations: true
+urlcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- KaTeX is the only dependency -->
+<link rel="stylesheet" href="pseudo/katex.min.css">
+<script src="pseudo/katex.min.js"></script>
+<!-- Pseudocode -->
+<link rel="stylesheet" href="pseudo/pseudocode.css" type="text/css">
+<script src="pseudo/pseudocode.js" type="text/javascript"></script>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58894263-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
+                      message = FALSE,
+                      dpi=300,
+                      cache=TRUE,
+                      fig.width = 10, 
+                      fig.height = 6)
+
+# if this is false, RMarkdown will re-run all the RBC simulations
+# this takes time (I never tried to optimize that part of the code)
+# when this is true, RMarkdown will just read summary statistics of already done runs
+load_rbc_runs_from_drive<-TRUE
+
+## keep all the random seed constant. Should reproduce exactly the same numbers on all computers
+## change this if you need to do sensitivity analysis
+set.seed(0)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+
+
+```
+
+```{r}
+
+
+
+library(data.table)
+
+library(gEcon)
+library(vars)
+library(tidyverse)
+library(stringr)
+library(purrrlyr)
+library(glmnet)
+library(glmnetUtils)
+library(latex2exp)
+library(scales)
+library(randomForest)
+library(lhs)
+library(kableExtra)
+
+
+
+# basically computes the Wald type estimator (the Mahalanobis distance if W is COV^{-1})
+# by doing (error_row)'W(error_row) where error_row is some
+covariance_error<-function(error_row,weight_matrix)
+{
+  as.matrix(error_row) %*% (weight_matrix %*% as.matrix(t(error_row)))
+}
+
+# useful for debugging and not much else
+print_and_capture <- function(x)
+{
+  paste(capture.output(print(x)), collapse = "\n")
+}
+
+
+
+# computes column-wise distance between rows
+#
+# basically set is a dataframe where each row is a run
+# one (and only one) in row in the set will have isTargetRun set to true
+# that's the target; the function will compute for all the other rows 
+# their distance to it in terms of column by column distance
+# for all the columns in "additionalColumns"
+column_distances_df<-function(set,
+                              # columns whose distance we care about
+                              additionalColumns=NULL,
+                              error_type="absolute")
+{
+  stopifnot(error_type %in% c("absolute","squared","simple"))
+  # isolate target run
+  target<-
+    set %>% 
+    filter(isTargetRun==TRUE)
+  # if the target run failed, skip
+  if(nrow(target)==0)
+  {
+    warning(paste("Failed to get a target for ",unique(set$target_strategy),unique(set$run)))
+    #     stopifnot(FALSE)
+    return(data.frame())
+  }
+  # stopifnot(nrow(target)>0)
+  if(nrow(target)>1)
+  {
+    warning(print_and_capture(target %>% select(run,target_strategy)))
+    stopifnot(FALSE)
+  }
+  stopifnot(nrow(target)==1)
+  
+  #ugly column by column distance
+  for(column in additionalColumns)
+  {
+    if(error_type == "absolute")
+    {
+      set[[paste(column,"_error",sep="")]]=
+        abs(set[[column]] - target[[column]]) 
+    }
+    if(error_type == "squared")
+    {
+      set[[paste(column,"_error",sep="")]]=
+        (set[[column]] - target[[column]])**2 
+      
+    }
+    if(error_type=="simple")
+    {
+      set[[paste(column,"_error",sep="")]]=
+        set[[column]] - target[[column]]
+      
+    }
+  } 
+  
+  return(set)
+  
+}
+
+
+
+## computes for all the experiments in "joined" their distance in terms of
+## (b-.b)'W(b-.b)
+## where b and .b are the summary statistic of the target run and the candidate runs respectively
+# the "joined" data frame has one simulated run for each row and all the columns in 
+# "columns_unweighted" represent summary statistics
+# weight_type is either a string describing the kind of W or a function of pre-computed weights
+# (in which case it will not be inverted)
+# when misspecified is set to FALSE, joined is split by scenario and grouped by "run"
+# each run contains a target row and many candidate rows and the error is computed between
+# candidate and target
+# if misspecified is set to TRUE then the error is between candidates and the target run 
+# speciefied by "mispecified_run"; this is useful if I am testing additional parametric errors
+compute_errors_joined<-function(joined,
+                                columns_unweighted=NULL,
+                                error_type="absolute",
+                                mispecified = FALSE,
+                                mispecified_run=99,
+                                weight_type = "error_cov"
+)
+{
+  
+  stopifnot(weight_type %in% c("error_cov","error_var","none","cov","var") | is.matrix(weight_type))
+  if(weight_type %in% c("cov","var"))
+  {
+    #  cov and var grab only the runs that are TARGET and compute the summary statistics
+    # covariance matrix for cov and its diagonal for var
+    # then invert it
+    # notice the high tol: covariance matrices always generate numerical issues
+    # just say no (thank you), kids
+    real_data<-
+      joined %>% filter(isTargetRun==TRUE) %>%
+      select_(.dots=c(columns_unweighted)) %>%
+      select_if(~sum(!is.na(.)) > 0 ) %>%
+      select_if(~!all(. == 0)) %>% 
+      #order alphabetically!
+      select(order(colnames(.)))
+    
+    # glimpse(real_data)
+    if(weight_type == "cov")
+    {
+      weights<-solve(cov(real_data %>% na.omit()),tol = 1e-24)
+    }
+    if(weight_type == "var")
+    {
+      weights<-solve(diag(diag(var(real_data%>% na.omit()))),tol = 1e-24) 
+    }
+  }
+  
+  
+  if(mispecified)
+  {
+    joined_errored<-
+      joined %>%
+      filter(isTargetRun==FALSE | (isTargetRun==TRUE & run==mispecified_run) ) %>%
+      group_by(scenario,target_strategy) %>%
+      do(column_distances_df(.,
+                             additionalColumns =columns_unweighted,
+                             error_type = error_type))
+  }
+  else{
+    joined_errored<-
+      joined %>% 
+      group_by(scenario,target_strategy,run) %>%
+      do(column_distances_df(.,
+                             additionalColumns =columns_unweighted,
+                             error_type = error_type))
+  }
+  
+  
+  #now remove the "TRUE" runs
+  joined_errored<-
+    joined_errored %>% filter(isTargetRun!=TRUE)
+  
+  
+  #get the error and its weight by variance-covariance
+  error_columns<-joined_errored %>% ungroup() %>% select(contains("_error"))%>% 
+    select_if(~sum(!is.na(.)) > 0 ) %>%
+    #don't take it if it's all zeros
+    select_if(~!all(. == 0))%>% 
+    #order alphabetically!
+    select(order(colnames(.)))
+  
+  
+  #write_csv(error_columns,"~/temp.csv")
+  
+  # error cov and error var are weight matrices where the variance and covariance
+  # are not about the auxiliary statistics themselves but their differences
+  if(weight_type=="error_cov")
+  {
+    weights<-solve(cov(error_columns %>% na.omit()),tol = 1e-24)
+  }  
+  if(weight_type=="error_var")
+  {
+    weights<-solve(diag(diag(var(error_columns%>% na.omit()))),tol = 1e-24) 
+  }   
+  if(weight_type=="none")
+  {
+    weights<-diag(ncol(error_columns))
+  }
+  if(is.matrix(weight_type))
+  {
+    weights<-weight_type
+    #  print(weights)
+    #  print(colnames(error_columns))
+    
+  }
+  
+  # compute error as (error)W(error)
+  final_result<-
+    error_columns %>% 
+    by_row(..f = covariance_error, .to = "matteo",weight_matrix=weights,.collate = "rows") #
+  
+  
+  joined_errored$error<-final_result$matteo
+  
+  
+  
+  return(joined_errored)
+}
+
+
+
+# get winners for each run
+get_winners<-
+  function(experiments){
+    return(
+      experiments %>%
+        group_by(scenario,target_strategy,run) %>%
+        mutate(rank=dense_rank(error)) %>%
+        filter(rank==1) %>%
+        select(scenario,target_strategy,run,current_strategy)
+    )
+  }
+
+
+# get winners as a matrix, for plotting
+get_winners_matrix<-function(winners){
+  
+  return(
+    winners %>%
+      group_by(scenario,target_strategy,current_strategy) %>% summarise(chosen=n()) %>%
+      group_by(scenario,target_strategy) %>% mutate(runs=sum(chosen)) %>%
+      mutate(chosen=chosen/runs) %>%
+      select(-runs) 
+  )
+}
+
+# get success rate in guessing that that a particular strategy came from a particular
+# model
+get_error_rates<-function(winners,id)
+{
+  winners %>% ungroup() %>% mutate(success = (current_strategy == target_strategy)) %>% group_by(scenario,target_strategy) %>% summarise(success = sum(success)/n()) %>%
+    mutate(id=id)
+}
+
+# handy
+default_error_type<-"absolute"
+
+
+
+
+```
+
+# JEL Classification {-}
+
+C15; C63; C3
+
+# Keywords {-}
+
+Agent-based models;
+Indirect inference;
+Estimation;
+Calibration;
+Simulated minimum distance;
+
+# Acknowledgments {-}
+
+This research is funded in part by the Oxford Martin School, the David and Lucile Packard Foundation, the Gordon and Betty Moore Foundation, the Walton Family Foundation, and Ocean Conservancy.  
+
+# Introduction
+
+We want to tune the parameters of a simulation model to match data.
+When the likelihood is intractable and the data high-dimensional, the common approach is the simulated minimum distance [@Grazzini2015].
+This involves summarising real and simulated data into a set of summary statistics and then tuning the model parameters to minimize their distance.
+
+Minimization involves three tasks.
+First, choose the summary statistics.
+Second, weight their distance.
+Third, perform the numerical minimization keeping in mind that simulation may be computationally expensive.
+
+Conveniently, "regression adjustment methods" from the approximate Bayesian computation(ABC) literature [@Blum2013] can be adapted to side-step all 3 tasks. 
+Moreover we can use these techniques outside of the ABC super-structure.
+
+We substitute the minimization with a regression.
+First, run the model "many" times and observe pairs of model parameters and generated summary statistics. 
+Then, regress the parameters as the dependent variable against all the simulated summary statistics.
+Finally, plug in the real summary statistics in the regression to obtain the tuned parameters.
+Model selection can be similarly achieved by training a classifier instead.
+
+While the regressions can in principle be non-linear and/or non-parametric, we limit ourselves here to regularized linear regressions (the regularization is what selects the summary statistics). 
+In essence, we can feed the regression a long list of summary statistics we think relevant and have the regularization select only what matters for parametrization.
+
+We summarize the agent-based estimation in general and regression adjustment methods in particular in section \@ref(litreview).
+We describe how to parametrize models in section \@ref(method). We then provide 3 examples: a statistical line fit in section \@ref(linerexample), a real business cycle macroeconomic model in section \@ref(rbcexample) and a fishery agent-based model in section \@ref(abmexample). We conclude by pointing out weaknesses and possible extensions in section \@ref(concludes).
+
+
+# Literature review {#litreview}
+
+The approach of condensing data and simulations into a set of summary statistics in order to match them is covered in detail in two review papers: @hartig_statistical_2011 in ecology and @Grazzini2015 in economics.  
+They differ only in their definition of summary statistics: @hartig_statistical_2011 defines it as any kind of observation available in both model and reality while @Grazzini2015, with its focus on consistency, allows only for statistical moments or auxiliary parameters from ergodic simulations.
+
+@Grazzini2015 also introduces the catch-all term "simulated minimum distance" for a set of related estimation techniques, including indirect inference[@Gourieroux1993] and the simulated method of moments[@McFadden1989].
+@Smith1993 first introduced indirect inference to fit a 6-parameter real business cycle macroeconomic model.  
+In agent-based models, indirect inference was first advocated in @Richiardi2006 [see also @Shalizi2017] and first implemented in @Zhao2010 (who also proved mild conditions for consistency).
+
+Common to all is the need to accomplish three tasks: selecting the summary statistics, defining the distance function and choosing how to minimize it.
+
+Defining the distance function may at first appear the simplest of these tasks. 
+It is standard to use the Euclidean distance between summary statistics weighed by the inverse of their variance or covariance matrix.
+However, while asymptotically efficient, this was shown to underperform in @Smith1993 and @Altonji1996.
+The distance function itself is a compromise, since in all but trivial problems we face a multi-objective optimization[see review by @Marler2004] where we should minimize the distance to each summary statistic independently. 
+In theory, we could solve this by searching for an optimal Pareto front [see @Badham2017 for an example of dominance analysis applied to agent-based models]. 
+In practice, however, even a small number of summary statistics make this approach infeasible and unintelligible.
+Better then to focus on a single imperfect distance function (a weighted global criterion, in multi-objective optimization terms) where there is at least the hope of effective minimization. A practical solution that may nonetheless obscure tradeoffs between summary statistic distances.
+
+<!-- But how do we know about tradeoffs, you really want to weigh it in a way but you can't tell ahead of time -->
+
+We can minimize distance function with off-the-shelf methods such as genetic algorithms [@Calver2006; @Heppenstall2007; @Lee2015] or simulated annealing [@Le2016; @Zhao2010].
+More recently two Bayesian frameworks have been prominent: BACCO (Bayesian Analysis of Computer Code Output) and ABC (Approximate Bayesian Computation).
+
+BACCO involves running the model multiple times for random parameter inputs, building a statistical meta-model (sometimes called *emulator* or *surrogate*) predicting distance as a function of parameters and then minimizing the meta-model as a short-cut to minimizing the real distance.
+@Kennedy2001a introduced the method[see @OHagan2006 for a review]. @Ciampaglia2013, @Parry2013 and @Salle2014 are recent agent-based model examples.
+
+A variant of this approach interleaves running simulations and training the meta-model to sample more promising areas and achieve better minima.
+The general framework is the "optimization by model fitting"[see chapter 9 of @luke_essentials_2009 for a review; see @Michalski2000 for an early example].
+@Lamperti2018 provides an agent-based model application (using gradient trees as a meta-model).
+Bayesian optimization [see @shahriari_taking_2016 for a review] is the equivalent approach using Gaussian processes and @Bailey2018 first applied it to agent-based models.
+
+As in BACCO, ABC methods also start by sampling the parameter space at random but they only retain simulations whose distance is below a pre-specified threshold in order to build a posterior distribution of acceptable parameters[see @Beaumont2010 for a review].
+@Drovandi2011, @Grazzini2017 and @Zhang2017 apply the method to agent-based models.
+@Zhang2017 notes that ABC matches the "pattern oriented modelling" framework of @Grimm2005.
+
+All these algorithms however require the user to select the summary statistics first. This is always an *ad-hoc* procedure.
+@Beaumont2010 describes it as "rather arbitrary" and notes that its effects "[have] not been systematically studied".
+The more summary statistics we use, the more informative the simulated distance is [see @Bruins2018 which compares four auxiliary models of increasing complexity].
+However the more summary statistics we use the harder the minimization (and the more important the weighting of individual distances) becomes.  
+
+Because of its use of kernel smoothing, ABC methods are particularly vulnerable to the "curse of dimensionality" with respect to the number of summary statistics.
+As a consequence the ABC literature has developed many "dimension reduction" techniques [see @Blum2013 for a review].
+Of particular interest here is the "regression adjustment" literature [@Beaumont2002; @Blum2010; @Nott2014] which advocates various ways to build regressions to map parameters from the summary statistics they generate.
+Our paper simplifies and applies this approach to agent-based models.
+
+Model selection in agent-based models has received less attention.
+As in statistical learning one can select models on the basis of their out-of-sample predictive power [see Chapter 8 of @friedman_elements_2001].
+The challenge is then to develop a single measure to compare models of different complexity making multi-variate predictions. 
+This has been fundamentally solved in @Barde2017 by using Markovian Information Criteria.  
+Our approach in section \@ref(patternrecognition) differs from standard statistical model selection by treating it as a pattern recognition problem (that is, a classification), rather than making the choice based on ranking of out-of-sample prediction performance.
+
+
+@Fagiolo2007 were the first to tackle the growing variety of calibration methods in agent-based models. In the ensuing years, this variety has grown enormously.
+In the next section we add to this problem by proposing yet another estimation technique.
+
+
+# Method {#method}
+
+## Estimation
+
+Take a simulation model  depending on $K$ parameters $\theta = \left[ \theta_1,\theta_2,\dots,\theta_K \right]$ to output $M$ simulated summary statistics $S(\theta) = \left[ S_1(\theta), S_2(\theta),\dots,S_M(\theta) \right]$. 
+Given real-world observed summary statistics $S^*$ we want to find the parameter vector $\theta^*$ that generated them.  
+Our method proceeds as follows:
+
+
+1. Repeatedly run the model each time supplying it a random vector $\hat \theta$ 
+2. Collect for each simulation its output as summary statistics $S(\hat \theta)$
+3. Run $K$ separate regularized regressions, $r_i$, one for each parameter. The parameter is the dependent variable and all the candidate summary statistics are independent variables: 
+$$
+\left\{\begin{matrix}
+\theta_1 = r_1(S_1,S_2,\dots,S_M)\\ 
+\theta_2 = r_2(S_1,S_2,\dots,S_M)\\ 
+\vdots \\
+\theta_n = r_n(S_1,S_2,\dots,S_M)
+\end{matrix}\right.  (\#eq:regressions)  
+$$
+4. Plug in the "real" summary statistics $S^*$ in each regression to predict the "real" parameters $\theta^*$    
+
+
+In step 1 and 2 we use the model to generate a data-set: we repeatedly input random parameters $\hat \theta$ and we collect the output $\hat S_1,\dots,\hat S_M$ (see Table \@ref(tab:sample) for an example).
+In step 3 we take the data we generated and use it to train regressions (one for each model input) where we want to predict each model input $\theta$ looking only at the model output $S_1,\dots,S_M$. The regressions map observed outputs back to the inputs that generated them.  
+Only in step 4 we use the real summary statistics (which we have ignored so far) to plug in the regressions we built in step 3. The prediction the regressions make when we feed in the real summary statistics $S^*$ are the estimated parameters $\theta^*$.
+
+Table: (\#tab:sample) A sample table generated after step 1 and 2 of the estimation procedure (assuming the simulation model depends on a single parameter $\theta_1$ ). Each row is a separate simulation run where $\hat \theta_1$ was the input of the model and $\hat S_1,\dots,\hat S_M$ was its output. In step 3 we use this table to train a regression that uses as explanatory variables the output of the model $S_1,\dots,S_M$ and try to predict from them the model input that generated them $\theta_1$
+
+| $\hat \theta_1$  | $\hat S_1$ | $\hat S_2$ | $\dots$ | $\hat S_M$ |
+|------------------|------------|------------|---------|------------|
+| $\vdots$          | $\vdots$    | $\vdots$    | $\vdots$ | $\vdots$    |
+| $\vdots$          | $\vdots$    | $\vdots$    | $\vdots$ | $\vdots$    |
+
+The key implementation detail is to use regularized regressions.
+We used elastic nets [@Friedman2010] because they are linear and they combine the penalties of LASSO and ridge regressions.
+LASSO penalties automatically drop summary statistics that are uninformative.
+Ridge penalties lower the weight of summary statistics that are strongly correlated to each other.  
+We can then start with a large number of summary statistics (anything we think may matter and that the model can reproduce) and let the regression select only the useful ones.
+The regressions could also be made non-linear and non-parametric but this proved not necessary for our examples.
+
+Compare this to simulated minimum distance. 
+There, the mapping between model outputs $S(\cdot)$ and inputs $\theta$ is defined by the minimization of the distance function:
+$$ 
+\theta^* = \arg_{\theta}\min (S(\theta)-S^*) W (S(\theta)-S^*)  (\#eq:waldtype)    
+$$
+When using a simulated minimum distance approach, both the summary statistics $S(\cdot)$ and their weights $W$ need to be chosen in advance. Then one can estimates $\theta^*$ by explicitly minimizing the distance. In effect the $\arg \min$ operator maps model output $S(\cdot)$ to model input $\theta$.  
+Instead, in our approach, the regularized regression not only selects and weights summary statistics  but, more importantly, also maps them back to model input.
+Hence, the regression bypasses (takes the place of) the usual minimization.
+
+
+
+## Model Selection {#patternrecognition}
+
+We observe summary statistics $S^*$ from the real world and we would like to know which candidate model $\{m_1,\dots,m_n\}$ generated them.  
+We can solve this problem by training a classifier against simulated data.
+
+1. Repeatedly run each model
+2. Collect for each simulation its generated summary statistics $S(m_i)$
+3. Build a classifier predicting the model by looking at summary statistics and train it on the data-set just produced: 
+$$
+i \sim g(S_1,S_2,\dots,S_M) (\#eq:classifier) 
+$$
+4. Plug in "real" summary statistics $S^*$ in the classifier to predict which model generated it
+
+The classifier family $g(\cdot)$ can also be non-linear and non-parametric.
+We used a multinomial regression with elastic net regularization[@Friedman2010]; its advantages is that the regularization selects summary statistics and the output is a classic logit formula that is easily interpretable.
+
+Model selection cannot be done on the same data-set used for estimation. If the parameters of a model need to be estimated, the estimation must be performed on on either a separate training data-set or the inner loop of a nested cross-validation[@friedman_elements_2001].
+
+
+
+# Examples
+
+## Fit Lines {#linerexample}
+
+### Regression-based methods fit straight lines as well as ABC or Simulated Minimum Distance
+
+```{r linerestimation}
+#set.seed(0)
+x<-(1:10)
+#draws a line
+liner_model<-function(x,b,sigma){
+  return(x*b+rnorm(length(x),mean=0,sd=sigma))
+}
+
+#draws at random until xlim then draws a line
+broken_liner_model<-function(x,b,sigma,xlim=5){
+  y<-rnorm(length(x),mean=0,sd=sigma)
+  for(i in 1:length(x))
+  {
+    if(x[i]>xlim)
+      y[i]<-y[i]+x[i]*b
+  }
+  return(y)
+}
+
+
+# helper to generate liner models
+generate_random<-function(model=liner_model,
+                          name="liner",
+                          scenario_name="simple",
+                          x=1:10,
+                          b_min=0,
+                          b_max=2,
+                          sigma_min=1,
+                          sigma_max=1,
+                          number_of_observations=10000){
+  
+  #set.seed(0)
+  b<-runif(min = b_min,max = b_max,n=1)
+  sigma<-runif(min=sigma_min,max=sigma_max,n=1)
+  y<-model(x=x,sigma=sigma,b=b)
+  dataset<-data.frame(
+    run = 0,
+    seed = 0,
+    b=b,
+    sigma=sigma,
+    #   current_strategy=name,
+    #    isTargetRun=FALSE,
+    #    scenario=scenario_name,
+    #not exactly prize winning code right here
+    y0=y[1],
+    y1=y[2],
+    y2=y[3],
+    y3=y[4],
+    y4=y[5],
+    y5=y[6],
+    y6=y[7],
+    y7=y[8],
+    y8=y[9],
+    y9=y[10]
+  )
+  for(run in (1:(number_of_observations-1)))
+  {
+    #    print(run)
+    b<-runif(min = b_min,max = b_max,n=1)
+    y<-model(x=x,sigma=sigma,b=b)
+    dataset<-rbind.data.frame(dataset,
+                              c(run,run,b,sigma,
+                                #name,FALSE,
+                                #scenario_name,
+                                y),
+                              stringsAsFactors = FALSE
+    )
+  }
+  dataset$current_strategy<-name
+  dataset$target_strategy<-name
+  dataset$isTargetRun=FALSE
+  dataset$scenario<-scenario_name
+  return(dataset)
+}
+
+
+#generate training data
+testing_data <-generate_random(
+  model = liner_model,
+  number_of_observations = 1000)
+
+# summary statistics name
+summary_statistics<-
+  c( "y0","y1","y2","y3","y4","y5",
+     "y6","y7","y8","y9"
+  )
+
+############################################################
+
+#### OUR METHOD:::
+
+liner_calibration_training<-
+  generate_random(
+    model = liner_model,
+    number_of_observations = 1000)
+
+
+
+start_time<-Sys.time()
+reg<-cv.glmnet(formula(paste("b~",paste(summary_statistics
+                                        ,collapse="+"))),
+               data=liner_calibration_training)
+
+
+predictions <- predict(reg,newdata=testing_data)
+end_time<-Sys.time()
+speed_regression<-(end_time-start_time)
+units(speed_regression)<-"mins"
+```
+
+In this section we present a simplified one-dimensional parametrization problem and show that regression methods perform as well as ABC and simulated minimum distance.
+
+We observe 10 summary statistics (in this case these are just direct observations) $S^*=(S^*_0,\dots,S^*_9)$ and we assume they were generated by the model $S_i=\beta i + \epsilon$  where $\epsilon \sim \mathcal{N}(0,1)$.
+Assuming the model is correct, we want to estimate the $\beta^*$ parameter that generated the observed $S^*$.
+Because the model is a straight line, we could solve the estimation by least squares.
+Pretend however this model is a computational black box where the connection between it and drawing straight lines is not apparent.  
+
+We run 1,000 simulations with $\beta \sim U[0,2]$ (the range is arbitrary and could represent either a prior or the feasible interval), collecting the 10 simulated summary statistics $\hat S(\beta_i)$. We then train a linear elastic net regression of the form:
+$$ 
+\beta = a + \sum_{i=0}^9 b_i \hat S_i (\#eq:linelineline)  
+$$
+Table \@ref(tab:linercoeff) shows the $b$ coefficients of the regression.
+$S_0$ contains no information about $\beta$ (since it is generated as $S_0 = \epsilon$) and the regression correctly ignores it by dropping $b_0$ (setting the coefficient to 0).
+The elastic net weights larger summary statistics more because the effect of $\beta$ is larger there compared to the $\epsilon$ noise.
+
+
+```{r linercoeff}
+library(broom)
+library(gridExtra)
+library(knitr)
+knitr::kable(
+  broom::tidy(reg$glmnet.fit) %>% 
+    filter(lambda==reg$lambda.1se) %>% select(-dev.ratio,-lambda,-step) %>% mutate(term=str_replace(term,"y","$b_"),
+                                                                                                                 term=ifelse(str_detect(term,"Intercept"),term,paste(term,"$",sep=""))),
+  col.names = c("Term","Estimate"),
+  caption = "Coefficients generated by fitting an elastic net against a training sample of size 1000. Notice that $b_0$ has been automatically dropped since in this case $S_0$ contains no information about $\\beta$"
+  
+)
+
+```
+
+We test this regression by making it predict, out-of-sample, the $\beta$ of 1000 more simulations looking only at their summary statistics.
+Figure \@ref(fig:linererrorplots) and table \@ref(tab:linererrorrate) compare the estimation quality with those achieved by the standard rejection ABC and MCMC ABC [following @Marjoram2003; @Wegmann2009; both methods implemented in @Jabot2015].
+All achieve similar error rates.
+
+
+```{r linererrorplots, fig.cap = "A side by side comparison between the 'real' and discovered $\\beta$ as generated by either the regression method or two standard ABC algorithms: rejection sampling or MCMC. The x-axis represents the real $\\beta$, the y-axis its estimate. Each point represents the estimation against a different set of summary statistics. The red line is the 45 degree line: the closer the points are to it the better the estimation. All methods perform equally well."}
+# how good is it at predicting?
+range<-ggplot(testing_data) +
+  geom_point(aes(x=b,y=predictions)) +
+  geom_abline(intercept=0,slope=1,lwd=1.2,col="red") +
+  #  geom_smooth(aes(b,abs(pred))) +
+  ggtitle("Regression Error - Prediction")
+#range
+
+
+
+### ABC
+compute_abc_estimates<-function(testing_data,
+                                parameter_names,
+                                summary_statistics_name,
+                                model=liner_model,
+                                tol=0.1,
+                                MCMC=TRUE)
+{
+  library(EasyABC)
+  
+  
+  #store results here
+  results<-data.frame(
+    matrix(ncol=length(parameter_names),nrow=0)
+  )
+  
+  toy_model<-function(x){
+    return(model(1:10,x[1],1)) 
+    
+  }
+  toy_prior=list(c("unif",0,2))
+  
+  
+  
+  
+  for(i in 1:nrow(testing_data))
+  {
+    
+    
+    sum_stat_obs=testing_data %>% filter(row_number()==i) %>%
+      dplyr::select_(.dots=summary_statistics_name) %>% unlist() 
+    
+    
+    if(MCMC)
+    {
+      result<-ABC_mcmc(model=toy_model,prior=toy_prior,n_rec = 200,
+                       summary_stat_target =  sum_stat_obs, 
+                       method= "Marjoram")
+    } else {
+      result<-ABC_rejection(model=toy_model,prior=toy_prior,
+                            nb_simul=1000,
+                            summary_stat_target =  sum_stat_obs,
+                            tol=tol)
+    }
+    #  print(result)
+    results<-rbind(results,mean(result$param))
+  } 
+  colnames(results)<-parameter_names
+  return(results)
+  
+}
+
+
+start_time<-Sys.time()
+abc_results<-
+  compute_abc_estimates(
+    testing_data
+    ,
+    c("b"),
+    c("y0","y1","y2","y3","y4","y5","y6","y7","y8","y9"),
+    tol=0.1,
+    MCMC=FALSE)
+
+unweighted_pred<-
+  ggplot(testing_data
+  ) +
+  geom_point(aes(x=b,y=abc_results[,1])) +
+  geom_abline(intercept=0,slope=1,lwd=1.2,col="red") +
+  # geom_smooth(aes(b,abs(pred))) +
+  ggtitle("Rejection ABC")
+end_time<-Sys.time()
+speed_rejection<-(end_time-start_time)
+units(speed_rejection)<-"mins"
+
+start_time<-Sys.time()
+abc_results_var<-
+  compute_abc_estimates(
+    testing_data
+    ,
+    c("b"),
+    c("y0","y1","y2","y3","y4","y5","y6","y7","y8","y9"),
+    MCMC=TRUE)
+end_time<-Sys.time()
+speed_mcmc<-(end_time-start_time)
+units(speed_mcmc)<-"mins"
+
+
+var_pred<-ggplot(testing_data
+)+
+  geom_point(aes(x=b,y=abc_results_var[,1])) +
+  geom_abline(intercept=0,slope=1,lwd=1.2,col="red") +
+  # geom_smooth(aes(b,abs(pred))) +
+  ggtitle("MCMC ABC")
+
+
+
+grid.arrange(range +
+               xlab(TeX("Real $\\beta")) + ylab(TeX("Estimated $\\beta")),
+             var_pred +
+               xlab(TeX("Real $\\beta")) + ylab(TeX("Estimated $\\beta")),
+             unweighted_pred +
+               xlab(TeX("Real $\\beta")) + ylab(TeX("Estimated $\\beta"))
+             ,nrow=1)
+
+```
+
+
+```{r linererrorrate}
+
+rmse <- function(x,y)
+{
+  return(sqrt(mean((x-y)^2)))
+}
+
+kable(data.frame(type = c("Regression Method","Rejection ABC", "MCMC ABC"),
+                 errors = c(
+                   rmse(testing_data$b, predict(reg,newdata=testing_data)),
+                   rmse(testing_data$b,abc_results[,1]),
+                   rmse(testing_data$b,abc_results_var[,1])
+                 ),
+                 duration= c(
+                   format(speed_regression),
+                   format(speed_rejection),
+                   format(speed_mcmc)
+                 ),
+           duration_scaled = c(
+             1,
+             as.numeric(speed_rejection)/as.numeric(speed_regression),
+             as.numeric(speed_mcmc)/as.numeric(speed_regression)
+           )
+                 
+),
+col.names=c("Estimation","Average RMSE", "Runtime","Runtime(scaled)"),
+align ="lccr",
+caption = "All three methods achieve on average similar estimation errors, although the regression-based method is much quicker"
+)
+```
+
+We can also compare the regression against the standard simulated minimum distance approach. 
+Simulated minimum distance search for the parameters that minimize:
+$$ 
+\beta^* = \arg_{\beta}\min (S(\beta)-S^*) W (S(\beta)-S^*)  (\#eq:waldtype)    
+$$
+The steeper its curvature, the easier it is to minimize numerically.  
+In figure \@ref(fig:linerestimationslope) we compare the curvature defined by $W=I$ and $W= \left(\text{diag}(\Sigma)\right)^{-1}$ (where $I$ is the identity matrix and $\Sigma$ is the covariance matrix of summary statistics) against the curvature implied by our regression $r$: $|r(S^*)-r(S)|$ (that is, the distance between the estimation made given the real summary statistics, $r(S^*)$, and the estimation made at other simulated summary statistics $r(S)$). 
+This problem is simple enough that the usual weight matrices produce distance functions that are easy to numerically minimize.
+
+```{r linerestimationslope, fig.cap= "Curvature of the fitness function as implied by the regression versus weighted Euclidean distance between summary statistics. We take the 1000 testing simulation runs, we pick one in the middle ($\\beta \\approx 1$) as the 'real' one and we compute the summary statistics distances between all the other simulations to it. The red line represents the real $\\beta$, each dot is the distance to the real $\\beta$ for that simulation run and its associated $\\beta$. "}
+
+# we want to show the "slope" of the objective function; let's pick an experiment somewhere in the middle
+# and show distance to it
+unpaired<-
+  testing_data  %>% ungroup() %>% 
+  mutate(run=0) %>% mutate(isTargetRun=FALSE) 
+#make it so that they compute the error to the first element only
+target<-
+  unpaired %>% mutate(row=row_number(),distance_from_1 = abs(1-b))%>%
+  mutate(rank=min_rank(distance_from_1)) %>% filter(rank==1) %>% pull(row)
+unpaired$isTargetRun[target]<-TRUE
+correct_b<-unpaired %>% filter(isTargetRun==TRUE) %>% pull(b)
+
+
+
+# compute distance unweighted
+errored<-
+  compute_errors_joined(unpaired,
+                        
+                        columns_unweighted= summary_statistics,
+                        error_type="simple",
+                        weight_type = "none"
+  )
+
+
+
+# #you can test that you computed the errors correctly
+raw_plot<-
+  ggplot(errored) +
+  geom_point(aes(x=b,y=error)) +
+  geom_vline(xintercept=correct_b,lwd=1.2,col="red") #+
+  #geom_smooth(aes(b,error))
+#raw_plot
+
+
+# Diagonal error
+var_weight<-
+  solve(diag(diag(
+    var(unpaired %>%
+          select_(.dots=summary_statistics
+          ) %>%      #order alphabetically!
+          dplyr::select(order(colnames(.)))))),tol = 1e-24)
+
+
+var_error<-
+  compute_errors_joined(unpaired,
+                        
+                        columns_unweighted= summary_statistics,
+                        error_type="simple",
+                        # can't use "cov" because we only have one synthetic data-set
+                        weight_type = var_weight
+  )
+
+varcov_plot<-
+  ggplot(var_error) +
+  geom_point(aes(x=b,y=error)) +
+  geom_vline(xintercept=correct_b,lwd=1.2,col="red") #+
+  #geom_smooth(aes(b,error))
+
+unpaired$pred<-
+  predict(reg,newdata=unpaired)[,1]
+correct_pred<-unpaired %>% filter(isTargetRun==TRUE) %>% pull(pred)
+corrected<-ggplot(unpaired) +
+  geom_point(aes(x=b,y=abs(pred-correct_pred))) +
+  geom_vline(xintercept=correct_b,lwd=1.2,col="red") #+
+ # geom_smooth(aes(b,abs(pred-correct_pred)))
+#corrected
+
+grid.arrange(corrected +
+               ggtitle("Curvature implied by regression") +
+               xlab(TeX("$\\beta$")) +
+               ylab(TeX("$|r(S^*)-r(S(\\beta))|$"))
+             ,
+             raw_plot +
+               ggtitle(TeX("Curvature with $W=I$"))+
+               xlab(TeX("$\\beta$")) +
+               ylab(TeX("$(S(\\beta)-S^*) W (S(\\beta)-S^*)$")),
+             varcov_plot +
+               ggtitle(TeX("Curvature with $W=(diag(\\Sigma))^{-1}$")) +
+               xlab(TeX("$\\beta$"))+
+               ylab(TeX("$(S(\\beta)-S^*) W (S(\\beta)-S^*)$"))
+             ,nrow=1)
+
+```
+
+
+We showed here that regression-based methods perform as well as ABC and simulated minimum distance in a simple one-dimensional problem.
+
+### Regression-based methods fit broken lines better than ABC or simulated minimum distance
+
+In this section we present another simplified one-dimensional parametrization but show that regression methods outperform both ABC and simulated minimum distance because of better selection of summary statistics.
+
+We observe 10 summary statistics $S=(S_0,\dots,S_9)$ but we assume they were generated by the "broken line" model: 
+$$
+S_i=\left\{\begin{matrix}
+\epsilon & i < 5\\ 
+\beta i + \epsilon & i\geq5
+\end{matrix}\right. (\#eq:brokenline)  
+$$  
+where $\epsilon \sim \mathcal{N}(0,1)$.  
+We want to find the $\beta$ that generated the observed summary statistics.
+Notice that $S_0,\dots,S_4$ provide no information on $\beta$.
+
+As before we run the model 1000 times to train an elastic net of the form:
+$$ 
+\beta = a + \sum_{i=0}^9 b_i S_i (\#eq:linelineline)  
+$$
+Table \@ref(tab:brokenlinerestimation) shows the coefficients found. The regression correctly drops $b_0,\dots,b_4$ and weighs the remaining summary statistics more the higher they are.
+
+We run the model another 1000 times to test the regression ability to estimate their $\beta$. 
+As shown in Figure \@ref(fig:brokenlinerplots)  and Table \@ref(tab:brokentable) the regression outperforms both ABC alternatives. 
+This is due to the elastic net ability to prune unimportant summary statistics.
+
+
+
+```{r brokenlinerestimation}
+
+
+
+############################################################
+
+#### OUR METHOD:::
+
+training<-
+  generate_random(
+    model = broken_liner_model,
+    number_of_observations = 1000)
+
+#generate testing data
+testing <-generate_random(
+  model = broken_liner_model,
+  number_of_observations = 1000)
+
+
+start_time<-Sys.time()
+reg<-cv.glmnet(formula(paste("b~",paste(summary_statistics
+                                        ,collapse="+"))),
+               data=training)
+
+predictions <- predict(reg,newdata=testing)
+end_time<-Sys.time()
+speed_regression<-(end_time-start_time)
+units(speed_regression)<-"mins"
+
+
+#  now instead take it as unpaired, you are going to try and predict the parameter distance
+#  in each pair by their summary statistics distances
+
+
+testing$pred<-
+  predictions[,1]
+
+
+
+
+
+range<-ggplot(testing) +
+  geom_point(aes(x=b,y=pred)) +
+  geom_abline(intercept=0,slope=1,lwd=1.2,col="red") +
+  ggtitle("Regression Error - Prediction")
+#+
+#geom_smooth(aes(b,abs(pred)))
+#range
+
+
+#coef(reg,s="lambda.1se")
+
+knitr::kable(
+  broom::tidy(reg$glmnet.fit) %>% filter(lambda==reg$lambda.1se) %>% select(-dev.ratio,-lambda,-step) %>% mutate(term=str_replace(term,"y","$b_"),
+                                                                                                                 term=ifelse(str_detect(term,"Intercept"),term,paste(term,"$",sep=""))),
+  col.names = c("Term","Estimate"),
+  caption = "Coefficient estimates after 1000 training observations; notice that all the uninformative summary statistics have been automatically dropped."
+  
+)
+
+```
+
+```{r brokenlinerplots, fig.cap = "A side by side comparison between the 'real' and discovered $\\beta$ as generated by either the regression method or two standard ABC algorithms: rejection sampling or MCMC. The x-axis represents the real $\\beta$, the y-axis its estimate. Each point represents the estimation against a different set of summary statistics. The red line is the 45 degree line: the closer the points are to it the better the estimation. Notice that rejection sampling (ABC) is inaccurate when $\\beta$ is very small (near 0) or very large (near 2) while MCMC has a larger average error than regression-based methods"}
+###############################################################
+start_time<-Sys.time()
+abc_results<-
+  compute_abc_estimates(
+    testing,
+    model = broken_liner_model,
+    c("b"),
+    c("y0","y1","y2","y3","y4","y5","y6","y7","y8","y9"),
+    tol=0.1,
+    MCMC=FALSE)
+end_time<-Sys.time()
+speed_rejection<-(end_time-start_time)
+units(speed_rejection)<-"mins"
+
+unweighted_pred<-
+  ggplot(testing
+  ) +
+  geom_point(aes(x=b,y=abc_results[,1])) +
+  geom_abline(intercept=0,slope=1,lwd=1.2,col="red") +
+  # geom_smooth(aes(b,abs(pred))) +
+  ggtitle("Rejection ABC")
+
+start_time<-Sys.time()
+
+abc_results_var<-
+  compute_abc_estimates(
+    testing,
+    model = broken_liner_model,
+    
+    c("b"),
+    c("y0","y1","y2","y3","y4","y5","y6","y7","y8","y9"),
+    MCMC=TRUE)
+end_time<-Sys.time()
+speed_mcmc<-(end_time-start_time)
+units(speed_mcmc)<-"mins"
+
+var_pred<-ggplot(testing
+)+
+  geom_point(aes(x=b,y=abc_results_var[,1])) +
+  geom_abline(intercept=0,slope=1,lwd=1.2,col="red") +
+  # geom_smooth(aes(b,abs(pred))) +
+  ggtitle("MCMC ABC")
+
+
+
+grid.arrange(range +
+               xlab(TeX("Real $\\beta")) + ylab(TeX("Estimated $\\beta")),
+             var_pred +
+               xlab(TeX("Real $\\beta")) + ylab(TeX("Estimated $\\beta")),
+             unweighted_pred +
+               xlab(TeX("Real $\\beta")) + ylab(TeX("Estimated $\\beta"))
+             ,nrow=1)
+```
+
+
+```{r brokentable}
+knitr::kable(
+data.frame(type = c("Regression Method","Rejection ABC", "MCMC ABC"),
+           errors = c(
+             rmse(testing$b, predict(reg,newdata=testing)),
+             rmse(testing$b,abc_results[,1]),
+             rmse(testing$b,abc_results_var[,1])
+           ),
+           duration= c(
+             format(speed_regression),
+             format(speed_rejection),
+             format(speed_mcmc)
+           ),
+           duration_scaled = c(
+             1,
+             as.numeric(speed_rejection)/as.numeric(speed_regression),
+             as.numeric(speed_mcmc)/as.numeric(speed_regression)
+           )
+),
+col.names=c("Estimation","Average RMSE", "Runtime","Runtime(scaled)"),
+align ="lccr",
+caption = "Regression errors achieve lower estimation errors in a fraction of the time. This is because they automatically ignore all summary statistics that do not inform $\\beta$"
+           )
+
+```
+
+In simulated minimum distance methods, choosing the wrong $W$ can compound the problem of poor summary statistics selection.
+As shown in Figure \@ref(fig:brokenestimationslope) the default choice $W= \left(\text{diag}(\Sigma)\right)^{-1}$ detrimentally affects the curvature of the distance function, by adding noise.
+This is because summary statistics $S_0,\dots,S_4$, in spite of containing no useful information, are the values with the lowest variance and are therefore given larger weights.
+
+
+```{r brokenestimationslope, fig.cap= "Curvature of the fitness function as implied by the regression versus weighted Euclidean distance between summary statistics. We take the 1000 training simulation runs, we pick one in the middle ($\\beta \\approx 1$) as the 'real' one and we compute the summary statistics distances between all the other simulations to it. The red line represents the real $\\beta$, each dot is the distance to the real $\\beta$ for that simulation run and its associated $\\beta$. For this model the default choice of weighing matrix (the inverse of the variance diagonal) makes numerical minimization harder. "}
+
+# we want to show the "slope" of the objective function; let's pick an experiment somewhere in the middle
+# and show distance to it
+unpaired<-
+  testing  %>% ungroup() %>% 
+  mutate(run=0) %>% mutate(isTargetRun=FALSE) 
+#make it so that they compute the error to the first element only
+target<-
+  unpaired %>% mutate(row=row_number(),distance_from_1 = abs(1-b))%>%
+  mutate(rank=min_rank(distance_from_1)) %>% filter(rank==1) %>% pull(row)
+unpaired$isTargetRun[target]<-TRUE
+correct_b<-unpaired %>% filter(isTargetRun==TRUE) %>% pull(b)
+
+
+
+# compute distance unweighted
+errored<-
+  compute_errors_joined(unpaired,
+                        
+                        columns_unweighted= summary_statistics,
+                        error_type="simple",
+                        weight_type = "none"
+  )
+
+
+
+# #you can test that you computed the errors correctly
+raw_plot<-
+  ggplot(errored) +
+  geom_point(aes(x=b,y=error)) +
+  geom_vline(xintercept=correct_b,lwd=1.2,col="red")# +
+  #geom_smooth(aes(b,error))
+#raw_plot
+
+
+# Diagonal error
+var_weight<-
+  solve(diag(diag(
+    var(unpaired %>%
+          select_(.dots=summary_statistics
+          ) %>%      #order alphabetically!
+          dplyr::select(order(colnames(.)))))),tol = 1e-24)
+
+
+var_error<-
+  compute_errors_joined(unpaired,
+                        
+                        columns_unweighted= summary_statistics,
+                        error_type="simple",
+                        # can't use "cov" because we only have one synthetic data-set
+                        weight_type = var_weight
+  )
+
+varcov_plot<-
+  ggplot(var_error) +
+  geom_point(aes(x=b,y=error)) +
+  geom_vline(xintercept=correct_b,lwd=1.2,col="red")# +
+  #geom_smooth(aes(b,error))
+
+unpaired$pred<-
+  predict(reg,newdata=unpaired)[,1]
+correct_pred<-unpaired %>% filter(isTargetRun==TRUE) %>% pull(pred)
+corrected<-ggplot(unpaired) +
+  geom_point(aes(x=b,y=abs(pred-correct_pred))) +
+  geom_vline(xintercept=correct_b,lwd=1.2,col="red") #+
+#  geom_smooth(aes(b,abs(pred-correct_pred)))
+#corrected
+
+grid.arrange(corrected +
+               ggtitle("Curvature implied by regression") +
+               xlab(TeX("$\\beta$")) +
+               ylab(TeX("$|\\r(S^*)-r(S(\\beta))|$"))
+             ,
+             raw_plot +
+               ggtitle(TeX("Curvature with $W=I$"))+
+               xlab(TeX("$\\beta$")) +
+               ylab(TeX("$(S(\\beta)-S^*) W (S(\\beta)-S^*)$")),
+             varcov_plot +
+               ggtitle(TeX("Curvature with $W=(diag(\\Sigma))^{-1}$")) +
+               xlab(TeX("$\\beta$"))+
+               ylab(TeX("$(S(\\beta)-S^*) W (S(\\beta)-S^*)$"))
+             ,nrow=1)
+
+```
+
+We showed here how, even in a simple one dimensional problem, the ability to prune uninformative summary statistics will result in better estimation (as shown by RMSE in table \@ref(tab:brokentable)) .
+
+### Model selection through regression-based methods is informative and accurate
+
+In this section we train a classifier to choose which of the two models we described above (‘straight-’ and ‘broken-line’) generated the observed data. We show that the classifier does a better job than choosing the model that minimizes prediction errors.
+
+We observe 10 summary statistics $S^*=(S^*_0,\dots,S^*_9)$ and we would like to know if they were generated by the "straight-line" model:
+$$
+S_i = \beta i + \epsilon (\#eq:straightline) 
+$$
+or the "broken-line" model:
+$$
+S_i=\left\{\begin{matrix}
+\epsilon & i < 5\\ 
+\beta i + \epsilon & i\geq5
+\end{matrix}\right. (\#eq:brokenline) 
+$$  
+where $\epsilon \sim N(0,1)$ and $i \in [0,9]$. Assume we have already estimated both models and $\beta=1$.
+
+We run each model 1000 times and then train a logit classifier:
+$$ 
+\text{Pr}(\text{broken line model}) = \frac{1}{1 + \exp(-[a +\sum b_i S_i])} 
+(\#eq:brokenlineclassifier)  
+$$
+Notice that $S_0$ and $S_5,\dots,S_9$ are generated by the same rule in both models: both draw a straight line through those points. Their values will then not be useful for model selection. We should focus instead exclusively on $S_1,\dots,S_4$ since that is the only area where one model draws a straight line and the other does not.  
+The regularized regression discovers this, by dropping $b_0$ and $b_5,\dots,b_9$  as Table \@ref(tab:modelselectionlinetabb) shows.
+
+
+
+```{r modelselectionlinetabb}
+
+#these are the target runs
+synthetic_test<-
+  bind_rows(
+    generate_random(
+      model = liner_model,
+      number_of_observations = 1000,
+      name = "liner",
+      b_min = 1,b_max = 1),
+    generate_random(
+      model = broken_liner_model,
+      number_of_observations = 1000,
+      name = "broken",
+      b_min = 1,b_max = 1)
+    
+  )
+
+synthetic_test$isTargetRun<-TRUE
+#these are the non-target runs
+simulated_test<-
+  bind_rows(
+    generate_random(
+      model = liner_model,
+      number_of_observations = 1000,
+      name = "liner",
+      b_min = 1,b_max = 1),
+    generate_random(
+      model = broken_liner_model,
+      number_of_observations = 1000,
+      name = "broken",
+      b_min = 1,b_max = 1)
+    
+  )
+simulated_test$isTargetRun<-FALSE
+simulated_test$target_strategy<-"liner"
+test<-bind_rows(synthetic_test,simulated_test)
+simulated_test<-
+  bind_rows(
+    generate_random(
+      model = liner_model,
+      number_of_observations = 1000,
+      name = "liner",
+      b_min = 1,b_max = 1),
+    generate_random(
+      model = broken_liner_model,
+      number_of_observations = 1000,
+      name = "broken",
+      b_min = 1,b_max = 1)
+    
+  )
+simulated_test$isTargetRun<-FALSE
+simulated_test$target_strategy<-"broken"
+test<-bind_rows(test,simulated_test)
+
+var_errors<-
+  get_error_rates(get_winners(
+    test%>% group_by(scenario) %>%
+      do(compute_errors_joined(.,
+                               
+                               columns_unweighted= summary_statistics ,
+                               error_type="simple",
+                               weight_type = "var"
+      ))
+  ),id="var")
+
+cov_errors<-
+  get_error_rates(get_winners(
+    test%>% group_by(scenario) %>%
+      do(compute_errors_joined(.,
+                               
+                               columns_unweighted= summary_statistics ,
+                               error_type="simple",
+                               weight_type = "cov"
+      ))
+  ),id="cov")
+
+identity_errors<-
+  get_error_rates(get_winners(
+    test%>% group_by(scenario) %>%
+      do(compute_errors_joined(.,
+                               
+                               columns_unweighted= summary_statistics ,
+                               error_type="absolute",
+                               weight_type = "none"
+      ))
+  ),id="none")
+
+varerr_errors<-
+  get_error_rates(get_winners(
+    test%>% group_by(scenario) %>%
+      do(compute_errors_joined(.,
+                               
+                               columns_unweighted= summary_statistics ,
+                               error_type="simple",
+                               weight_type = "error_var"
+      ))
+  ),id="error_var")
+
+coverr_errors<-
+  get_error_rates(get_winners(
+    test%>% group_by(scenario) %>%
+      do(compute_errors_joined(.,
+                               
+                               columns_unweighted= summary_statistics ,
+                               error_type="simple",
+                               weight_type = "error_cov"
+      ))
+  ),id="error_cov")
+
+
+#################################################
+
+# This is the regression based method
+# training
+training<-
+  bind_rows(
+    generate_random(
+      model = liner_model,
+      number_of_observations = 1000,
+      name = "liner",
+      b_min = 1,b_max = 1),
+    generate_random(
+      model = broken_liner_model,
+      number_of_observations = 1000,
+      name = "broken",
+      b_min = 1,b_max = 1)
+    
+  )
+
+
+reg<-cv.glmnet(formula(paste("current_strategy~",paste(summary_statistics,collapse="+"))),
+               data=training,
+               family="binomial")
+
+
+
+training$pred<-predict(reg,newdata=training,type="class")
+
+insample_error<-
+  training %>%  group_by(scenario,target_strategy) %>% summarise(count=n(),matches=sum(pred==current_strategy)) %>% mutate(success=matches/count) %>% select(-count,-matches) %>% mutate(id="in-sample")
+
+
+testing<-
+  test %>% filter(isTargetRun==TRUE) 
+stopifnot(testing$target_strategy==testing$current_strategy)
+testing$pred<-
+  predict(reg,newdata=testing,type="class")
+
+outsample_error<-
+  testing %>%  group_by(scenario,target_strategy) %>% summarise(count=n(),matches=sum(pred==current_strategy)) %>% mutate(success=matches/count) %>% select(-count,-matches) %>% mutate(id="out-sample")
+
+
+
+errors <- bind_rows(var_errors,cov_errors,coverr_errors,varerr_errors,identity_errors,outsample_error)
+
+
+errors2<-errors %>%
+  group_by(scenario,id) %>% summarise(success=mean(success)) %>% 
+  mutate(id=factor(id,levels=c("none","var","cov","error_var","error_cov","out-sample"))) %>%
+  mutate(synthetic=(id=="out-sample"))
+
+
+
+knitr::kable(
+  broom::tidy(reg$glmnet.fit) %>% 
+    filter(lambda==reg$lambda.1se) %>% 
+    select(-dev.ratio,-lambda,-step) %>% 
+    mutate(term=str_replace(term,"y","$b_"),term=ifelse(str_detect(term,"Intercept"), term,paste(term,"$",sep=""))),
+  col.names = c("Term","Estimate"),
+  caption = "Coefficient estimates after 2000 training observations; notice how only the low summary statistics have a coefficient associated to them. This is because they are the only part of the line that is 'broken': $S_5,\\dots,S_9$ are generated the same way for both models and are therefore of no use for differentiating the two models.")
+
+```
+
+
+Figure \@ref(fig:modelselectionline) tabulates the success rate from 2000 out-of-sample simulations by the classifier and compares it with picking models by choosing the one that minimizes the distance between summary statistics. The problem is simple enough that choosing $W=I$ achieves almost perfect success rate; using the more common variance-based weights does not.
+
+```{r modelselectionline, fig.cap= "A comparison between training a classifier to do model selection versus choosing the model whose distance to summary statistics is smaller. All weighing schemes except $W=I$ underperform compared to the classifier. Model selection performed on 2000 testing runs (not used for training the classifier)"}
+
+
+ggplot(errors2,aes(x=id,y=success,fill=id,col=synthetic,linetype=synthetic))  +
+  geom_col(position="dodge")+ ylim(0,1) +
+  scale_color_manual(values=c("white","black"),guide=FALSE) +
+  scale_linetype_manual(values=c(2,1),guide=FALSE) +
+  ggtitle("Model selection success") +
+  xlab("Model selection method") +
+  scale_y_continuous(name="% of models successfully selected",limits=c(0,1),
+                     labels = scales::percent) +
+  scale_fill_discrete(breaks=c("none","var","cov","error_var","error_cov","out-sample"),
+                      labels=list(TeX("$W=I$"),
+                                  TeX("$W=diag(\\Omega^{-1}(S))$"),
+                                  TeX("$W=\\Omega^{-1}(S)$"),
+                                  TeX("$W=diag(\\Omega^{-1}(|\\Delta_S|))$"),
+                                  TeX("$W=\\Omega^{-1}(|\\Delta_S|$"),  
+                                  "Classifier"
+                      )) +
+  scale_x_discrete(breaks=c("none","var","cov","error_var","error_cov","out-sample"),
+                   labels=NULL) +
+  xlab("Model Selection Method") +
+  geom_text(aes(x=id,y=success,label=scales::percent(success)),
+            position = position_dodge(0.9),
+    vjust = 5,col="black") 
+
+
+```
+
+
+
+## Fit RBC {#rbcexample}
+
+### Fit against cross-correlation matrix {#crosscorrelation}
+
+In this section we parametrize a simple macro-economic model by looking at the time series it simulates. We show that we can use a large number of summary statistics efficiently and that we can diagnose estimation strengths and weaknesses the same way we diagnose regression outputs.
+
+We observe 150 steps^[This is the setup in the original indirect inference paper by @Smith1993 applied to a similar RBC model] of 5 quarterly time series: $Y,r,I,C,L$. Assuming we know they come from a standard real business cycle (RBC) model [the default RBC implementation of the gEcon package in R, see @Klima2018, see also  Appendix A], we estimate the 6 parameters ($\beta,\delta,\eta,\mu,\phi,\sigma$) that generated them.
+
+Summarize the time series observed with (a) the $t=-5,\dots,+5$ cross-correlation vectors of $Y$ against $r,I,C,L$, (b) the lower-triangular covariance matrix of $Y,r,I,C,L$, (c) the squares of all cross-correlations and covariances, (d) the pair-wise products between all cross-correlations and covariances.
+This totals to 2486 summary statistics: too many for most ABC approaches.  
+This problem is however still solvable by regression. We train 6 separate regressions, one for each parameter, as follows:
+$$ 
+\left\{\begin{matrix}
+\beta &= \sum a_{\beta,i} S_i + \sum b_{\beta,i} S_{i}^2 + \sum c_{\beta,i,j} S_i S_j  \\
+\gamma &= \sum a_{\gamma,i} S_i + \sum b_{\gamma,i} S_{i}^2 + \sum c_{\gamma,i,j} S_i S_j \\
+&\vdots \\
+\sigma &= \sum a_{\sigma,i} S_i + \sum b_{\sigma,i} S_{i}^2 + \sum c_{\sigma,i,j} S_i S_j \\
+\end{matrix}\right.
+(\#eq:regressioncross)  
+$$
+Where $a,b,c$ are elastic net coefficients.
+
+We train the regressions over 2000 RBC runs then produce 2000 more to test its estimation.
+Figure \@ref(fig:rbccovplott) and Table \@ref(tab:rbccovtable) show that all the parameters are estimated correctly but $\eta$ and $\delta$ less precisely than the others.
+We judge the quality of the estimation through the predictivity coefficient [see @Salle2014; also known as modelling efficiency as in @Stow2009] which measures the improvement of using an estimate $\hat \beta$ to discover the real $\beta^*$ as opposed to just using the hindsight average $\bar \beta$:
+$$
+\text{Predictivity} = \frac{ \sum \left( \beta^*_i - \bar \beta \right)^2 - \sum \left( \beta^*_i - \hat \beta_i \right)^2 }{\sum \left( \beta^*_i - \bar \beta \right)^2}
+(\#eq:predictivity)  
+$$
+Intuitively, this is just an extension of the definition to $R^2$ to out-of-sample predictions.
+A predictivity of 1 implies perfect estimation, 0 implies that averaging would have performed as well as the estimate.
+
+
+
+
+```{r rbc_setup, message=FALSE, warning=FALSE}
+
+# contains the RBC stuff
+g_econ_directory<-"./gecon"
+
+# takes a simulated output from the model and returns a list of auxiliary statistics
+# VAR: Y~I    
+# VAR: Y~C    
+# VAR: Y~r    
+# VAR: Y~L    
+# LM: Y~C+r
+# AR(5):  Y
+# Covariance matrix (lower triangular) of Y,I,C,r,L
+full_extractor<-function(simulated_output)
+{
+  fit<-VAR(simulated_output %>% select(Y,I),p=1)
+  fit2<-VAR(simulated_output %>% select(Y,C),p=1)
+  fit3<-VAR(simulated_output %>% select(Y,r),p=1)
+  fit4<-VAR(simulated_output %>% select(Y,L_s),p=1)
+  
+  covariance<-cov(simulated_output)
+  summary_var_statistics<-c(coef(fit)$C[,1],coef(fit)$Y[,1])
+  summary_covariance_statistics<-covariance[lower.tri(covariance,diag=TRUE)]
+  # steady_states<-get_ss_values(rbc_ic,silent=TRUE)
+  arY<-dynlm::dynlm(Y~L(Y,1:5),data=ts(simulated_output))
+  lmfit<-lm(Y~C+r,data=simulated_output)
+  summary_stats<-list(
+    varI=c(coef(fit)$I[,1],coef(fit)$Y[,1]),
+    varC=c(coef(fit2)$C[,1],coef(fit2)$Y[,1]),
+    varr=c(coef(fit3)$r[,1],coef(fit3)$Y[,1]),
+    varL=c(coef(fit4)$L_s[,1],coef(fit4)$Y[,1]),
+    lmfit=coef(lmfit),
+    ar=coef(arY),
+    cov=summary_covariance_statistics#,
+    #steady=steady_states
+  )
+}
+
+
+# runs the RBC model once
+# Solves it
+# Produces a random path of log-linear deviations from steady state
+# returns the summary statistics extracted from that path by the given extractor function
+rbc_model<-function(
+  beta = 0.990,
+  delta = 0.025,
+  eta = 2.000,
+  mu = 0.300,
+  phi = 0.950,
+  sigma=0.01,
+  time=150,
+  extractor=full_extractor)
+{
+  model_path<-paste(g_econ_directory,"rbc.gcn",sep="/")
+  rbc_ic<-make_model(model_path)
+  rbc_ic<-set_free_par(rbc_ic,reset=TRUE)
+  rbc_ic<-set_free_par(rbc_ic,list(
+    beta=beta,
+    delta=delta,
+    eta=eta,
+    mu=mu,
+    phi=phi))
+  rbc_ic<- steady_state(rbc_ic)
+  rbc_ic<- solve_pert(rbc_ic)
+  rbc_ic<- set_shock_cov_mat(
+    model=rbc_ic,
+    cov_matrix =  matrix(c(sigma),1,1), #1 dimensional matrix, contains only the variance
+    shock_order =  "epsilon_Z"
+  )
+  rbc_ic_sim<-random_path(rbc_ic, 
+                          variables= c('Y','C',"I","r","L_s"),
+                          sim_length = time
+  )
+  simulated_output<-data.frame(t(rbc_ic_sim@sim)) 
+  
+  return(extractor(simulated_output))
+}
+
+
+#runs the RBC model many times!
+# if a design matrix is provided (assuming 0 to 1) then we run the simulation over those numbers, otherwise all the parameters are randomly drawn from uniform every time
+generate_random<-function(model=rbc_model,
+                          name="rbc",
+                          scenario_name="simple",
+                          time=150,
+                          min_sigma=0.01,max_sigma=0.03,
+                          min_beta = 0.990*.9,max_beta=.999,
+                          min_delta = 0.025*.9,max_delta = 0.025*1.1,
+                          min_eta = 2.000*.9,max_eta = 2.000*1.1,
+                          min_mu = 0.300*.9,max_mu = 0.300*1.1,
+                          min_phi = 0.950*.9,max_phi = .999,
+                          design=NULL,
+                          extractor=full_extractor,
+                          number_of_observations=10
+){
+  
+  if(is.null(design))
+  {
+    beta <- runif(min=min_beta,max=max_beta,n=number_of_observations)
+    delta<-runif(min=min_delta,max=max_delta,n=number_of_observations)
+    eta<-runif(min=min_eta,max=max_eta,n=number_of_observations)
+    mu<-runif(min=min_mu,max=max_mu,n=number_of_observations)
+    phi<-runif(min=min_phi,max=max_phi,n=number_of_observations)
+    sigma<-runif(min=min_sigma,max=max_sigma,n=number_of_observations)
+    
+  }
+  else{
+    beta<-design[,1]*(max_beta-min_beta)+min_beta
+    delta<-design[,2]*(max_delta-min_delta)+min_delta
+    eta<-design[,3]*(max_eta-min_eta)+min_eta
+    mu<-design[,4]*(max_mu-min_mu)+min_mu
+    phi<-design[,5]*(max_phi-min_phi)+min_phi
+    sigma<-design[,6]*(max_sigma-min_sigma)+min_sigma
+    
+  }
+  stats<-model(sigma=sigma[1],
+               beta = beta[1],
+               delta = delta[1],
+               eta = eta[1],
+               mu = mu[1],
+               phi = phi[1],
+               time=time,
+               extractor=extractor)
+  dataset<-
+    data.frame(stringsAsFactors = FALSE,
+               run=0,seed=0,sigma=sigma[1],model=name,
+               beta=beta[1],
+               delta = delta[1],
+               eta = eta[1],
+               mu = mu[1],
+               phi = phi[1],
+               t(unlist(stats))
+    )
+  for(i in (2:(number_of_observations)))
+  {
+    try(
+      {
+        #        print("name")
+        #        print(name)
+        #        print("name")
+        stats<-model(sigma=sigma[i],
+                     beta = beta[i],
+                     delta = delta[i],
+                     eta = eta[i],
+                     mu = mu[i],
+                     phi = phi[i],
+                     time=time,
+                     extractor=extractor)
+        #        print(stats)
+        dataset<-rbind(dataset,
+                       c(
+                         run=i,seed=i,sigma=sigma[i],model=name,
+                         beta=beta[i],
+                         delta = delta[i],
+                         eta = eta[i],
+                         mu = mu[i],
+                         phi = phi[i],
+                         unlist(stats)
+                       )
+        )},silent=FALSE
+    )
+  }
+  return(dataset)
+}
+
+```
+
+
+
+
+```{r rbc_correlations, message=FALSE, warning=FALSE}
+
+
+# takes a simulated output from the model and returns a list of auxiliary statistics
+# Cross correlation matrices (-5,+5) of Y,r,I,C on Y
+# Covariance matrix (lower triangular) of Y,I,C,r,L
+covariance_extractor<-function(simulated_output)
+{
+  covariance<-cov(simulated_output)
+  summary_stats<-list(
+    acf=ccf(simulated_output$Y,simulated_output$Y,lag.max=5,plot=FALSE)$acf,
+    ccYL=ccf(simulated_output$Y,simulated_output$L_s,lag.max=5,plot=FALSE)$acf,
+    ccYr=ccf(simulated_output$Y,simulated_output$r,lag.max=5,plot=FALSE)$acf,
+    ccYI=ccf(simulated_output$Y,simulated_output$I,lag.max=5,plot=FALSE)$acf,
+    ccYC=ccf(simulated_output$Y,simulated_output$C,lag.max=5,plot=FALSE)$acf,
+    cov=covariance[lower.tri(covariance,diag=TRUE)]
+    #steady=steady_states
+  )
+  return(summary_stats)
+}
+
+
+# rbc
+
+if(load_rbc_runs_from_drive)
+{
+  rbc_calibration<-read_csv(
+    paste(g_econ_directory,"calibration_covs.csv",sep="/")
+  )
+} else {
+  rbc_calibration<-generate_random(
+    model = rbc_model,
+    number_of_observations = 2000,time=150,
+    design=maximinLHS(2000,6),
+    extractor=covariance_extractor)
+  # write_csv(rbc_calibration,
+  #    paste(g_econ_directory,"calibration_covs.csv",sep="/")
+  #  )
+}
+
+rbc_columns<-colnames(rbc_calibration %>% 
+                        select(-run,-model,
+                               -seed,-sigma,
+                               -beta,-delta,-eta,-mu,-phi))
+rbc_columns<-rbc_columns %>% str_replace_all("\\.","_")
+
+
+
+
+if(load_rbc_runs_from_drive)
+{
+  rbc_validation<-read_csv(
+    paste(g_econ_directory,"validation_covs.csv",sep="/")
+  )
+} else {
+  rbc_validation<-generate_random(
+    model = rbc_model,
+    number_of_observations = 1000,time=150,
+    extractor=covariance_extractor)
+  # write_csv(rbc_validation,
+  #    paste(g_econ_directory,"validation_covs.csv",sep="/")
+  #  )
+}
+colnames(rbc_calibration)<-str_replace_all(colnames(rbc_calibration),"\\.","_")
+colnames(rbc_validation)<-str_replace_all(colnames(rbc_validation),"\\.","_")
+
+rbc_calibration<-rbc_calibration %>% select(-model) %>% 
+  mutate_all(function(x) as.numeric(as.character(x))) %>% mutate(model="rbc")
+rbc_validation<-rbc_validation %>% select(-model) %>% 
+  mutate_all(function(x) as.numeric(as.character(x))) %>% mutate(model="rbc")
+
+
+### BETA
+
+
+fit<-cv.glmnet(formula(
+  paste("beta~(",paste(rbc_columns,collapse="+"),")^2")
+) ,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$beta
+
+
+smith_table<-
+  data.frame(
+    variable="beta",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+predict_table<-data.frame(
+  prediction=prediction[,1],
+  correct=correct,
+  parameter="beta"
+)
+
+##################################################
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("delta~(",paste(rbc_columns,collapse="+"),")^2")                       
+)
+,data=rbc_calibration)
+
+
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$delta
+
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="delta",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="delta"
+    )
+  )
+
+
+## eta
+
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("eta~(",paste(rbc_columns,collapse="+"),")^2")                       )
+  ,data=rbc_calibration)
+
+
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$eta
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="eta",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="eta"
+    )
+  )
+
+##mu
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("mu~(",paste(rbc_columns,collapse="+"),")^2")                       )
+  ,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$mu
+
+# ggplot(data.frame(prediction=prediction[,1],
+#                   correct=correct), 
+#        aes(y=prediction, x=correct)) + geom_point() + 
+#   xlim(c(min(prediction,correct),max(prediction,correct))) +
+#   ylim(c(min(prediction,correct),max(prediction,correct))) +
+#   geom_abline(slope=1,lwd=2,col="red")
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="mu",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="mu"
+    )
+  )
+
+
+##  sigma
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("sigma~(",paste(rbc_columns,collapse="+"),")^2")                       )
+  ,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$sigma
+
+# ggplot(data.frame(prediction=prediction[,1],
+#                   correct=correct), 
+#        aes(y=prediction, x=correct)) + geom_point() + 
+#   xlim(c(min(prediction,correct),max(prediction,correct))) +
+#   ylim(c(min(prediction,correct),max(prediction,correct))) +
+#   geom_abline(slope=1,lwd=2,col="red")
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="sigma",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="sigma"
+    )
+  )
+
+## 	phi
+
+fit<-cv.glmnet(formula(
+  paste("phi~(",paste(rbc_columns,collapse="+"),")^2") 
+  # paste("phi~(",paste(rbc_columns,collapse="+"),")^2 + I(",paste(rbc_columns,collapse="^2)+I("),"^2)")                       )
+)
+,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$phi
+
+# ggplot(data.frame(prediction=prediction[,1],
+#                   correct=correct), 
+#        aes(y=prediction, x=correct)) + geom_point() + 
+#   xlim(c(min(prediction,correct),max(prediction,correct))) +
+#   ylim(c(min(prediction,correct),max(prediction,correct))) +
+#   geom_abline(slope=1,lwd=2,col="red")
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="phi",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="phi"
+    )
+  )
+
+```
+
+
+```{r rbccovplott, fig.cap="Estimated versus real parameters for 2000 RBC runs in the testing data-set (not used for training the regressions). Each dot is a pair real-estimate parameter from a single RBC run. Red line is the 45 degree line: the closer the dots are to it the better estimated that parameter is. The parameters $\\delta$ and $\\eta$ are not as well estimated as the other 4"}
+
+ggplot(predict_table,
+       aes(y=prediction, x=correct)) + geom_point() + 
+  #  xlim(c(min(prediction,correct),max(prediction,correct))) +
+  #  ylim(c(min(prediction,correct),max(prediction,correct))) +
+  geom_abline(slope=1,lwd=2,col="red") +
+  facet_wrap(~parameter,scales="free",
+             labeller = as_labeller(
+               c(
+                 `beta`=TeX("$\\beta$"),
+                 `delta`=TeX("$\\delta$"),
+                 `sigma`=TeX("$\\sigma$"),
+                 `eta`=TeX("$\\eta$"),
+                 `mu`=TeX("$\\mu$"),
+                 `phi`=TeX("$\\phi$")
+                  ),label_parsed
+               ))  +
+  ylab("Estimation") +
+  xlab("Real Value") +
+  ggtitle("Estimated vs Real RBC parameters")
+
+```
+
+
+```{r rbccovtable}
+
+knitr::kable(smith_table %>%
+               mutate(bounds =
+                        case_when(
+                          variable=="beta" ~ "[0.891,0.999]",
+                          variable=="delta"~ "[0.225,0.275]",
+                          variable=="sigma"~"[0.01,0.03]",
+                          variable=="eta"~"[1.8,2.2]",
+                          variable=="mu"~"[0.27,0.33]",
+                          variable=="phi"~"[0.855,0.999]"
+                        )
+                        ) %>%
+               mutate(variable = paste("$\\",variable,"$",sep="")) %>%
+               select(variable,bounds,bias,rmse,predictivity),
+             col.names = c("Variable", "Variable Bounds", "Average Bias", "Average RMSE", "Predictivity"),
+               caption = "Predictivity for each variable when estimating parameters of the RBC model looking at cross-correlations and covariance; $\\delta$ and $\\eta$ are less precisely estimated than the other parameters. All results obtained on a testing data-set (not used for training) of 2000 RBC runs. Bias is defined as average distance between real and estimated parameter: $\\theta^*-\\theta$, RMSE is the root mean square error: $\\sqrt{\\sum \\frac{\\left(\\theta^*-\\theta\\right)^2}{2000}}$. Variable bounds are the interval 20% below and above the default RBC parameters in the original gEcon implementation.")
+
+
+```
+
+
+<!-- you may think that switching to a mgaussian approach would work better, but it does not. I wonder if that's just an RBC problem  -->
+<!-- ```{r mgaussian, eval=FALSE,echo=FALSE} -->
+<!-- fit<-cv.glmnet(formula( -->
+<!--   paste("cbind(beta,delta,sigma,eta,mu,phi)~(",paste(rbc_columns,collapse="+"),")^2") -->
+<!-- ) ,data=rbc_calibration,family="mgaussian") -->
+
+
+<!-- # weird bug in cv.glmnet: it stops predicting with mgaussian after it hits a certain number of predictions -->
+<!-- # therefore I need to predict in a loop -->
+<!-- predictions<-predict(fit,newdata=rbc_validation[1,]) -->
+<!-- for(i in 2:nrow(rbc_validation)) -->
+<!--   predictions<-rbind(predictions, -->
+<!--                      predict(fit,newdata=rbc_validation[i,]) -->
+<!--                      ) -->
+<!-- colnames(predictions)<-c("beta","delta","sigma","eta","mu","phi") -->
+<!-- predictions<-tbl_df(predictions) -->
+<!-- corrects<-rbc_validation %>% select(beta,delta,sigma,eta,mu,phi) -->
+
+
+<!-- correct<- corrects %>% pull(beta) -->
+<!-- prediction<- predictions %>% pull(beta) -->
+<!-- smith_table<- -->
+<!--   data.frame( -->
+<!--     variable="beta", -->
+<!--     average = mean(correct), -->
+<!--     bias= mean(prediction-correct), -->
+<!--     rmse= mean((prediction-correct)^2), -->
+<!--     predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2) -->
+<!--   ) -->
+
+<!-- for(variable in c("delta","sigma","eta","mu","phi")){ -->
+<!--   correct<- corrects %>% pull(variable) -->
+<!--   prediction<- predictions %>% pull(variable) -->
+<!--   smith_table<- -->
+<!--   add_row( -->
+<!--     smith_table, -->
+<!--     variable=variable, -->
+<!--     average = mean(correct), -->
+<!--     bias= mean(prediction-correct), -->
+<!--     rmse= mean((prediction-correct)^2), -->
+<!--     predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2) -->
+<!--   ) -->
+<!-- } -->
+
+
+
+<!-- ``` -->
+
+We showed here that we can estimate the parameters of a simple RBC model by looking at their cross-correlations. 
+However this method is better served by looking at multiple auxiliary models as we show in the next section.
+
+### Fit against auxiliary fits
+
+In this section we parametrize the same simple macro-economic model by looking at the same time series it simulates but using a more diverse array of summary statistics. We show how that improves the estimation of the model. 
+
+Again, we observe 150 steps of 5 quarterly time series: $Y,r,I,C,L$. Assuming we know they come from a standard RBC model, we want to estimate the 6 parameters ($\beta,\delta,\eta,\mu,\phi,\sigma$) that generated them.  
+
+
+In this section we use a larger variety of summary statistics. Even though they derive from auxiliary models that convey much of the same information, we are able to use them efficiently for estimation. 
+We summarize output by (i) coefficients of regressing $Y$ on $Y_{t-1},I_{t},I_{t-1}$, (ii) coefficients of regressing $Y$ on $Y_{t-1},C_{t},C_{t-1}$, (iii)  coefficients of regressing $Y$ on $Y_{t-1},r_{t},r_{t-1}$, (iv) coefficients of regressing $Y$ on $Y_{t-1},L_{t},L_{t-1}$, (v) coefficients of regressing $Y$ on $C,r$ (vi) coefficients of fitting AR(5) on $Y$, (vii)  the (lower triangular) covariance matrix of $Y,I,C,r,L$.  
+In total there are 48 summary statistics to which we add all their squares and cross-products.
+
+Again we train 6 regressions against 2000 RBC observations and test their estimation against 2000 more.  
+Figure \@ref(fig:rbcfullplot) and Table \@ref(tab:rbcfulltable) shows that all the parameters are estimated correctly and with higher predictivity coefficient.
+In particular $\delta$ and $\eta$ are better predicted than by looking at cross-correlations.
+
+```{r rbc_full, message=FALSE, warning=FALSE}
+
+
+if(load_rbc_runs_from_drive)
+{
+  rbc_calibration<-read_csv(
+    paste(g_econ_directory,"calibration.csv",sep="/")
+  )
+} else
+{
+  
+  rbc_calibration<-generate_random(
+    model = rbc_model,
+    number_of_observations = 2000,time=150,
+    design=maximinLHS(2000,6))
+  # write_csv(rbc_calibration,
+  #    paste(g_econ_directory,"calibration.csv",sep="/")
+  #  )
+}
+
+rbc_columns<-colnames(rbc_calibration %>% 
+                        select(-run,-model,
+                               -seed,-sigma,
+                               -beta,-delta,-eta,-mu,-phi))
+rbc_columns<-rbc_columns %>% str_replace_all("\\.","_")
+
+
+if(load_rbc_runs_from_drive)
+{
+  rbc_validation<-read_csv(
+    paste(g_econ_directory,"validation.csv",sep="/")
+  )
+} else {
+  rbc_validation<-generate_random(
+    model = rbc_model,
+    number_of_observations = 1000,time=150)
+  # write_csv(rbc_validation,
+  #    paste(g_econ_directory,"validation.csv",sep="/")
+  #  )
+}
+colnames(rbc_calibration)<-str_replace_all(colnames(rbc_calibration),"\\.","_")
+colnames(rbc_validation)<-str_replace_all(colnames(rbc_validation),"\\.","_")
+
+rbc_calibration<-rbc_calibration %>% select(-model) %>% 
+  mutate_all(function(x) as.numeric(as.character(x))) %>% mutate(model="rbc")
+rbc_validation<-rbc_validation %>% select(-model) %>% 
+  mutate_all(function(x) as.numeric(as.character(x))) %>% mutate(model="rbc")
+
+
+### BETA
+
+
+fit<-cv.glmnet(formula(
+  paste("beta~(",paste(rbc_columns,collapse="+"),")^2")
+) ,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$beta
+
+
+smith_table<-
+  data.frame(
+    variable="beta",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+predict_table<-data.frame(
+  prediction=prediction[,1],
+  correct=correct,
+  parameter="beta"
+)
+
+##################################################
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("delta~(",paste(rbc_columns,collapse="+"),")^2")                       
+)
+,data=rbc_calibration)
+
+
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$delta
+
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="delta",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="delta"
+    )
+  )
+
+
+## eta
+
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("eta~(",paste(rbc_columns,collapse="+"),")^2")                       )
+  ,data=rbc_calibration)
+
+
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$eta
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="eta",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="eta"
+    )
+  )
+
+##mu
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("mu~(",paste(rbc_columns,collapse="+"),")^2")                       )
+  ,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$mu
+
+# ggplot(data.frame(prediction=prediction[,1],
+#                   correct=correct), 
+#        aes(y=prediction, x=correct)) + geom_point() + 
+#   xlim(c(min(prediction,correct),max(prediction,correct))) +
+#   ylim(c(min(prediction,correct),max(prediction,correct))) +
+#   geom_abline(slope=1,lwd=2,col="red")
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="mu",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="mu"
+    )
+  )
+
+
+##  sigma
+
+rm(fit)
+fit<-cv.glmnet(formula(
+  paste("sigma~(",paste(rbc_columns,collapse="+"),")^2")                       )
+  ,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$sigma
+
+# ggplot(data.frame(prediction=prediction[,1],
+#                   correct=correct), 
+#        aes(y=prediction, x=correct)) + geom_point() + 
+#   xlim(c(min(prediction,correct),max(prediction,correct))) +
+#   ylim(c(min(prediction,correct),max(prediction,correct))) +
+#   geom_abline(slope=1,lwd=2,col="red")
+
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="sigma",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="sigma"
+    )
+  )
+
+## 	phi
+
+fit<-cv.glmnet(formula(
+  paste("phi~(",paste(rbc_columns,collapse="+"),")^2") 
+  # paste("phi~(",paste(rbc_columns,collapse="+"),")^2 + I(",paste(rbc_columns,collapse="^2)+I("),"^2)")                       )
+)
+,data=rbc_calibration)
+
+prediction<-predict(fit,newdata=rbc_validation)
+correct<-rbc_validation$phi
+
+# ggplot(data.frame(prediction=prediction[,1],
+#                   correct=correct), 
+#        aes(y=prediction, x=correct)) + geom_point() + 
+#   xlim(c(min(prediction,correct),max(prediction,correct))) +
+#   ylim(c(min(prediction,correct),max(prediction,correct))) +
+#   geom_abline(slope=1,lwd=2,col="red")
+
+smith_table<-
+  add_row(
+    smith_table,
+    variable="phi",
+    average = mean(correct),
+    bias= mean(prediction-correct),
+    rmse= mean((prediction-correct)^2),
+    predictivity = 1- sum((prediction-correct)^2)/sum((mean(correct)-correct)^2)
+  )
+
+
+
+predict_table<-
+  bind_rows(
+    predict_table,
+    data.frame(
+      prediction=prediction[,1],
+      correct=correct,
+      parameter="phi"
+    )
+  )
+```
+
+
+```{r rbcfullplot, fig.cap="Estimated versus real parameters for 2000 RBC runs in the testing data-set (not used for training the regressions). Each dot is a pair of real-estimate parameters from a single RBC run. The red line is the 45 degree line: the closer the dots are to it the better estimated that parameter is. All parameters are well estimated"}
+ggplot(predict_table,
+       aes(y=prediction, x=correct)) + geom_point() + 
+  #  xlim(c(min(prediction,correct),max(prediction,correct))) +
+  #  ylim(c(min(prediction,correct),max(prediction,correct))) +
+  geom_abline(slope=1,lwd=2,col="red") +
+    facet_wrap(~parameter,scales="free",
+             labeller = as_labeller(
+               c(
+                 `beta`=TeX("$\\beta$"),
+                 `delta`=TeX("$\\delta$"),
+                 `sigma`=TeX("$\\sigma$"),
+                 `eta`=TeX("$\\eta$"),
+                 `mu`=TeX("$\\mu$"),
+                 `phi`=TeX("$\\phi$")
+                  ),label_parsed
+               ))  +
+  ylab("Estimation") +
+  xlab("Real Value") +
+  ggtitle("Estimated vs Real RBC parameters")
+
+```
+
+
+```{r rbcfulltable}
+knitr::kable(smith_table %>%
+               mutate(bounds =
+                        case_when(
+                          variable=="beta" ~ "[0.891,0.999]",
+                          variable=="delta"~ "[0.225,0.275]",
+                          variable=="sigma"~"[0.01,0.03]",
+                          variable=="eta"~"[1.8,2.2]",
+                          variable=="mu"~"[0.27,0.33]",
+                          variable=="phi"~"[0.855,0.999]"
+                        )
+                        ) %>%
+               mutate(variable = paste("$\\",variable,"$",sep="")) %>%
+               select(variable,bounds,bias,rmse,predictivity),
+             col.names = c("Variable", "Variable Bounds", "Average Bias", "Average RMSE", "Predictivity"),
+               caption = "Predictivity for each variable when estimating parameters of the RBC model looking at cross-correlations and covariance; All parameters are well estimated. All results obtained on a testing data-set (not used for training) of 2000 RBC runs. Bias is defined as average distance between real and estimated parameter: $\\theta^*-\\theta$, RMSE is the root mean square error: $\\sqrt{\\sum \\frac{\\left(\\theta^*-\\theta\\right)^2}{2000}}$. Variable bounds are the interval 20% below and above the default RBC parameters in the original gEcon implementation.")
+
+```
+
+
+
+
+
+## Heuristic selection in the face of input uncertainty {#abmexample}
+
+In this section we select between 10 variations of an agent-based model where some inputs and parameters are unknowable. By training a classifier we are able to discover which summary statistics are robust to the unknown parameters and leverage this to outperform standard model selection by prediction error.
+
+Assume all fishermen in the world can be described by one of 10 decision-making algorithms (heuristics).
+We observe 100 fishermen for five years and we want to identify which heuristic they are using.
+The heuristic selection is however complicated by not knowing basic biological facts about the environment the fishermen exploit.  
+This is a common scenario in fisheries: we can monitor boats precisely through electronic logbooks and satellites but more than 80% of global catch comes from unmeasured fish stocks[@Costello2012].  
+Because heuristics are adaptive, the same heuristic will generate very different summary statistics when facing different biological constraints.
+We show here that we can still identify heuristics even without knowing how many fish there are in the sea. 
+
+
+We can treat each heuristic as a separate model and train a classifier that looks at summary statistics to predict which heuristic generated them.
+The critical step is to train the classifier on example runs where the uncertain inputs (the unknown biological constraints) are randomized.
+This way the classifier automatically learns which summary statistics are robust to biological changes and look only at those when selecting the right heuristic.
+
+We use POSEIDON[@Bailey2018], a fishery agent-based model to simulate the fishery.
+We observe the fishery for five years and we collect 17 summary statistics: (i) aggregate five year averages on landings, effort (hours spent fishing), distance travelled from port, number of trips per year and average hours at sea per trip, (ii) a discretized(3 by 3 matrix) heatmap of geographical effort over the simulated ocean, (iii) the coefficients and $R^2$ of a discrete choice model fitting area fished as a function of distance from port and habit (an integer describing how many times that particular fisher has visited that area before in the past 365 days ).  
+These summary statistics are a typical information set we might expect to obtain in a developed fishery.
+
+Within each simulation, all fishers use the same heuristic. There are 10 possible candidates,all described more in depth in a separate paper^[currently in R&R, working draft: http://carrknight.github.io/poseidon/algorithms.html]:
+
+* Random: each fisher each trip picks a random cell to trawl
+* Gravitational Search: agents copy one another as if planets attracted by gravity where mass is equal to profits made in the previous trip [ see @rashedi_gsa:_2009]
+* $\epsilon$-greedy bandit: agents have a fixed 20% chance of exploring a new random area otherwise exploiting(fishing) the currently most profitable discovered location. Two parametrizations of this heuristic are available, depending on whether fishers discretize the map in a 3 by 3 matrix or a 9 by 9 one.
+* "Perfect" agent: agents knows perfectly the profitability of each area $\Pi(\cdot)$ and chooses to fish in area $i$ by SOFTMAX: 
+$$
+\text{Probability}(i) = \frac{e^{\Pi(i)}}{\sum_j e^{\Pi(j)}}  (\#eq:perfectagents)  
+$$
+* Social Annealing: agents always return to the same location unless they are making less than fishery's average profits(across the whole fishery), in which case they try a new area at random
+* Explore-Exploit-Imitate: like $\epsilon$-greedy agents, they have a fixed probability of exploring. When not exploring each fisher checks the profits of two random "friends" and copies their location if either are doing better. Three parametrizations of this heuristics are possible: exploration rate at 80% or 20% with exploration range of 5 cells, or 20% exploration rate with exploration range of 20 cells.
+* Nearest Neighbour: agents keep track of the profitability of all the areas they have visited through a nearest neighbour regression and always fish the peak area predicted by the regression.
+
+
+All runs are simulations of the single-species "baseline" fishery described in the ESM of @Bailey2018 (see also Appendix B).  
+We run the model 10,000 times in total, 1000 times for each heuristic.
+We also randomize in each simulation three biological parameters: (i) carrying capacity of the each cell map, (ii) diffusion speed of fish, (iii) the Malthusian growth parameter of the stock.
+
+We train a multi-logit classifier on the simulation outputs as shown in section \@ref(patternrecognition):
+$$ 
+\text{Pr}(\text{Heuristic }i) = \frac{e^{b_i' S}}{1+\sum_j e^{b_j' S}} (\#eq:multiclassifier)
+$$
+where $b_1,\dots,b_{10}$ are vectors of elastic net coefficients.  
+
+We build the testing data-set by running the model 10,000 more times.
+We compare the quality of model selection against selection by weighted prediction error.  
+First, in Figure \@ref(fig:easyclassification) the prediction error is computed by re-running simulations with the correct random biological parameters. In spite of having a knowledge advantage over the classifier, selection by prediction error performs worse.
+In Figure \@ref(fig:abmerrorcomparison)  we do not assume to know the random biological parameters. Prediction error (which now tries to minimize the distance between simulations which differ in both heuristics and biological parameters) performs much worse.
+
+<!-- NOTE: put algorithms paper in arvix if you need to submit this -->
+
+
+
+```{r abm_setup2}
+
+
+# when we have them, this is the universe of all columns from the logit
+full_columns<-c("1:(intercept)","2:(intercept)",
+                "3:(intercept)","4:(intercept)",
+                "5:(intercept)","6:(intercept)",
+                "7:(intercept)","8:(intercept)",
+                "grid_x","grid_y","port_distance",
+                "habit_continuous",
+                "simulated_profits")
+
+minimal_columns<-c(
+  "habit_continuous",
+  "port_distance")
+
+
+types<-cols(`0` = col_double(), `2` = col_double(),
+            `1` = col_double(), `3` = col_double(), 
+            `4` = col_double(), `5` = col_double(), 
+            `6` = col_double(), `7` = col_double(), 
+            `8` = col_double())
+
+
+hist_columns<-c("0","1","2","3",
+                "4","5","6","7",
+                "8")
+hist_columns_renamed<-c("h0","h1","h2","h3",
+                        "h4","h5","h6","h7",
+                        "h8")
+aggregate_columns<-c("landings","effort","distance","trips",
+                     "hours")
+full_additional_columns<-c(hist_columns_renamed,
+                           "r2",aggregate_columns)
+
+## read join is a utility to read and merge multiple runs from multiple scenarios
+read_join_simple<-function(logit_file,
+                           histogram_file,
+                           aggregate_file)
+{
+  chaser_short_hist<-read_csv(histogram_file,
+                              col_types = types)
+  
+  chaser<-read_csv(logit_file)
+  joined<-
+    inner_join(chaser,chaser_short_hist,by=c("run","target_strategy","current_strategy" ,"isTargetRun","scenario"))
+  
+  aggregate<-read_csv(aggregate_file)
+  
+  failures<-anti_join(aggregate,joined)
+  if(failures %>% nrow() > 0)
+  {
+    warning("Some aggregate runs do not exist in the logit/histogram file")
+    warning(print_and_capture(failures))
+  }
+  failures<-anti_join(joined,aggregate)
+  if(failures %>% nrow() > 0)
+  {
+    warning("Some  runs exist in the logit/histogram file but not in the aggregate")
+    warning(print_and_capture(failures))
+  }
+  
+  
+  joined<-inner_join(joined,aggregate,by=c("run","target_strategy","current_strategy","isTargetRun","scenario"))
+  
+  
+  setnames(joined,old=hist_columns,new=hist_columns_renamed)
+  
+  return(joined)
+  
+}
+
+
+# palettes in order
+
+error_types<-c("out-sample","aggregates","logit","histograms","sum","in-sample")
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+error_colors<-cbbPalette[1:length(error_types)]
+names(error_colors)<-error_types
+
+fill_scale<-scale_fill_manual(name="Error Type",
+                              values = error_colors)
+```
+
+```{r read-abm-data2}
+short_directory<-"./abm/training/"
+validation_directory<-"./abm/validation/"
+
+test<-
+  bind_rows(
+    read_join_simple(
+      paste(validation_directory,"baseline/baseline_minimal.csv",sep=""),
+      paste(validation_directory,"baseline/baseline_histograms.csv",sep=""),
+      paste(validation_directory,"baseline/baseline_aggregates.csv",sep="")),
+    # There are more scenarios, the results are similar. But it's a pain to 
+    #explain them all without making references to not published material
+    # read_join_simple(
+    #   paste(validation_directory,"chaser/chaser_minimal.csv",sep=""),
+    #   paste(validation_directory,"chaser/chaser_histograms.csv",sep=""),
+    #   paste(validation_directory,"chaser/chaser_aggregates.csv",sep="")),
+    # read_join_simple(
+    #   paste(validation_directory,"deriso/deriso_minimal.csv",sep=""),
+    #   paste(validation_directory,"deriso/deriso_histograms.csv",sep=""),
+    #   paste(validation_directory,"deriso/deriso_aggregates.csv",sep=""))
+  )
+
+training<-
+  bind_rows(
+    read_join_simple(
+      paste(short_directory,"baseline/baseline_minimal.csv",sep=""),
+      paste(short_directory,"baseline/baseline_histograms.csv",sep=""),
+      paste(short_directory,"baseline/baseline_aggregates.csv",sep="")),
+    # read_join_simple(
+    #   paste(short_directory,"chaser/chaser_minimal.csv",sep=""),
+    #   paste(short_directory,"chaser/chaser_histograms.csv",sep=""),
+    #   paste(short_directory,"chaser/chaser_aggregates.csv",sep="")),
+    # 
+    # read_join_simple(
+    #   paste(short_directory,"deriso/deriso_minimal.csv",sep=""),
+    #   paste(short_directory,"deriso/deriso_histograms.csv",sep=""),
+    #   paste(short_directory,"deriso/deriso_aggregates.csv",sep=""))
+  )
+
+
+```
+
+
+```{r abm_setup3}
+default_error_type<-"simple"
+
+
+fit_glm_to_joined<-function(joined_errored,
+                            columns=NULL)
+{
+  
+  # print(joined_errored %>% pull(unique(scenario)))
+  joined_ready<-
+    joined_errored %>% ungroup() %>% 
+    select(current_strategy,columns) 
+  
+  joined_ready<-na.omit(joined_ready)
+  
+  # 10k observations, 15 parameters
+  # we are really in the meso-area where non-parametrics work
+  # let's just go at it
+  #  model<-cv.glmnet(current_strategy~.,data=joined_ready,family="multinomial")
+  model<-randomForest(as.factor(current_strategy)~.,data=joined_ready)
+  
+  return(model)
+}
+
+# basically I expect to be given a full data set where some rows are for training and others are not
+# we then make a prediction on all the rows
+fit_and_predict<-function(data,training_variable,print_coef=FALSE,
+                          columns=NULL){
+  training_data<-data %>% filter_(paste(training_variable, "==", TRUE))
+  # print(paste("total data length ",nrow(data)))
+  fit<- fit_glm_to_joined(training_data,columns)
+  
+  #  print(paste("total training data length ",nrow(training_data)))
+  pred <- predict(fit,newdata=data,type="response",s = "lambda.min")
+  data %>% mutate(prediction=pred) 
+}
+
+
+
+
+
+synthetic<-
+  bind_rows(
+    training %>% mutate(training=TRUE),
+    test %>% mutate(training=FALSE)) %>%
+  group_by(scenario) %>% 
+  do(fit_and_predict(data=.,training_variable="training",
+                     columns=c(
+                       minimal_columns, 
+                       full_additional_columns
+                     )))
+
+insample_error<-
+  get_error_rates(
+    synthetic %>% filter(training==TRUE) %>% filter(isTargetRun) %>% 
+      mutate(current_strategy=prediction)
+    ,id="in-sample") 
+
+outsample_error<-
+  get_error_rates(
+    synthetic %>% filter(training==FALSE) %>% filter(isTargetRun)%>% 
+      mutate(current_strategy=prediction)
+    ,id="out-sample") 
+
+
+# outsample_error %>%
+#   group_by(scenario) %>%
+#   summarise(mean(success))
+
+
+# errors <- bind_rows(logit_errors,aggregate_errors,hist_errors,sum_errors,outsample_error,
+#                     insample_error)
+
+# ggplot(errors %>%
+#          group_by(scenario,id) %>% summarise(success=mean(success) )) +
+#   geom_col(aes(x=scenario,y=success,fill=id), position="dodge") +
+#   ylim(0,1) +
+#   fill_scale
+
+```
+
+
+
+
+```{r easyclassification, fig.cap="Comparison of success rate in correctly estimating which heuristics generated a given summary statistics $S$. The classifier success rate has solid borders. In this set of simulations model selection by minimum prediction error is advantaged by knowing the correct biological parameters while the classifier is a single global model trained over all combinations of biological parameters."}
+
+var_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               #minimal columns ought to 
+                               #be weighted by itself but doing so ruins
+                               # the weight when it's not error based
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             weight_type = "var"
+    ))
+),id="var")
+
+cov_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             weight_type = "cov"
+    ))
+),id="cov")
+
+
+coverr_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             weight_type = "error_cov"
+    ))
+),id="error_cov")
+
+varerr_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             weight_type = "error_var"
+    ))
+),id="error_var")
+
+
+unweighted_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             weight_type = "none"
+    ))
+),id="none")
+
+
+errors <- bind_rows(var_errors,cov_errors,coverr_errors,varerr_errors,unweighted_errors,outsample_error)
+
+
+
+ggplot(errors %>%
+         group_by(scenario,id) %>% summarise(success=mean(success)) %>% 
+         mutate(synthetic = id=="out-sample") %>%
+         mutate(id=factor(id,
+                          levels=c("none","var","cov","error_var","error_cov","out-sample")))) +
+  geom_col(aes(x=id,y=success,fill=id,col=synthetic,linetype=synthetic), position="dodge")+ ylim(0,1) +
+  scale_color_manual(values=c("white","black"),guide=FALSE) +
+  scale_linetype_manual(values=c(2,1),guide=FALSE) +
+    scale_fill_discrete(breaks=c("none","var","cov","error_var","error_cov","out-sample"),
+                      labels=list(TeX("$W=I$"),
+                                  TeX("$W=diag(\\Omega^{-1}(S))$"),
+                                  TeX("$W=\\Omega^{-1}(S)$"),
+                                  TeX("$W=diag(\\Omega^{-1}(|\\Delta_S|))$"),
+                                  TeX("$W=\\Omega^{-1}(|\\Delta_S|$"),  
+                                  "Classifier"
+                      ), name= "Method") +
+  scale_x_discrete(breaks=NULL) +
+  xlab("Model Selection Method") +
+  ylab("Success Rate") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_text(aes(x=id,y=success,label=scales::percent(success)),
+            position = position_dodge(0.9),
+    vjust = 5,col="black") +
+  ggtitle("Model selection with known biological parameters")
+```
+
+
+
+```{r abmerrorcomparison, fig.cap="Comparison of success rate in correctly estimating which heuristics generated a given summary statistics $S$. The classifier success rate has solid borders. In this set of simulations model selection by minimum prediction error has no additional knowledge about the biological parameters."}
+var_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               #minimal columns ought to 
+                               #be weighted by itself but doing so ruins
+                               # the weight when it's not error based
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             weight_type = "var",
+                             mispecified = TRUE,
+                             mispecified_run = 199
+    ))
+),id="var")
+
+cov_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             mispecified = TRUE,
+                             mispecified_run = 199,
+                             weight_type = "cov"
+    ))
+),id="cov")
+
+
+coverr_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             mispecified = TRUE,
+                             mispecified_run = 199,
+                             weight_type = "error_cov"
+    ))
+),id="error_cov")
+
+varerr_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             mispecified = TRUE,
+                             mispecified_run = 199,
+                             weight_type = "error_var"
+    ))
+),id="error_var")
+
+
+unweighted_errors<-get_error_rates(get_winners(
+  test%>% group_by(scenario) %>% 
+    do(compute_errors_joined(.,
+                             columns_unweighted= c(
+                               minimal_columns, 
+                               full_additional_columns
+                             ),
+                             error_type="simple",
+                             weight_type = "none",
+                             mispecified = TRUE,
+                             mispecified_run = 199
+    ))
+),id="none")
+
+
+errors <- bind_rows(var_errors,cov_errors,coverr_errors,varerr_errors,unweighted_errors,outsample_error)
+
+
+
+ggplot(errors %>%
+         group_by(scenario,id) %>% summarise(success=mean(success)) %>% 
+         mutate(synthetic = id=="out-sample") %>%
+         mutate(id=factor(id,
+                          levels=c("none","var","cov","error_var","error_cov","out-sample")))) +
+  geom_col(aes(x=id,y=success,fill=id,col=synthetic,linetype=synthetic), position="dodge")+ ylim(0,1) +
+  scale_color_manual(values=c("white","black"),guide=FALSE) +
+  scale_linetype_manual(values=c(2,1),guide=FALSE) +
+    scale_fill_discrete(breaks=c("none","var","cov","error_var","error_cov","out-sample"),
+                      labels=list(TeX("$W=I$"),
+                                  TeX("$W=diag(\\Omega^{-1}(S))$"),
+                                  TeX("$W=\\Omega^{-1}(S)$"),
+                                  TeX("$W=diag(\\Omega^{-1}(|\\Delta_S|))$"),
+                                  TeX("$W=\\Omega^{-1}(|\\Delta_S|$"),  
+                                  "Classifier"
+                      ), name= "Method") +
+  scale_x_discrete(breaks=c("none","var","cov","error_var","error_cov","out-sample"),
+                   labels=NULL) +
+  xlab("Model Selection Method") +
+  ylab("Success Rate") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_text(aes(x=id,y=success,label=scales::percent(success)),
+            position = position_dodge(0.9),
+    vjust = 5,col="black") +
+  ggtitle("Model selection with unknown biological parameters")
+```
+
+Model selection by prediction error is hard if we are not certain about all model inputs.
+However it is trivial to train a classifier by feeding it observations from different parameter configurations such that only the  summary statistics "robust" to such parameter noise are used for model selection.
+
+
+# Discussion {#concludes}
+
+
+## Advantages of a regression-based approach
+
+
+Regression are commonly-used and well-understood.
+We leverage that knowledge for parameter estimation.  
+By looking at out-of-sample prediction we can immediately diagnose parameter identification problems: the lower the accuracy, the weaker the identification [compare this to diagnosis of numerical minimization outputs as in @Canova2005] .
+Moreover, if the regression is linear, its coefficients show which summary statistic $S_i$ inform which model parameter $\theta_i$.
+
+
+A secondary advantage of building a statistical model is the ease with which  additional input uncertainty can be incorporated as shown in section \@ref(abmexample).
+If we are uncertain about an input and cannot estimate it directly (because of lack of data or under-identification), it is straightforward to simulate for multiple values of the input, train a statistical model and then check whether it is possible to estimate reliably the other parameters.
+In a simulated minimum distance setting we would have to commit to a specific guess of the uncertain input before running a minimization or minimize multiple times for each guess (without any assurance that the weighing matrix ought to be kept constant between guesses).
+
+
+
+## Weaknesses
+
+This method has two limitations.
+First, users cannot weight summary statistics by importance.
+As a consequence, the method cannot be directed to replicate a specific summary statistic.
+Imagine a financial model of the housing market which we may judge  primarily by its ability of matching real house prices.
+When estimating its parameters the regression may however ignore house prices entirely and focus on another seemingly minor summary statistic (say, total number of bathrooms).
+While that may be an interesting and useful way of parametrizing the model, it does not guarantee a good match with observed house prices.  
+Nevertheless, in this case one option would be to transition to a weighted regression and weigh more the observations whose generated summary statistic $S_i$ were close to the value of $S_i^*$ we are primarily interested in replicating. As such, the model would be forced to include component deemed important, even if not the most efficient in terms of explanatory power. 
+Comparing this fit with the unweighted one may also be instructive.
+
+The second limitation is that the each parameter is estimated separately.
+Because each parameter is given a separate regression, this method may underestimate  underlying connections (dependencies) between two or more parameters when such connections are not reflected in changes to summary statistics.
+This issue is mentioned in the ABC literature by @Beaumont2010 although it is also claimed that in practice it does not seem to be an issue.
+It may however be more appropriate to use a simultaneous system estimation routine[@Henningsen2007] or a multi-task learning algorithm[@Evgeniou2004].
+
+## Possible Extensions
+
+Our method contains a fundamental inefficiency: we build a global statistical model to use  only once when plugging in the real summary statistics $S^*$.
+Given that the real summary statistics $S^*$ are known in advance, a direct search ought to be more efficient.  
+Our method makes up for this by solving multiple problems at once as it implicitly selects summary statistics and weights them while estimating the model parameters.
+
+In machine learning, transduction substitutes regression when we are interested in a prediction for a known $S^*$ only, without the need to build a global statistical model[see Chapter 10 of @Cherkassky2007; @Beaumont2002 weights simulations depending on the distance to known $S^*$ in essentially the same approach].
+Switching to transduction would however remove the familiarity advantage of using regressions as well as the ease to test its predictive power with randomly generated summary statistics.
+
+Another avenue for improvement is to use non-linear, non-parametric regressions. 
+@Blum2010 used neural networks, for example.
+Non-parametrics are more flexible but they may be more computationally demanding and their final output harder to interpret.
+
+It may also be possible to use regressions as an intermediate step in a more traditional simulated minimum distance problem. We would still build a regression for each parameter but then using them as the distance function to minimize by standard numerical methods. 
+
+
+## Conclusion
+
+We presented here a general method to fit agent-based and simulation models. We perform indirect inference using prediction rather than minimization, and, by using regularized regressions, we avoid three major problems of estimation: selecting the most valuable of the summary statistics, defining the distance function, and achieving reliable numerical minimization. By substituting regression with classification we can further extend this approach to model selection. This approach is relatively easy to understand and apply, and at its core uses statistical tools already familiar to social scientists. The method scales well with the complexity of the underlying problem, and as such may find broad application.
+
+
+
+
+# Appendix A: RBC Model {-}
+
+## Consumer {-}
+
+\begin{align}
+&\max_{K^{\mathrm{s}}_{t}, C_{t}, L^{\mathrm{s}}_{t}, I_{t}
+} U_{t} = {\beta} {\mathrm{E}_{t}\left[U_{t+1}\right]} + \left(1 - \eta\right)^{-1} {\left({{C_{t}}^{\mu}} {\left(1 - L^{\mathrm{s}}_{t}\right)^{1 - \mu}}\right)^{1 - \eta}}\\
+& C_{t} + I_{t} = \pi_{t} + {K^{\mathrm{s}}_{t-1}} {r_{t}} + {L^{\mathrm{s}}_{t}} {W_{t}} \\
+& K^{\mathrm{s}}_{t} = I_{t} + {K^{\mathrm{s}}_{t-1}} \left(1 - \delta\right)
+\end{align}
+
+## Firm {-}
+
+\begin{align}
+&\max_{K^{\mathrm{d}}_{t}, L^{\mathrm{d}}_{t}, Y_{t}
+} \pi_{t} = Y_{t} - {L^{\mathrm{d}}_{t}} {W_{t}} - {r_{t}} {K^{\mathrm{d}}_{t}}\\
+& Y_{t} = {Z_{t}} {{K^{\mathrm{d}}_{t}}^{\alpha}} {{L^{\mathrm{d}}_{t}}^{1 - \alpha}} 
+\end{align}
+
+
+## Equilibrium {-}
+
+
+\begin{equation}
+K^{\mathrm{d}}_{t} = K^{\mathrm{s}}_{t-1} 
+\end{equation}
+\begin{equation}
+L^{\mathrm{d}}_{t} = L^{\mathrm{s}}_{t}
+\end{equation}
+\begin{equation}
+Z_{t} = e^{\epsilon^{\mathrm{Z}}_{t} + {\phi} {\log{Z_{t-1}}}}
+\end{equation}
+\begin{equation}
+-0.36Y_\mathrm{ss} + {r_\mathrm{ss}} {K^{\mathrm{s}}_\mathrm{ss}} = 0
+\end{equation}
+
+
+# Appendix B: Fishery Parameters {-}
+
+
+| Parameter       | Value          | Meaning                               |
+|-----------------|:--------------:|--------------------------------------:|
+| **Biology**         | Logistic       |                                       |
+| $K$             | $\sim U[1000,10000]$   | max units of fish per cell            |
+| $m$             | $\sim U[0,0.003]$         | fish speed                            |
+  | $r$       | $\sim U[.3,.8]$            | Malthusian growth parameter           |
+| **Fisher**      | Explore-Exploit-Imitate                |                                       |
+| rest hours      | 12             | rest at ports in hours                |
+| $\epsilon$      | 0.2            | exploration rate                      |
+| $\delta$        | $\sim U[1,10]$ | exploration area size                 |
+| fishers         | 100            | number of fishers                     |
+| friendships     | 2            | number of friends each fisher has                     |
+| max days at sea | 5              | time after which boats must come home |
+| **Map **            |                |                                       |
+| width           | 50             | map size horizontally                 |
+| height          | 50             | map size vertically                   |
+| port position   | 40,25          | location of port                      |
+| cell width      | 10           | width (and height) of each cell map   |
+| **Market**          |                |                                       |
+| market price    | 10             | $ per unit of fish sold               |
+| gas price       | 0.01           | $ per litre of gas                      |
+| **Gear**            |                |                                       |
+| catchability    | 0.01           | % biomass caught per tow hour         |
+| speed           | 5.0            | distance/h of boat                          |
+| hold size       | 100            | max units of fish storable in boat   |
+| litres per unit of distance   | 10             | litres consumed per distance travelled      |
+| litres per trawling hour   | 5             | litres consumed per hour trawled      |
+
+
+
+# References {-}
