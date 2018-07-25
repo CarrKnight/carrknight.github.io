@@ -2,7 +2,7 @@
 layout: default
 title:  "Kuliah Tamu"
 date:   2018-07-23 12:00:00
-excerpt: A guest lecture at the KKP in Indonesia
+excerpt: <p>A guest lecture at the KKP in Indonesia</p>
 categories: abm poseidon
 --- 
 
