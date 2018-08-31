@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>POSEIDON tutorial</title>
+  <meta name="description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+
+  <meta property="og:title" content="POSEIDON tutorial" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="POSEIDON tutorial" />
+  
+  <meta name="twitter:description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code" />
+  
+
+<meta name="author" content="Ernesto Carrella">
+
+
+<meta name="date" content="2018-08-31">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="getting-started.html">
+<link rel="next" href="changing-basic-parameters.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Tutorial for POSEIDON</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#installation"><i class="fa fa-check"></i><b>2.1</b> Installation</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#pre-requisites"><i class="fa fa-check"></i><b>2.1.1</b> Pre-requisites</a></li>
+<li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#downloading-poseidon"><i class="fa fa-check"></i><b>2.1.2</b> Downloading POSEIDON</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="getting-started.html"><a href="getting-started.html#starting-poseidon"><i class="fa fa-check"></i><b>2.2</b> Starting POSEIDON</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started.html"><a href="getting-started.html#the-scenario-selection-screen"><i class="fa fa-check"></i><b>2.3</b> The scenario selection screen</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="basic-model-operation.html"><a href="basic-model-operation.html"><i class="fa fa-check"></i><b>3</b> Basic Model Operation</a><ul>
+<li class="chapter" data-level="3.1" data-path="basic-model-operation.html"><a href="basic-model-operation.html#the-first-model-run"><i class="fa fa-check"></i><b>3.1</b> The first model run</a></li>
+<li class="chapter" data-level="3.2" data-path="basic-model-operation.html"><a href="basic-model-operation.html#poseidon-in-motion"><i class="fa fa-check"></i><b>3.2</b> POSEIDON in motion</a></li>
+<li class="chapter" data-level="3.3" data-path="basic-model-operation.html"><a href="basic-model-operation.html#tracking-and-inspecting-agents"><i class="fa fa-check"></i><b>3.3</b> Tracking and Inspecting Agents</a></li>
+<li class="chapter" data-level="3.4" data-path="basic-model-operation.html"><a href="basic-model-operation.html#aggregate-data"><i class="fa fa-check"></i><b>3.4</b> Aggregate Data</a></li>
+<li class="chapter" data-level="3.5" data-path="basic-model-operation.html"><a href="basic-model-operation.html#fishing-fronts"><i class="fa fa-check"></i><b>3.5</b> Fishing Fronts</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html"><i class="fa fa-check"></i><b>4</b> Changing Basic Parameters</a><ul>
+<li class="chapter" data-level="4.1" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html#types-of-parameters"><i class="fa fa-check"></i><b>4.1</b> Types of parameters</a></li>
+<li class="chapter" data-level="4.2" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html#larger-fishing-fronts"><i class="fa fa-check"></i><b>4.2</b> Larger fishing fronts</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="map.html"><a href="map.html"><i class="fa fa-check"></i><b>5</b> Change the base map</a><ul>
+<li class="chapter" data-level="5.1" data-path="map.html"><a href="map.html#load-a-realistic-map"><i class="fa fa-check"></i><b>5.1</b> Load a realistic map</a></li>
+<li class="chapter" data-level="5.2" data-path="map.html"><a href="map.html#download-other-maps"><i class="fa fa-check"></i><b>5.2</b> Download other maps</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="different-behaviours.html"><a href="different-behaviours.html"><i class="fa fa-check"></i><b>6</b> Different behaviours</a><ul>
+<li class="chapter" data-level="6.1" data-path="different-behaviours.html"><a href="different-behaviours.html#strategies"><i class="fa fa-check"></i><b>6.1</b> Strategies</a></li>
+<li class="chapter" data-level="6.2" data-path="different-behaviours.html"><a href="different-behaviours.html#change-destination-strategy"><i class="fa fa-check"></i><b>6.2</b> Change Destination Strategy</a></li>
+<li class="chapter" data-level="6.3" data-path="different-behaviours.html"><a href="different-behaviours.html#gravitational-search-algorithm"><i class="fa fa-check"></i><b>6.3</b> Gravitational Search Algorithm</a></li>
+<li class="chapter" data-level="6.4" data-path="different-behaviours.html"><a href="different-behaviours.html#heatmap-algorithm"><i class="fa fa-check"></i><b>6.4</b> Heatmap algorithm</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html"><i class="fa fa-check"></i><b>7</b> YAML Scearios and Batch Runs</a><ul>
+<li class="chapter" data-level="7.1" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html#yaml"><i class="fa fa-check"></i><b>7.1</b> YAML</a></li>
+<li class="chapter" data-level="7.2" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html#batch-runs"><i class="fa fa-check"></i><b>7.2</b> Batch Runs</a></li>
+<li class="chapter" data-level="7.3" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html#sample-batch-run"><i class="fa fa-check"></i><b>7.3</b> Sample Batch Run</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="policies.html"><a href="policies.html"><i class="fa fa-check"></i><b>8</b> Policies</a><ul>
+<li class="chapter" data-level="8.1" data-path="policies.html"><a href="policies.html#policy-in-poseidon"><i class="fa fa-check"></i><b>8.1</b> Policy in POSEIDON</a></li>
+<li class="chapter" data-level="8.2" data-path="policies.html"><a href="policies.html#example-setup"><i class="fa fa-check"></i><b>8.2</b> Example Setup</a></li>
+<li class="chapter" data-level="8.3" data-path="policies.html"><a href="policies.html#no-regulations"><i class="fa fa-check"></i><b>8.3</b> No Regulations</a></li>
+<li class="chapter" data-level="8.4" data-path="policies.html"><a href="policies.html#total-allowable-quota"><i class="fa fa-check"></i><b>8.4</b> Total Allowable Quota</a></li>
+<li class="chapter" data-level="8.5" data-path="policies.html"><a href="policies.html#individual-tradeable-quotas"><i class="fa fa-check"></i><b>8.5</b> Individual Tradeable Quotas</a></li>
+<li class="chapter" data-level="8.6" data-path="policies.html"><a href="policies.html#fines"><i class="fa fa-check"></i><b>8.6</b> Fines</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html"><i class="fa fa-check"></i><b>9</b> Changing policies within the simulation</a><ul>
+<li class="chapter" data-level="9.1" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#dynamic-changes"><i class="fa fa-check"></i><b>9.1</b> Dynamic changes</a></li>
+<li class="chapter" data-level="9.2" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#switch-to-quotas-2-years-in-the-simulation"><i class="fa fa-check"></i><b>9.2</b> Switch to quotas 2 years in the simulation</a></li>
+<li class="chapter" data-level="9.3" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#closed-season"><i class="fa fa-check"></i><b>9.3</b> Closed Season</a></li>
+<li class="chapter" data-level="9.4" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#draw-mpas-on-the-fly"><i class="fa fa-check"></i><b>9.4</b> Draw MPAs on the fly</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="applying-poseidon.html"><a href="applying-poseidon.html"><i class="fa fa-check"></i><b>10</b> Applying POSEIDON</a><ul>
+<li class="chapter" data-level="10.1" data-path="applying-poseidon.html"><a href="applying-poseidon.html#flexible-scenario"><i class="fa fa-check"></i><b>10.1</b> Flexible Scenario</a></li>
+<li class="chapter" data-level="10.2" data-path="applying-poseidon.html"><a href="applying-poseidon.html#how-to-use-data-in-poseidon"><i class="fa fa-check"></i><b>10.2</b> How to use data in POSEIDON</a></li>
+<li class="chapter" data-level="10.3" data-path="applying-poseidon.html"><a href="applying-poseidon.html#the-peter-snapper-fishery"><i class="fa fa-check"></i><b>10.3</b> The Peter Snapper Fishery</a></li>
+<li class="chapter" data-level="10.4" data-path="applying-poseidon.html"><a href="applying-poseidon.html#adding-boats-to-the-right-ports"><i class="fa fa-check"></i><b>10.4</b> Adding boats to the right ports</a></li>
+<li class="chapter" data-level="10.5" data-path="applying-poseidon.html"><a href="applying-poseidon.html#adding-knowledge-about-boat-operations"><i class="fa fa-check"></i><b>10.5</b> Adding knowledge about boat operations</a></li>
+<li class="chapter" data-level="10.6" data-path="applying-poseidon.html"><a href="applying-poseidon.html#the-simplest-possible-biology-input"><i class="fa fa-check"></i><b>10.6</b> The simplest possible biology input</a></li>
+<li class="chapter" data-level="10.7" data-path="applying-poseidon.html"><a href="applying-poseidon.html#calibrating-catchability"><i class="fa fa-check"></i><b>10.7</b> Calibrating Catchability</a></li>
+<li class="chapter" data-level="10.8" data-path="applying-poseidon.html"><a href="applying-poseidon.html#validating"><i class="fa fa-check"></i><b>10.8</b> Validating</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://link.springer.com/article/10.1007/s11625-018-0579-9" target="blank">Read about POSEIDON here</a></li>
+<li><a href="https://github.com/CarrKnight/POSEIDON" target="blank">Get POSEIDON here</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">POSEIDON tutorial</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="basic-model-operation" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Basic Model Operation</h1>
+<div id="the-first-model-run" class="section level2">
+<h2><span class="header-section-number">3.1</span> The first model run</h2>
+<p>Start POSEIDON by running on terminal:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ex">./gradlew</span> run</a></code></pre></div>
+<p>You will be greeted by the scenario selection window:<br />
+<img src="images/startup.png" /><!-- --></p>
+<p>Keep the default scenario settings and press the <code>OK</code> button. The scenario selection dialog will disappear and be replaced by the controller window (which you should be familiar with if you have ever done any other <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON modelling</a>)</p>
+<p><img src="images/controller.png" /><!-- --></p>
+<p>There are 3 buttons on the bottom left corner: play <img src="images/play.png" alt="play" />, <img src="images/pause.png" alt="pause" />, and <img src="images/stop.png" alt="stop" />. Pressing <code>stop</code> at any time will close the simulation and return to the scenario selection dialog. Pressing either <code>play</code> or <code>pause</code> will start the simulation. <code>play</code> will start the simulation and run it, while <code>pause</code> will start the simulation but wait for user input before doing anything else.</p>
+<p>Press <img src="images/pause.png" /> to start the simulation.</p>
+<p>When the simulation starts, a second window will open containing the bathymetry of the simulation. Green areas represent land, blue areas represent the sea (the darker, the higher the depth). On the top-right corner you can change the mode of the bathymetry to show other geographical information. In the default abstract scenario there is a single species of fish (Species 0) randomly dispersed. As shown below we can check where it is more prevalent on the bathymetry (the darker the areas the more fish is in that cell).</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/bathymetry.mp4" type="video/mp4">
+</video>
+</div>
+</div>
+<div id="poseidon-in-motion" class="section level2">
+<h2><span class="header-section-number">3.2</span> POSEIDON in motion</h2>
+<p>Press <img src="images/play.png" /> to run the simulation. Let’s run it for a couple of simulated years. The simulated time is written down at the bottom of the controller.</p>
+<p><img src="images/time-indicator.png" /><!-- --></p>
+<p>If you look at the bathymetry you can see something like this unfolding:</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/firstrun.mp4" type="video/mp4">
+</video>
+</div>
+<p>This the “fishing front” behaviour we described in the <a href="https://link.springer.com/content/pdf/10.1007%2Fs11625-018-0579-9.pdf">paper</a>.
+Basically fish is uniformly distributed but travel is expensive so agents quickly learn to fish near port for maximum profits. However these areas are consumed quickly and fishers fan out away from the port as time goes by.</p>
+<p>You can get investigate the effect by looking at the biomass layer to see that areas close to port are indeed depleted:</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/firstrun_ending.mp4" type="video/mp4">
+</video>
+</div>
+</div>
+<div id="tracking-and-inspecting-agents" class="section level2">
+<h2><span class="header-section-number">3.3</span> Tracking and Inspecting Agents</h2>
+<p>If we want to track a particular boat over time we can single click it in the bathymetry simulation and we will be able to see its path as the simulation progresses.<br />
+Press <img src="images/pause.png" alt="pause" />, single click on a boat and then press <img src="images/play.png" alt="play" /> again to see its motion. Single click on an empty cell will turn off the tracking.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/tracking.mp4" type="video/mp4">
+</video>
+</div>
+<p>We can also look at the variables of each agent to understand their behaviour. If we double click on a boat we can use the inspector tab to check its variables and understand its behaviour. These variables will update as the simulation continues.<br />
+Press <img src="images/pause.png" alt="pause" />, double click on a boat and then look for its name in the <code>Inspectors</code> tab of the controller (it will say some variation of “Fisher X”). You will be able to look at all its variables (in alphabetical order) underneath.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/inspecting.mp4" type="video/mp4">
+</video>
+</div>
+<p>A particularly important set of variables are <code>Daily Data</code> and <code>Yearly Data</code>. These are the data collected by the individual fisher over time both for decision making and for us to monitor. Its variables are shown as buttons and clicking on any of them will open a time series describing its progression.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/dailydata.mp4" type="video/mp4">
+</video>
+</div>
+<p>Running the model while inspecting the variables of many agents is computationally expensive. When you are done observing, press <code>Empty List</code> to speed up POSEIDON.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/emptylist.mp4" type="video/mp4">
+</video>
+</div>
+</div>
+<div id="aggregate-data" class="section level2">
+<h2><span class="header-section-number">3.4</span> Aggregate Data</h2>
+<p>As we have seen, agents hold some data objects we can observe in the form of time series. The model itself is also collecting data on the whole fishery. These can be accessed in the <code>Aggregate Data</code> section of the controller.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/aggregate_data.mp4" type="video/mp4">
+</video>
+</div>
+<p>You may save the data to file by pressing <code>to csv</code> just next to the data button or you can save the time series image directly by right clicking on its picture and saving to PNG.</p>
+</div>
+<div id="fishing-fronts" class="section level2">
+<h2><span class="header-section-number">3.5</span> Fishing Fronts</h2>
+<p>Run the model for about 10 years.</p>
+<p>Look at the <code>Average Distance From Port</code> daily aggregate data. It will clearly show (after the initial noise due to random starting conditions) a clear trend of fishing further and further out.<br />
+Similarly, look at <code>Average Last Trip Hourly Profits</code>. You will see that the profitability of fishing decreasing steadily the first year and settling into a permanent low.<br />
+However if you look at <code>Biomass Species 0</code> you will see that the amount of fish in the sea has actually increased over the years.</p>
+<p>A quick glance at the bathymetry will reveal the problem. Areas far from port are brimming with fish, areas near port are depleted. While <code>Average Hours Out</code> is steady through the years, <code>Effort</code> (which in POSEIDON refers to actual hours fishing) drops by year 2. That is, fishers spend a lot more time travelling back and forth instead of fishing.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/front.mp4" type="video/mp4">
+</video>
+</div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="getting-started.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="changing-basic-parameters.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": ["tutorial.pdf", "tutorial.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
