@@ -25,7 +25,7 @@
 <meta name="author" content="Ernesto Carrella">
 
 
-<meta name="date" content="2018-08-31">
+<meta name="date" content="2018-09-03">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -33,7 +33,7 @@
   
   
 <link rel="prev" href="changing-policies-within-the-simulation.html">
-<link rel="next" href="references.html">
+<link rel="next" href="references-1.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -159,10 +159,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.3" data-path="different-behaviours.html"><a href="different-behaviours.html#gravitational-search-algorithm"><i class="fa fa-check"></i><b>6.3</b> Gravitational Search Algorithm</a></li>
 <li class="chapter" data-level="6.4" data-path="different-behaviours.html"><a href="different-behaviours.html#heatmap-algorithm"><i class="fa fa-check"></i><b>6.4</b> Heatmap algorithm</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html"><i class="fa fa-check"></i><b>7</b> YAML Scearios and Batch Runs</a><ul>
-<li class="chapter" data-level="7.1" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html#yaml"><i class="fa fa-check"></i><b>7.1</b> YAML</a></li>
-<li class="chapter" data-level="7.2" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html#batch-runs"><i class="fa fa-check"></i><b>7.2</b> Batch Runs</a></li>
-<li class="chapter" data-level="7.3" data-path="yaml-scearios-and-batch-runs.html"><a href="yaml-scearios-and-batch-runs.html#sample-batch-run"><i class="fa fa-check"></i><b>7.3</b> Sample Batch Run</a></li>
+<li class="chapter" data-level="7" data-path="batch.html"><a href="batch.html"><i class="fa fa-check"></i><b>7</b> YAML Scearios and Batch Runs</a><ul>
+<li class="chapter" data-level="7.1" data-path="batch.html"><a href="batch.html#yaml"><i class="fa fa-check"></i><b>7.1</b> YAML</a></li>
+<li class="chapter" data-level="7.2" data-path="batch.html"><a href="batch.html#batch-runs"><i class="fa fa-check"></i><b>7.2</b> Batch Runs</a></li>
+<li class="chapter" data-level="7.3" data-path="batch.html"><a href="batch.html#sample-batch-run"><i class="fa fa-check"></i><b>7.3</b> Sample Batch Run</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="policies.html"><a href="policies.html"><i class="fa fa-check"></i><b>8</b> Policies</a><ul>
 <li class="chapter" data-level="8.1" data-path="policies.html"><a href="policies.html#policy-in-poseidon"><i class="fa fa-check"></i><b>8.1</b> Policy in POSEIDON</a></li>
@@ -186,9 +186,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="10.5" data-path="applying-poseidon.html"><a href="applying-poseidon.html#adding-knowledge-about-boat-operations"><i class="fa fa-check"></i><b>10.5</b> Adding knowledge about boat operations</a></li>
 <li class="chapter" data-level="10.6" data-path="applying-poseidon.html"><a href="applying-poseidon.html#the-simplest-possible-biology-input"><i class="fa fa-check"></i><b>10.6</b> The simplest possible biology input</a></li>
 <li class="chapter" data-level="10.7" data-path="applying-poseidon.html"><a href="applying-poseidon.html#calibrating-catchability"><i class="fa fa-check"></i><b>10.7</b> Calibrating Catchability</a></li>
-<li class="chapter" data-level="10.8" data-path="applying-poseidon.html"><a href="applying-poseidon.html#validating"><i class="fa fa-check"></i><b>10.8</b> Validating</a></li>
+<li class="chapter" data-level="10.8" data-path="applying-poseidon.html"><a href="applying-poseidon.html#validation"><i class="fa fa-check"></i><b>10.8</b> Validation</a></li>
+<li class="chapter" data-level="10.9" data-path="applying-poseidon.html"><a href="applying-poseidon.html#references"><i class="fa fa-check"></i><b>10.9</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="chapter" data-level="" data-path="references-1.html"><a href="references-1.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://link.springer.com/article/10.1007/s11625-018-0579-9" target="blank">Read about POSEIDON here</a></li>
 <li><a href="https://github.com/CarrKnight/POSEIDON" target="blank">Get POSEIDON here</a></li>
@@ -382,7 +383,7 @@ At its simplest POSEIDON need to have some knowledge about the following:</p>
 <div id="the-peter-snapper-fishery" class="section level2">
 <h2><span class="header-section-number">10.3</span> The Peter Snapper Fishery</h2>
 <p>Let’s assume we want to study a basic made-up fishery: the Indonesian Petern Snapper fishery.
-I would classify this as a medium-data fishery, since we have a decent knowledge of its human side while knowing basically nothing biologically <span class="citation">(after all, 80% of the catch comes from unassessed fisheries according to <span class="citeproc-not-found" data-reference-id="Costello2012"><strong>???</strong></span>)</span>.
+I would classify this as a medium-data fishery, since we have a decent knowledge of its human side while knowing basically nothing biologically <span class="citation">(after all, 80% of the catch comes from unassessed fisheries according to Costello et al. <a href="#ref-Costello2012">2012</a>)</span>.
 Let’s start with some very basic knowledge:</p>
 <ul>
 <li>The fishery is located around Bali, say between lat-long <span class="math inline">\((114.5,-6.9)\)</span> and (127.6, -12.85)</li>
@@ -704,7 +705,7 @@ Finally, let’s place fishers in the right port:</p>
 </ul>
 <p>Let’s also assume we manage to back out (by formula, by asking the expert or by sheer guess) some logistics about the fishery:</p>
 <ul>
-<li>Boats consume about 3<span class="math inline">\(\frac {l}{\text{km})\)</span> of diesel when cruising</li>
+<li>Boats consume about 3<span class="math inline">\(\frac {l}{\text{km}}\)</span> of diesel when cruising</li>
 <li>Each hour spent fishing consumes 70l of diesel (keeping boat steady and so on)</li>
 </ul>
 <p>We can add all these informations in. Start with the boat information in the <code>fisherDefinitions</code></p>
@@ -727,8 +728,8 @@ Finally, let’s place fishers in the right port:</p>
 <div id="the-simplest-possible-biology-input" class="section level2">
 <h2><span class="header-section-number">10.6</span> The simplest possible biology input</h2>
 <p>Trevor A. Branch lists 15 “fisheries controversies” on <a href="https://sites.google.com/a/uw.edu/most-cited-fisheries/controversies">his website</a>. Number 2 is <a href="https://sites.google.com/a/uw.edu/most-cited-fisheries/controversies/status-from-catches">Can we use catch data alone to make inferences about fishery stock status?</a>.
-This is in contrast to the standard way of assessing stocks which requiers the time series of both landings and effort, as in chapter 11 of <span class="citation">(<span class="citeproc-not-found" data-reference-id="Haddon2011"><strong>???</strong></span>)</span>.</p>
-<p>The classic technique for those brave enough, like us for the Peter Snapper fishery, to do stock assessment with landings alone is by using the <em>catch-MSY</em> method <span class="citation">(<span class="citeproc-not-found" data-reference-id="Martell2013a"><strong>???</strong></span>)</span>.<br />
+This is in contrast to the standard way of assessing stocks which requiers the time series of both landings and effort, as in chapter 11 of <span class="citation">Haddon (<a href="#ref-Haddon2011">2011</a>)</span>.</p>
+<p>The classic technique for those brave enough, like us for the Peter Snapper fishery, to do stock assessment with landings alone is by using the <em>catch-MSY</em> method <span class="citation">(Martell and Froese <a href="#ref-Martell2013a">2013</a>)</span>.<br />
 The basic idea is that if you have some landings and some prior on what the stock looks like now, there are only a few combinations of <span class="math inline">\(K\)</span> (carrying capacity) and <span class="math inline">\(r\)</span> (malthusian growth) that qualify.<br />
 Let’s try our best with what we have (がんばれ).</p>
 <p>Imagine having decent landing data (in kg) for the past 10 years.</p>
@@ -749,26 +750,389 @@ Let’s try our best with what we have (がんばれ).</p>
 <p>We can go lookup on <a href="https://www.fishbase.de/">FishBase</a> the properties of the Peter Snapper (except of course that it’s an imaginary fish). Let’s just pretend it claims the Peter Snapper to be of <code>Low</code> resilience (like, say, the <a href="https://www.fishbase.de/Summary/SpeciesSummary.php?ID=1385&amp;AT=Flame+Snapper">flame snapper</a>). This is useful because it means we can probably bound the malthusian growth parameter <span class="math inline">\(r \in (.2,.5)\)</span>
 While we are on FishBase we can also take a look at the depth range of the fish. Let’s say it gives us a range between 30 and 800 meters.</p>
 <p>To use catch-MSY we need some bounds on the current and initial (10 years ago) depletion rate. Let’s say 10 years ago we guess the biomass was at 70-80% of <span class="math inline">\(K\)</span> as the fishery was still young. Given the big drop in landings we assume the biomass remaining somewhere between 5-25% of <span class="math inline">\(K\)</span>.<br />
-These are all the inputs needed for catch-MSY. There are many implementation of the method but I like the original code that came with the paper the most.<br />
+These are all the inputs we need for catch-MSY. There are many R libraries implementing the method but I like the original code that came with the paper the most.<br />
 It looks something like this:</p>
 <p>and when run it gives us a guessed <span class="math inline">\(K\)</span> and <span class="math inline">\(r\)</span>:</p>
 <pre><code>geom. mean r = 0.372 
 geom. mean k = 110749315 </code></pre>
-<p><strong>to be finished</strong></p>
+<p>Which we can put in the model. We add <span class="math inline">\(k\)</span> as carrying capacity, <span class="math inline">\(r\)</span> as steepness and depth ranges in the initial capacity allocation (which defines which areas are livable, more precisely: it defines how carrying capacity is to be distributed geographically).<br />
+The <code>initialBiomassAllocator</code> object contains our current biomass ratio guess: <span class="math inline">\(\frac{B_t}{K}\)</span>. We argued before that number is <span class="math inline">\(\frac{B_t}{K} \in (.2,.05)\)</span> now and $ (.8,.7)$ ten years ago.<br />
+We will start with the 10 year old guess which will be helpful for calibration later.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb29-1" data-line-number="1">  <span class="fu">biologyInitializer:</span></a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">    <span class="fu">Single Species Biomass Normalized:</span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">      <span class="fu">biomassSuppliedPerCell:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">      <span class="fu">carryingCapacity:</span><span class="at"> </span><span class="st">&#39;110749315&#39;</span></a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">      <span class="fu">differentialPercentageToMove:</span><span class="at"> </span><span class="st">&#39;0.001&#39;</span></a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">      <span class="fu">grower:</span></a>
+<a class="sourceLine" id="cb29-7" data-line-number="7">        <span class="fu">Common Logistic Grower:</span></a>
+<a class="sourceLine" id="cb29-8" data-line-number="8">          <span class="fu">steepness:</span><span class="at"> </span><span class="st">&#39;0.372&#39;</span></a>
+<a class="sourceLine" id="cb29-9" data-line-number="9">      <span class="fu">initialBiomassAllocator:</span></a>
+<a class="sourceLine" id="cb29-10" data-line-number="10">        <span class="fu">Random Allocator:</span></a>
+<a class="sourceLine" id="cb29-11" data-line-number="11">          <span class="fu">maximum:</span><span class="at"> </span><span class="st">&#39;.8&#39;</span></a>
+<a class="sourceLine" id="cb29-12" data-line-number="12">          <span class="fu">minimum:</span><span class="at"> </span><span class="st">&#39;.7&#39;</span></a>
+<a class="sourceLine" id="cb29-13" data-line-number="13">      <span class="fu">initialCapacityAllocator:</span></a>
+<a class="sourceLine" id="cb29-14" data-line-number="14">        <span class="fu">Depth Allocator:</span></a>
+<a class="sourceLine" id="cb29-15" data-line-number="15">          <span class="fu">delegate:</span></a>
+<a class="sourceLine" id="cb29-16" data-line-number="16">            <span class="fu">Equal Allocation:</span></a>
+<a class="sourceLine" id="cb29-17" data-line-number="17">              <span class="fu">constantValue:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb29-18" data-line-number="18">          <span class="fu">maxDepth:</span><span class="at"> </span><span class="st">&#39;800.0&#39;</span></a>
+<a class="sourceLine" id="cb29-19" data-line-number="19">          <span class="fu">minDepth:</span><span class="at"> </span><span class="st">&#39;30.0&#39;</span></a>
+<a class="sourceLine" id="cb29-20" data-line-number="20">      <span class="fu">percentageLimitOnDailyMovement:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb29-21" data-line-number="21">      <span class="fu">speciesName:</span><span class="at"> Peter Snapper</span></a>
+<a class="sourceLine" id="cb29-22" data-line-number="22">      <span class="fu">unfishable:</span><span class="at"> false</span></a></code></pre></div>
+<p>Here’s how the input file looks like now:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="fu">Flexible:</span></a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">  <span class="fu">biologyInitializer:</span></a>
+<a class="sourceLine" id="cb30-3" data-line-number="3">    <span class="fu">Single Species Biomass Normalized:</span></a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">      <span class="fu">biomassSuppliedPerCell:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-5" data-line-number="5">      <span class="fu">carryingCapacity:</span><span class="at"> </span><span class="st">&#39;110749315&#39;</span></a>
+<a class="sourceLine" id="cb30-6" data-line-number="6">      <span class="fu">differentialPercentageToMove:</span><span class="at"> </span><span class="st">&#39;0.001&#39;</span></a>
+<a class="sourceLine" id="cb30-7" data-line-number="7">      <span class="fu">grower:</span></a>
+<a class="sourceLine" id="cb30-8" data-line-number="8">        <span class="fu">Common Logistic Grower:</span></a>
+<a class="sourceLine" id="cb30-9" data-line-number="9">          <span class="fu">steepness:</span><span class="at"> </span><span class="st">&#39;0.372&#39;</span></a>
+<a class="sourceLine" id="cb30-10" data-line-number="10">      <span class="fu">initialBiomassAllocator:</span></a>
+<a class="sourceLine" id="cb30-11" data-line-number="11">        <span class="fu">Random Allocator:</span></a>
+<a class="sourceLine" id="cb30-12" data-line-number="12">          <span class="fu">maximum:</span><span class="at"> </span><span class="st">&#39;.8&#39;</span></a>
+<a class="sourceLine" id="cb30-13" data-line-number="13">          <span class="fu">minimum:</span><span class="at"> </span><span class="st">&#39;.7&#39;</span></a>
+<a class="sourceLine" id="cb30-14" data-line-number="14">      <span class="fu">initialCapacityAllocator:</span></a>
+<a class="sourceLine" id="cb30-15" data-line-number="15">        <span class="fu">Depth Allocator:</span></a>
+<a class="sourceLine" id="cb30-16" data-line-number="16">          <span class="fu">delegate:</span></a>
+<a class="sourceLine" id="cb30-17" data-line-number="17">            <span class="fu">Equal Allocation:</span></a>
+<a class="sourceLine" id="cb30-18" data-line-number="18">              <span class="fu">constantValue:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb30-19" data-line-number="19">          <span class="fu">maxDepth:</span><span class="at"> </span><span class="st">&#39;800.0&#39;</span></a>
+<a class="sourceLine" id="cb30-20" data-line-number="20">          <span class="fu">minDepth:</span><span class="at"> </span><span class="st">&#39;30.0&#39;</span></a>
+<a class="sourceLine" id="cb30-21" data-line-number="21">      <span class="fu">percentageLimitOnDailyMovement:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb30-22" data-line-number="22">      <span class="fu">speciesName:</span><span class="at"> Peter Snapper</span></a>
+<a class="sourceLine" id="cb30-23" data-line-number="23">      <span class="fu">unfishable:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-24" data-line-number="24">  <span class="fu">cheaters:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-25" data-line-number="25">  <span class="fu">fisherDefinitions:</span></a>
+<a class="sourceLine" id="cb30-26" data-line-number="26">  <span class="kw">-</span> <span class="fu">departingStrategy:</span></a>
+<a class="sourceLine" id="cb30-27" data-line-number="27">      <span class="fu">Fixed Rest:</span></a>
+<a class="sourceLine" id="cb30-28" data-line-number="28">        <span class="fu">hoursBetweenEachDeparture:</span><span class="at"> </span><span class="st">&#39;12.0&#39;</span></a>
+<a class="sourceLine" id="cb30-29" data-line-number="29">    <span class="fu">destinationStrategy:</span></a>
+<a class="sourceLine" id="cb30-30" data-line-number="30">      <span class="fu">Imitator-Explorator:</span></a>
+<a class="sourceLine" id="cb30-31" data-line-number="31">        <span class="fu">alwaysCopyBest:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-32" data-line-number="32">        <span class="fu">automaticallyIgnoreAreasWhereFishNeverGrows:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-33" data-line-number="33">        <span class="fu">automaticallyIgnoreMPAs:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-34" data-line-number="34">        <span class="fu">backtracksOnBadExploration:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-35" data-line-number="35">        <span class="fu">dropInUtilityNeededForUnfriend:</span><span class="at"> </span><span class="st">&#39;-1.0&#39;</span></a>
+<a class="sourceLine" id="cb30-36" data-line-number="36">        <span class="fu">ignoreEdgeDirection:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-37" data-line-number="37">        <span class="fu">ignoreFailedTrips:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-38" data-line-number="38">        <span class="fu">maxInitialDistance:</span><span class="at"> -1.0</span></a>
+<a class="sourceLine" id="cb30-39" data-line-number="39">        <span class="fu">objectiveFunction:</span></a>
+<a class="sourceLine" id="cb30-40" data-line-number="40">          <span class="fu">Hourly Profit Objective:</span></a>
+<a class="sourceLine" id="cb30-41" data-line-number="41">            <span class="fu">opportunityCosts:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-42" data-line-number="42">        <span class="fu">probability:</span></a>
+<a class="sourceLine" id="cb30-43" data-line-number="43">          <span class="fu">Fixed Probability:</span></a>
+<a class="sourceLine" id="cb30-44" data-line-number="44">            <span class="fu">explorationProbability:</span><span class="at"> </span><span class="st">&#39;0.2&#39;</span></a>
+<a class="sourceLine" id="cb30-45" data-line-number="45">            <span class="fu">imitationProbability:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb30-46" data-line-number="46">        <span class="fu">stepSize:</span><span class="at"> uniform 1.0 10.0</span></a>
+<a class="sourceLine" id="cb30-47" data-line-number="47">    <span class="fu">discardingStrategy:</span><span class="at"> No Discarding</span></a>
+<a class="sourceLine" id="cb30-48" data-line-number="48">    <span class="fu">fishingStrategy:</span></a>
+<a class="sourceLine" id="cb30-49" data-line-number="49">      <span class="fu">Until Full With Day Limit:</span></a>
+<a class="sourceLine" id="cb30-50" data-line-number="50">        <span class="fu">daysAtSea:</span><span class="at"> </span><span class="st">&#39;10.0&#39;</span></a>
+<a class="sourceLine" id="cb30-51" data-line-number="51">    <span class="fu">fuelTankSize:</span><span class="at"> </span><span class="st">&#39;100000.0&#39;</span></a>
+<a class="sourceLine" id="cb30-52" data-line-number="52">    <span class="fu">gear:</span></a>
+<a class="sourceLine" id="cb30-53" data-line-number="53">      <span class="fu">Random Catchability:</span></a>
+<a class="sourceLine" id="cb30-54" data-line-number="54">        <span class="fu">gasPerHourFished:</span><span class="at"> </span><span class="st">&#39;70.0&#39;</span></a>
+<a class="sourceLine" id="cb30-55" data-line-number="55">        <span class="fu">meanCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb30-56" data-line-number="56">        <span class="fu">meanCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb30-57" data-line-number="57">        <span class="fu">standardDeviationCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb30-58" data-line-number="58">        <span class="fu">standardDeviationCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb30-59" data-line-number="59">    <span class="fu">gearStrategy:</span><span class="at"> Never Change Gear</span></a>
+<a class="sourceLine" id="cb30-60" data-line-number="60">    <span class="fu">holdSize:</span><span class="at"> </span><span class="st">&#39;15000.0&#39;</span></a>
+<a class="sourceLine" id="cb30-61" data-line-number="61">    <span class="fu">hourlyVariableCost:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb30-62" data-line-number="62">    <span class="fu">initialFishersPerPort:</span></a>
+<a class="sourceLine" id="cb30-63" data-line-number="63">      <span class="fu">Benoa :</span><span class="at"> 25</span></a>
+<a class="sourceLine" id="cb30-64" data-line-number="64">      <span class="fu">Kupang:</span><span class="at"> 50</span></a>
+<a class="sourceLine" id="cb30-65" data-line-number="65">    <span class="fu">literPerKilometer:</span><span class="at"> </span><span class="st">&#39;3.0&#39;</span></a>
+<a class="sourceLine" id="cb30-66" data-line-number="66">    <span class="fu">logbook:</span><span class="at"> No Logbook</span></a>
+<a class="sourceLine" id="cb30-67" data-line-number="67">    <span class="fu">regulation:</span><span class="at"> Anarchy</span></a>
+<a class="sourceLine" id="cb30-68" data-line-number="68">    <span class="fu">speedInKmh:</span><span class="at"> </span><span class="st">&#39;16.0&#39;</span></a>
+<a class="sourceLine" id="cb30-69" data-line-number="69">    <span class="fu">tags:</span><span class="at"> </span><span class="st">&#39;&#39;</span></a>
+<a class="sourceLine" id="cb30-70" data-line-number="70">    <span class="fu">usePredictors:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-71" data-line-number="71">    <span class="fu">weatherStrategy:</span><span class="at"> Ignore Weather</span></a>
+<a class="sourceLine" id="cb30-72" data-line-number="72">  <span class="fu">gasPricePerLiter:</span><span class="at"> </span><span class="st">&#39;10000&#39;</span></a>
+<a class="sourceLine" id="cb30-73" data-line-number="73">  <span class="fu">habitatInitializer:</span><span class="at"> All Sand</span></a>
+<a class="sourceLine" id="cb30-74" data-line-number="74">  <span class="fu">mapInitializer:</span></a>
+<a class="sourceLine" id="cb30-75" data-line-number="75">    <span class="fu">From File Map:</span></a>
+<a class="sourceLine" id="cb30-76" data-line-number="76">      <span class="fu">gridWidthInCell:</span><span class="at"> </span><span class="st">&#39;70.0&#39;</span></a>
+<a class="sourceLine" id="cb30-77" data-line-number="77">      <span class="fu">header:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-78" data-line-number="78">      <span class="fu">latLong:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-79" data-line-number="79">      <span class="fu">mapFile:</span><span class="at"> /home/carrknight/code/oxfish/inputs/indonesia/indonesia_latlong.csv</span></a>
+<a class="sourceLine" id="cb30-80" data-line-number="80">  <span class="fu">mapMakerDedicatedRandomSeed:</span><span class="at"> </span><span class="dt">null</span></a>
+<a class="sourceLine" id="cb30-81" data-line-number="81">  <span class="fu">market:</span></a>
+<a class="sourceLine" id="cb30-82" data-line-number="82">    <span class="fu">Fixed Price Market:</span></a>
+<a class="sourceLine" id="cb30-83" data-line-number="83">      <span class="fu">marketPrice:</span><span class="at"> </span><span class="st">&#39;40000.0&#39;</span></a>
+<a class="sourceLine" id="cb30-84" data-line-number="84">  <span class="fu">networkBuilder:</span></a>
+<a class="sourceLine" id="cb30-85" data-line-number="85">    <span class="fu">Equal Out Degree:</span></a>
+<a class="sourceLine" id="cb30-86" data-line-number="86">      <span class="fu">allowMutualFriendships:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-87" data-line-number="87">      <span class="fu">degree:</span><span class="at"> </span><span class="st">&#39;2.0&#39;</span></a>
+<a class="sourceLine" id="cb30-88" data-line-number="88">      <span class="fu">equalOutDegree:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb30-89" data-line-number="89">  <span class="fu">plugins:</span><span class="at"> </span><span class="kw">[</span></a>
+<a class="sourceLine" id="cb30-90" data-line-number="90">    <span class="kw">]</span></a>
+<a class="sourceLine" id="cb30-91" data-line-number="91">  <span class="fu">portInitializer:</span></a>
+<a class="sourceLine" id="cb30-92" data-line-number="92">    <span class="fu">List of Ports:</span></a>
+<a class="sourceLine" id="cb30-93" data-line-number="93">      <span class="fu">ports:</span></a>
+<a class="sourceLine" id="cb30-94" data-line-number="94">        <span class="fu">Benoa:</span><span class="at"> 115.238843,-8.799605</span></a>
+<a class="sourceLine" id="cb30-95" data-line-number="95">        <span class="fu">Kupang:</span><span class="at"> 123.586249,-10.148044</span></a>
+<a class="sourceLine" id="cb30-96" data-line-number="96">      <span class="fu">usingGridCoordinates:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-97" data-line-number="97">  <span class="fu">portSwitching:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb30-98" data-line-number="98">  <span class="fu">weatherInitializer:</span></a>
+<a class="sourceLine" id="cb30-99" data-line-number="99">    <span class="fu">Constant Weather:</span></a>
+<a class="sourceLine" id="cb30-100" data-line-number="100">      <span class="fu">temperature:</span><span class="at"> </span><span class="st">&#39;30.0&#39;</span></a>
+<a class="sourceLine" id="cb30-101" data-line-number="101">      <span class="fu">windOrientation:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb30-102" data-line-number="102">      <span class="fu">windSpeed:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a></code></pre></div>
 </div>
 <div id="calibrating-catchability" class="section level2">
 <h2><span class="header-section-number">10.7</span> Calibrating Catchability</h2>
-<p>coming soon!</p>
+<p>One key parameter for any fishery model is catchability: the percentage of fish available in an area caught by one hour of effort. You can’t get this from surveys and you can’t use stock assessment estimates (since they are usually not geographical or at least not at the level we care about).<br />
+Catchability needs to be calibrated.</p>
+<p>Calibration simply mean that we want to tune some parameters (catchability) to minimize the distance between model output and reality.
+In our case, the only data we have is 10 years of landings. We want to modify catchability (<span class="math inline">\(q\)</span>) until the landings in the model are as close as possible to the data.
+This is a minimization problem:
+<span class="math display">\[ q^* = \arg \min_q \sum^{10}_{t=1} \text{Landings}_t-\text{ModelLandings}_t \]</span></p>
+<p>Now, there are a million different minimization routines one can use and feel free to use any of them. Currently in POSEIDON I am experimenting with EVA which is in java and distributed together with POSEIDON. You can use it by calling (in linux/mac):</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="ex">./gradlew</span> optimizer</a></code></pre></div>
+<p>while in Windows:</p>
+<pre class="posh"><code>gradlew.bat optimizer</code></pre>
+<p>I will however immediately confess that most optimization so far in POSEIDON have happened through by coding them in Java rather than using the gui so the options here are quite limited.</p>
+<ol style="list-style-type: decimal">
+<li>We need to choose an optimization method. For simple non-linear problems I select NelderMeadSimplex and set its population size to 5 (which makes it faster but only good at local searches).</li>
+</ol>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/peter_snapper/calibration1.mp4" type="video/mp4">
+</video>
 </div>
-<div id="validating" class="section level2">
-<h2><span class="header-section-number">10.8</span> Validating</h2>
-<p>coming soon!</p>
-<script>
-  $(".toggle").click(function() {
-    $(this).toggleClass("open");
-  });
-</script>
+<ol start="2" style="list-style-type: decimal">
+<li>Eva is a multi-purpose optimization platform. We need to feed it a POSEIDON problem. Select in <code>Problem</code> the <code>SimpleProblemWrapper</code> and from there select <code>Simple Problem</code>. From there you can select (by looking for the “open file” icon) and look in the POSEIDON folder for <code>/eva/flexible.yaml</code><br />
 
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/peter_snapper/calibration2.mp4" type="video/mp4">
+</video>
+</div></li>
+<li>We need to:
+<ul>
+<li>point the scenario towards a <code>csv</code> file containing the landings observed, in <code>Landing Data</code></li>
+<li>set catchability bounds (keeping the default <span class="math inline">\(\in (0.00001,0.005)\)</span>)</li>
+<li>point to the scenario file we want to calibrate, in <code>Scenario File</code></li>
+<li>set up how many different kind of agents we need to calibrate (just 1 in our case), in <code>Populations</code></li>
+<li>define the name of the species, in <code>Species Name</code></li>
+<li>point to where to store all our runs and associated errors for debugging purposes, in <code>Summary File</code></li>
+</ul></li>
+</ol>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/peter_snapper/calibration3.mp4" type="video/mp4">
+</video>
+</div>
+<ol start="4" style="list-style-type: decimal">
+<li>Set up a few details before running the calibration
+<ul>
+<li>Collect best and solution at each time step in the <code>Statistics</code> tab</li>
+<li>In the <code>Problem</code>, <code>SimpleProblemWrapper</code> set up how many simulations to run in parallel if your computer can handle them</li>
+</ul></li>
+</ol>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/peter_snapper/calibration4.mp4" type="video/mp4">
+</video>
+</div>
+<ol start="5" style="list-style-type: decimal">
+<li>Finally run the calibration and wait</li>
+</ol>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/peter_snapper/calibration5.mp4" type="video/mp4">
+</video>
+</div>
+<p>Each calibration runs somewhat differently but I’d expect a result such as this:<br />
+<img src="videos/peter_snapper/calibration6.png" /><!-- --></p>
+<p>The <code>fitness</code> represents the distance between the two time series (about 10,000t off over 10 years). The <code>solution</code> in the log is the catchability value we are looking for. Eva scales it between -10 and 10. The catchability <span class="math inline">\(q\)</span> given Eva suggestion <span class="math inline">\(x\)</span> then is:
+<span class="math display">\[ q = \frac{(x+10)}{20} \times (0.005-0.00001)  \]</span>
+Since the solution quoted by Eva is −7.427 the catchability guessed is: <span class="math inline">\(0.000641964\)</span></p>
+<p>Finally we can add this number in the scenario:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb33-1" data-line-number="1">    <span class="fu">gear:</span></a>
+<a class="sourceLine" id="cb33-2" data-line-number="2">      <span class="fu">Random Catchability:</span></a>
+<a class="sourceLine" id="cb33-3" data-line-number="3">        <span class="fu">gasPerHourFished:</span><span class="at"> </span><span class="st">&#39;70.0&#39;</span></a>
+<a class="sourceLine" id="cb33-4" data-line-number="4">        <span class="fu">meanCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.000641964&#39;</span></a>
+<a class="sourceLine" id="cb33-5" data-line-number="5">        <span class="fu">meanCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb33-6" data-line-number="6">        <span class="fu">standardDeviationCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb33-7" data-line-number="7">        <span class="fu">standardDeviationCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a></code></pre></div>
+<p>Giving us the final scenario:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="fu">Flexible:</span></a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">  <span class="fu">biologyInitializer:</span></a>
+<a class="sourceLine" id="cb34-3" data-line-number="3">    <span class="fu">Single Species Biomass Normalized:</span></a>
+<a class="sourceLine" id="cb34-4" data-line-number="4">      <span class="fu">biomassSuppliedPerCell:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-5" data-line-number="5">      <span class="fu">carryingCapacity:</span><span class="at"> </span><span class="st">&#39;110749315&#39;</span></a>
+<a class="sourceLine" id="cb34-6" data-line-number="6">      <span class="fu">differentialPercentageToMove:</span><span class="at"> </span><span class="st">&#39;0.001&#39;</span></a>
+<a class="sourceLine" id="cb34-7" data-line-number="7">      <span class="fu">grower:</span></a>
+<a class="sourceLine" id="cb34-8" data-line-number="8">        <span class="fu">Common Logistic Grower:</span></a>
+<a class="sourceLine" id="cb34-9" data-line-number="9">          <span class="fu">steepness:</span><span class="at"> </span><span class="st">&#39;0.372&#39;</span></a>
+<a class="sourceLine" id="cb34-10" data-line-number="10">      <span class="fu">initialBiomassAllocator:</span></a>
+<a class="sourceLine" id="cb34-11" data-line-number="11">        <span class="fu">Random Allocator:</span></a>
+<a class="sourceLine" id="cb34-12" data-line-number="12">          <span class="fu">maximum:</span><span class="at"> </span><span class="st">&#39;.8&#39;</span></a>
+<a class="sourceLine" id="cb34-13" data-line-number="13">          <span class="fu">minimum:</span><span class="at"> </span><span class="st">&#39;.7&#39;</span></a>
+<a class="sourceLine" id="cb34-14" data-line-number="14">      <span class="fu">initialCapacityAllocator:</span></a>
+<a class="sourceLine" id="cb34-15" data-line-number="15">        <span class="fu">Depth Allocator:</span></a>
+<a class="sourceLine" id="cb34-16" data-line-number="16">          <span class="fu">delegate:</span></a>
+<a class="sourceLine" id="cb34-17" data-line-number="17">            <span class="fu">Equal Allocation:</span></a>
+<a class="sourceLine" id="cb34-18" data-line-number="18">              <span class="fu">constantValue:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb34-19" data-line-number="19">          <span class="fu">maxDepth:</span><span class="at"> </span><span class="st">&#39;800.0&#39;</span></a>
+<a class="sourceLine" id="cb34-20" data-line-number="20">          <span class="fu">minDepth:</span><span class="at"> </span><span class="st">&#39;30.0&#39;</span></a>
+<a class="sourceLine" id="cb34-21" data-line-number="21">      <span class="fu">percentageLimitOnDailyMovement:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb34-22" data-line-number="22">      <span class="fu">speciesName:</span><span class="at"> Peter Snapper</span></a>
+<a class="sourceLine" id="cb34-23" data-line-number="23">      <span class="fu">unfishable:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-24" data-line-number="24">  <span class="fu">cheaters:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-25" data-line-number="25">  <span class="fu">fisherDefinitions:</span></a>
+<a class="sourceLine" id="cb34-26" data-line-number="26">  <span class="kw">-</span> <span class="fu">departingStrategy:</span></a>
+<a class="sourceLine" id="cb34-27" data-line-number="27">      <span class="fu">Fixed Rest:</span></a>
+<a class="sourceLine" id="cb34-28" data-line-number="28">        <span class="fu">hoursBetweenEachDeparture:</span><span class="at"> </span><span class="st">&#39;12.0&#39;</span></a>
+<a class="sourceLine" id="cb34-29" data-line-number="29">    <span class="fu">destinationStrategy:</span></a>
+<a class="sourceLine" id="cb34-30" data-line-number="30">      <span class="fu">Imitator-Explorator:</span></a>
+<a class="sourceLine" id="cb34-31" data-line-number="31">        <span class="fu">alwaysCopyBest:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-32" data-line-number="32">        <span class="fu">automaticallyIgnoreAreasWhereFishNeverGrows:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-33" data-line-number="33">        <span class="fu">automaticallyIgnoreMPAs:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-34" data-line-number="34">        <span class="fu">backtracksOnBadExploration:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-35" data-line-number="35">        <span class="fu">dropInUtilityNeededForUnfriend:</span><span class="at"> </span><span class="st">&#39;-1.0&#39;</span></a>
+<a class="sourceLine" id="cb34-36" data-line-number="36">        <span class="fu">ignoreEdgeDirection:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-37" data-line-number="37">        <span class="fu">ignoreFailedTrips:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-38" data-line-number="38">        <span class="fu">maxInitialDistance:</span><span class="at"> -1.0</span></a>
+<a class="sourceLine" id="cb34-39" data-line-number="39">        <span class="fu">objectiveFunction:</span></a>
+<a class="sourceLine" id="cb34-40" data-line-number="40">          <span class="fu">Hourly Profit Objective:</span></a>
+<a class="sourceLine" id="cb34-41" data-line-number="41">            <span class="fu">opportunityCosts:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-42" data-line-number="42">        <span class="fu">probability:</span></a>
+<a class="sourceLine" id="cb34-43" data-line-number="43">          <span class="fu">Fixed Probability:</span></a>
+<a class="sourceLine" id="cb34-44" data-line-number="44">            <span class="fu">explorationProbability:</span><span class="at"> </span><span class="st">&#39;0.2&#39;</span></a>
+<a class="sourceLine" id="cb34-45" data-line-number="45">            <span class="fu">imitationProbability:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb34-46" data-line-number="46">        <span class="fu">stepSize:</span><span class="at"> uniform 1.0 10.0</span></a>
+<a class="sourceLine" id="cb34-47" data-line-number="47">    <span class="fu">discardingStrategy:</span><span class="at"> No Discarding</span></a>
+<a class="sourceLine" id="cb34-48" data-line-number="48">    <span class="fu">fishingStrategy:</span></a>
+<a class="sourceLine" id="cb34-49" data-line-number="49">      <span class="fu">Until Full With Day Limit:</span></a>
+<a class="sourceLine" id="cb34-50" data-line-number="50">        <span class="fu">daysAtSea:</span><span class="at"> </span><span class="st">&#39;10.0&#39;</span></a>
+<a class="sourceLine" id="cb34-51" data-line-number="51">    <span class="fu">fuelTankSize:</span><span class="at"> </span><span class="st">&#39;100000.0&#39;</span></a>
+<a class="sourceLine" id="cb34-52" data-line-number="52">    <span class="fu">gear:</span></a>
+<a class="sourceLine" id="cb34-53" data-line-number="53">      <span class="fu">Random Catchability:</span></a>
+<a class="sourceLine" id="cb34-54" data-line-number="54">        <span class="fu">gasPerHourFished:</span><span class="at"> </span><span class="st">&#39;70.0&#39;</span></a>
+<a class="sourceLine" id="cb34-55" data-line-number="55">        <span class="fu">meanCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.000641964&#39;</span></a>
+<a class="sourceLine" id="cb34-56" data-line-number="56">        <span class="fu">meanCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb34-57" data-line-number="57">        <span class="fu">standardDeviationCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb34-58" data-line-number="58">        <span class="fu">standardDeviationCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb34-59" data-line-number="59">    <span class="fu">gearStrategy:</span><span class="at"> Never Change Gear</span></a>
+<a class="sourceLine" id="cb34-60" data-line-number="60">    <span class="fu">holdSize:</span><span class="at"> </span><span class="st">&#39;15000.0&#39;</span></a>
+<a class="sourceLine" id="cb34-61" data-line-number="61">    <span class="fu">hourlyVariableCost:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb34-62" data-line-number="62">    <span class="fu">initialFishersPerPort:</span></a>
+<a class="sourceLine" id="cb34-63" data-line-number="63">      <span class="fu">Benoa :</span><span class="at"> 25</span></a>
+<a class="sourceLine" id="cb34-64" data-line-number="64">      <span class="fu">Kupang:</span><span class="at"> 50</span></a>
+<a class="sourceLine" id="cb34-65" data-line-number="65">    <span class="fu">literPerKilometer:</span><span class="at"> </span><span class="st">&#39;3.0&#39;</span></a>
+<a class="sourceLine" id="cb34-66" data-line-number="66">    <span class="fu">logbook:</span><span class="at"> No Logbook</span></a>
+<a class="sourceLine" id="cb34-67" data-line-number="67">    <span class="fu">regulation:</span><span class="at"> Anarchy</span></a>
+<a class="sourceLine" id="cb34-68" data-line-number="68">    <span class="fu">speedInKmh:</span><span class="at"> </span><span class="st">&#39;16.0&#39;</span></a>
+<a class="sourceLine" id="cb34-69" data-line-number="69">    <span class="fu">tags:</span><span class="at"> </span><span class="st">&#39;&#39;</span></a>
+<a class="sourceLine" id="cb34-70" data-line-number="70">    <span class="fu">usePredictors:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-71" data-line-number="71">    <span class="fu">weatherStrategy:</span><span class="at"> Ignore Weather</span></a>
+<a class="sourceLine" id="cb34-72" data-line-number="72">  <span class="fu">gasPricePerLiter:</span><span class="at"> </span><span class="st">&#39;10000&#39;</span></a>
+<a class="sourceLine" id="cb34-73" data-line-number="73">  <span class="fu">habitatInitializer:</span><span class="at"> All Sand</span></a>
+<a class="sourceLine" id="cb34-74" data-line-number="74">  <span class="fu">mapInitializer:</span></a>
+<a class="sourceLine" id="cb34-75" data-line-number="75">    <span class="fu">From File Map:</span></a>
+<a class="sourceLine" id="cb34-76" data-line-number="76">      <span class="fu">gridWidthInCell:</span><span class="at"> </span><span class="st">&#39;70.0&#39;</span></a>
+<a class="sourceLine" id="cb34-77" data-line-number="77">      <span class="fu">header:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-78" data-line-number="78">      <span class="fu">latLong:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-79" data-line-number="79">      <span class="fu">mapFile:</span><span class="at"> /home/carrknight/code/oxfish/inputs/indonesia/indonesia_latlong.csv</span></a>
+<a class="sourceLine" id="cb34-80" data-line-number="80">  <span class="fu">mapMakerDedicatedRandomSeed:</span><span class="at"> </span><span class="dt">null</span></a>
+<a class="sourceLine" id="cb34-81" data-line-number="81">  <span class="fu">market:</span></a>
+<a class="sourceLine" id="cb34-82" data-line-number="82">    <span class="fu">Fixed Price Market:</span></a>
+<a class="sourceLine" id="cb34-83" data-line-number="83">      <span class="fu">marketPrice:</span><span class="at"> </span><span class="st">&#39;40000.0&#39;</span></a>
+<a class="sourceLine" id="cb34-84" data-line-number="84">  <span class="fu">networkBuilder:</span></a>
+<a class="sourceLine" id="cb34-85" data-line-number="85">    <span class="fu">Equal Out Degree:</span></a>
+<a class="sourceLine" id="cb34-86" data-line-number="86">      <span class="fu">allowMutualFriendships:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-87" data-line-number="87">      <span class="fu">degree:</span><span class="at"> </span><span class="st">&#39;2.0&#39;</span></a>
+<a class="sourceLine" id="cb34-88" data-line-number="88">      <span class="fu">equalOutDegree:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb34-89" data-line-number="89">  <span class="fu">plugins:</span><span class="at"> </span><span class="kw">[</span></a>
+<a class="sourceLine" id="cb34-90" data-line-number="90">    <span class="kw">]</span></a>
+<a class="sourceLine" id="cb34-91" data-line-number="91">  <span class="fu">portInitializer:</span></a>
+<a class="sourceLine" id="cb34-92" data-line-number="92">    <span class="fu">List of Ports:</span></a>
+<a class="sourceLine" id="cb34-93" data-line-number="93">      <span class="fu">ports:</span></a>
+<a class="sourceLine" id="cb34-94" data-line-number="94">        <span class="fu">Benoa:</span><span class="at"> 115.238843,-8.799605</span></a>
+<a class="sourceLine" id="cb34-95" data-line-number="95">        <span class="fu">Kupang:</span><span class="at"> 123.586249,-10.148044</span></a>
+<a class="sourceLine" id="cb34-96" data-line-number="96">      <span class="fu">usingGridCoordinates:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-97" data-line-number="97">  <span class="fu">portSwitching:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb34-98" data-line-number="98">  <span class="fu">weatherInitializer:</span></a>
+<a class="sourceLine" id="cb34-99" data-line-number="99">    <span class="fu">Constant Weather:</span></a>
+<a class="sourceLine" id="cb34-100" data-line-number="100">      <span class="fu">temperature:</span><span class="at"> </span><span class="st">&#39;30.0&#39;</span></a>
+<a class="sourceLine" id="cb34-101" data-line-number="101">      <span class="fu">windOrientation:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb34-102" data-line-number="102">      <span class="fu">windSpeed:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a></code></pre></div>
+<p>We can look at our calibration now by running it in batch 100 times and plotting its landings. We saw how to run batches in chapter <a href="batch.html#batch">7</a>. This is just a straightforward application of it.</p>
+<p><img src="videos/peter_snapper/batch.png" /><!-- --></p>
+<p>And here’s how the model output (grey lines) compares to the “real world” (bold black line).
+It’s quite close in the later years but not so much very early on.</p>
+<p><img src="tutorial_files/figure-html/unnamed-chunk-23-1.png" width="1000" /></p>
+<p>I can now reveal that the “real” 10 years of landings were actually also coming from POSEIDON and we can check how far off the real values were from the “real” scenario:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb35-1" data-line-number="1">  <span class="fu">biologyInitializer:</span></a>
+<a class="sourceLine" id="cb35-2" data-line-number="2">    <span class="fu">Single Species Biomass Normalized:</span></a>
+<a class="sourceLine" id="cb35-3" data-line-number="3">      <span class="fu">biomassSuppliedPerCell:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb35-4" data-line-number="4">      <span class="fu">carryingCapacity:</span><span class="at"> </span><span class="st">&#39;1.25E8&#39;</span></a>
+<a class="sourceLine" id="cb35-5" data-line-number="5">      <span class="fu">differentialPercentageToMove:</span><span class="at"> </span><span class="st">&#39;0.001&#39;</span></a>
+<a class="sourceLine" id="cb35-6" data-line-number="6">      <span class="fu">grower:</span></a>
+<a class="sourceLine" id="cb35-7" data-line-number="7">        <span class="fu">Common Logistic Grower:</span></a>
+<a class="sourceLine" id="cb35-8" data-line-number="8">          <span class="fu">steepness:</span><span class="at"> </span><span class="st">&#39;0.33&#39;</span></a>
+<a class="sourceLine" id="cb35-9" data-line-number="9">      <span class="fu">initialBiomassAllocator:</span></a>
+<a class="sourceLine" id="cb35-10" data-line-number="10">        <span class="fu">Random Allocator:</span></a>
+<a class="sourceLine" id="cb35-11" data-line-number="11">          <span class="fu">maximum:</span><span class="at"> </span><span class="st">&#39;.8&#39;</span></a>
+<a class="sourceLine" id="cb35-12" data-line-number="12">          <span class="fu">minimum:</span><span class="at"> </span><span class="st">&#39;.7&#39;</span></a>
+<a class="sourceLine" id="cb35-13" data-line-number="13">      <span class="fu">initialCapacityAllocator:</span></a>
+<a class="sourceLine" id="cb35-14" data-line-number="14">        <span class="fu">Depth Allocator:</span></a>
+<a class="sourceLine" id="cb35-15" data-line-number="15">          <span class="fu">delegate:</span></a>
+<a class="sourceLine" id="cb35-16" data-line-number="16">            <span class="fu">Equal Allocation:</span></a>
+<a class="sourceLine" id="cb35-17" data-line-number="17">              <span class="fu">constantValue:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb35-18" data-line-number="18">          <span class="fu">maxDepth:</span><span class="at"> </span><span class="st">&#39;800.0&#39;</span></a>
+<a class="sourceLine" id="cb35-19" data-line-number="19">          <span class="fu">minDepth:</span><span class="at"> </span><span class="st">&#39;30.0&#39;</span></a>
+<a class="sourceLine" id="cb35-20" data-line-number="20">      <span class="fu">percentageLimitOnDailyMovement:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb35-21" data-line-number="21">      <span class="fu">speciesName:</span><span class="at"> Peter Snapper</span></a>
+<a class="sourceLine" id="cb35-22" data-line-number="22">      <span class="fu">unfishable:</span><span class="at"> false</span></a></code></pre></div>
+<pre><code>    gear:
+      Random Catchability:
+        gasPerHourFished: &#39;72.0&#39;
+        meanCatchabilityFirstSpecies: &#39;6.2E-4&#39;
+        meanCatchabilityOtherSpecies: &#39;0.01&#39;
+        standardDeviationCatchabilityFirstSpecies: &#39;0.0&#39;
+        standardDeviationCatchabilityOtherSpecies: &#39;0.0&#39;
+    gearStrategy: Never Change Gear
+    holdSize: &#39;15000.0&#39;
+    hourlyVariableCost: &#39;0.0&#39;
+    initialFishersPerPort:
+      Benoa : 25
+      Kupang: 50
+    literPerKilometer: &#39;3.5&#39;</code></pre>
+<p>As you can see <span class="math inline">\(K\)</span> and <span class="math inline">\(r\)</span> were not perfectly estimated (in particular for <span class="math inline">\(K\)</span> we are about 10,000t too low which explains the gap between real and calibrated output). We also had errors in gas consumption, mileage and catchability although all these were minor.
+Overall, quite a nice match given how little data we used.</p>
+</div>
+<div id="validation" class="section level2">
+<h2><span class="header-section-number">10.8</span> Validation</h2>
+<p>Validation refers to the model matching data for which it was not calibrated against. This gives us an intuitively more honest prediction error estimation. It is particularly useful for two reasons:</p>
+<ol style="list-style-type: decimal">
+<li>We are afraid of over-fitting to the data we have</li>
+<li>We have multiple valid assumptions and want to choose the one that predicts best</li>
+</ol>
+<p>In this example we used up all the data for calibration so we can’t do validation without gathering more. An alternative would have been finding <span class="math inline">\(K\)</span>, <span class="math inline">\(r\)</span> and <span class="math inline">\(q\)</span> on a subset of the data (say, the first 8 years) and check the quality of the model by its prediction of year 9 and 10.</p>
+</div>
+<div id="references" class="section level2">
+<h2><span class="header-section-number">10.9</span> References</h2>
+
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-Costello2012">
+<p>Costello, Christopher, Daniel Ovando, Ray Hilborn, Steven D. Gaines, Olivier Deschenes, and Sarah E. Lester. 2012. “Status and solutions for the world’s unassessed fisheries.” <em>Science</em> 338 (6106): 517–20. <a href="https://doi.org/10.1126/science.1223389" class="uri">https://doi.org/10.1126/science.1223389</a>.</p>
+</div>
+<div id="ref-Haddon2011">
+<p>Haddon, Malcolm. 2011. <em>Modelling and Quantitative Methods in Fisheries</em>. 2nd ed. Boca Raton, FL: Crc Press-Taylor &amp; Francis Group.</p>
+</div>
+<div id="ref-Martell2013a">
+<p>Martell, Steven, and Rainer Froese. 2013. “A simple method for estimating MSY from catch and resilience.” <em>Fish and Fisheries</em> 14 (4): 504–14. <a href="https://doi.org/10.1111/j.1467-2979.2012.00485.x" class="uri">https://doi.org/10.1111/j.1467-2979.2012.00485.x</a>.</p>
 </div>
 </div>
             </section>
@@ -777,7 +1141,7 @@ geom. mean k = 110749315 </code></pre>
         </div>
       </div>
 <a href="changing-policies-within-the-simulation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="references-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="changing-basic-parameters.html">
-<link rel="next" href="different-behaviours.html">
+<link rel="prev" href="applying-poseidon.html">
+
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -212,64 +212,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="map" class="section level1">
-<h1><span class="header-section-number">Chapter 5</span> Change the base map</h1>
-<div id="load-a-realistic-map" class="section level2">
-<h2><span class="header-section-number">5.1</span> Load a realistic map</h2>
-<p>Start POSEIDON.</p>
-One parameter of the abstract scenario is the <code>Map Initializer</code>. This controls the basic geography of the scenario. Most applications of POSEIDON will involve loading a map from an external file.
-Let’s do so here by selecting <code>From File Map</code> as the <code>Map Initializer</code>.<br />
+<div id="references-1" class="section level1 unnumbered">
+<h1>References</h1>
 
+<div id="refs" class="references">
 <div>
-<video width="100%" controls="true"  >
-<source src="./videos/readmap/parameter.mp4" type="video/mp4">
-</video>
+<p>Costello, Christopher, Daniel Ovando, Ray Hilborn, Steven D. Gaines, Olivier Deschenes, and Sarah E. Lester. 2012. “Status and solutions for the world’s unassessed fisheries.” <em>Science</em> 338 (6106): 517–20. <a href="https://doi.org/10.1126/science.1223389" class="uri">https://doi.org/10.1126/science.1223389</a>.</p>
 </div>
-<p>There are 4 parameters to <code>From File Map</code>:</p>
-<ol style="list-style-type: decimal">
-<li><code>Map File</code>: which is merely the path to the .csv file containing the bathymetry</li>
-<li><code>Grid Width in Cell</code>: this is how many cells in POSEIDON will the csv map be subdivided in. For example, if we leave 100 as default the map will be a grid of width 100 (and the height proportional to the heigth-width ratio of the input).</li>
-<li><code>Header</code> which is true if the csv file has a non numeric first row</li>
-<li><code>Lat Long</code> which is true when the original map’s coordinates are lat-long; when this is false the coordinates are assumed UTM. Lat-long coordinates might result in slightly slower models because the distance function involves a couple of trigonometric functions. However UTM often involves large space distortions.</li>
-</ol>
-<p>The <code>Map File</code> is simply a long list of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> coordinates followed by an altitude reading (negative means underwater).</p>
-<pre><code>##        x y  depth
-## 1 105.04 0 -31.00
-## 2 105.13 0 -31.00
-## 3 105.22 0 -32.91
-## 4 105.31 0 -35.81
-## 5 105.40 0 -37.00</code></pre>
-<p>POSEIDON will act at a coarser resolution than what is present in the input file. The depth of a cell in POSEIDON will be the average depth of all rows the csv file that are assigned to that POSEIDON cell.</p>
-<p>As shown in the video, the <code>inputs</code> folder in POSEIDON already contains some csv files. Here we are going to open <code>inputs/indonesia/small_712_map.csv</code>. This is centered around WPP712 (north of the island of Java) in Indonesia.</p>
-<p>The model will then look and run very much like all the other abstract runs (including its own fishing front) but within the map currently generated.</p>
 <div>
-<video width="100%" controls="true"  >
-<source src="./videos/readmap/indonesia.mp4" type="video/mp4">
-</video>
+<p>Haddon, Malcolm. 2011. <em>Modelling and Quantitative Methods in Fisheries</em>. 2nd ed. Boca Raton, FL: Crc Press-Taylor &amp; Francis Group.</p>
 </div>
+<div>
+<p>Martell, Steven, and Rainer Froese. 2013. “A simple method for estimating MSY from catch and resilience.” <em>Fish and Fisheries</em> 14 (4): 504–14. <a href="https://doi.org/10.1111/j.1467-2979.2012.00485.x" class="uri">https://doi.org/10.1111/j.1467-2979.2012.00485.x</a>.</p>
 </div>
-<div id="download-other-maps" class="section level2">
-<h2><span class="header-section-number">5.2</span> Download other maps</h2>
-<p>There are of course many ways to find maps from GIS sources such as <a href="https://www.gebco.net/data_and_products/gridded_bathymetry_data/">here</a>.
-Most of these data sets are <code>tif</code> rasters that need to be converted (and sometimes they need to be reprojected as well).<br />
-The quickest way to get a map into POSEIDON is probably by querying bathymetry from <a href="https://octopus.zoo.ox.ac.uk/beta">OCTOPUS</a>, a great tool from <a href="https://www.linkedin.com/in/marc-wieland/">Marc Weiland</a> when he was at Oxford’s zoology department.</p>
-<p>Imagine wanting depth data in lat-long coordinates for the area between the points (105,-15) and (139,5). Simply copy paste the following address to your browser (or <code>wget</code>):<br />
-<code>https://octopus.zoo.ox.ac.uk/geoserver/wcs?service=WCS&amp;version=1.0.0 &amp;request=GetCoverage &amp;format=geotiff &amp;coverage=context:depth_none_009_gebco &amp;bbox=105,-15,139,5 &amp;crs=EPSG:4326 &amp;resx=0.09</code><br />
-Pay particular attention to <strong>bbox</strong> which is where coordinates are set.</p>
-<p>This will download a <code>geotiff</code> file with the correct lat-long projection(EPSG:4326). We can turn it into csv in R easily, with something like this:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">library</span>(raster)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co"># read the file</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">depth_raster &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;../tiff_name.tif&quot;</span>)</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co"># turn it into csv</span></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">depth&lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">rasterToPoints</span>(depth_raster)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="st">  </span><span class="co"># the depth column is by default the name of the file</span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="st">  </span><span class="kw">rename</span>(<span class="dt">depth=</span>tiff_name) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="st">  </span><span class="co">## notice that depth is -99999 for land in OCTOPUS, we need to change that to a positive number</span></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">depth=</span><span class="kw">ifelse</span>(depth<span class="op">==-</span><span class="dv">99999</span>,<span class="dv">10000</span>,depth))</a>
-<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="kw">write_csv</span>(depth,<span class="st">&quot;../csv_name.csv&quot;</span>)</a></code></pre></div>
-<p>Ready to go!</p>
-
 </div>
 </div>
             </section>
@@ -277,8 +232,8 @@ Pay particular attention to <strong>bbox</strong> which is where coordinates are
           </div>
         </div>
       </div>
-<a href="changing-basic-parameters.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="different-behaviours.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="applying-poseidon.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
