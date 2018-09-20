@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>POSEIDON tutorial</title>
+  <meta name="description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+
+  <meta property="og:title" content="POSEIDON tutorial" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="POSEIDON tutorial" />
+  
+  <meta name="twitter:description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code" />
+  
+
+<meta name="author" content="Ernesto Carrella">
+
+
+<meta name="date" content="2018-09-12">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="batch.html">
+<link rel="next" href="changing-policies-within-the-simulation.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58894263-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Tutorial for POSEIDON</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#installation"><i class="fa fa-check"></i><b>2.1</b> Installation</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#pre-requisites"><i class="fa fa-check"></i><b>2.1.1</b> Pre-requisites</a></li>
+<li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#downloading-poseidon"><i class="fa fa-check"></i><b>2.1.2</b> Downloading POSEIDON</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="getting-started.html"><a href="getting-started.html#starting-poseidon"><i class="fa fa-check"></i><b>2.2</b> Starting POSEIDON</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started.html"><a href="getting-started.html#the-scenario-selection-screen"><i class="fa fa-check"></i><b>2.3</b> The scenario selection screen</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="basic-model-operation.html"><a href="basic-model-operation.html"><i class="fa fa-check"></i><b>3</b> Basic Model Operation</a><ul>
+<li class="chapter" data-level="3.1" data-path="basic-model-operation.html"><a href="basic-model-operation.html#the-first-model-run"><i class="fa fa-check"></i><b>3.1</b> The first model run</a></li>
+<li class="chapter" data-level="3.2" data-path="basic-model-operation.html"><a href="basic-model-operation.html#poseidon-in-motion"><i class="fa fa-check"></i><b>3.2</b> POSEIDON in motion</a></li>
+<li class="chapter" data-level="3.3" data-path="basic-model-operation.html"><a href="basic-model-operation.html#tracking-and-inspecting-agents"><i class="fa fa-check"></i><b>3.3</b> Tracking and Inspecting Agents</a></li>
+<li class="chapter" data-level="3.4" data-path="basic-model-operation.html"><a href="basic-model-operation.html#aggregate-data"><i class="fa fa-check"></i><b>3.4</b> Aggregate Data</a></li>
+<li class="chapter" data-level="3.5" data-path="basic-model-operation.html"><a href="basic-model-operation.html#fishing-fronts"><i class="fa fa-check"></i><b>3.5</b> Fishing Fronts</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html"><i class="fa fa-check"></i><b>4</b> Changing Basic Parameters</a><ul>
+<li class="chapter" data-level="4.1" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html#types-of-parameters"><i class="fa fa-check"></i><b>4.1</b> Types of parameters</a></li>
+<li class="chapter" data-level="4.2" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html#larger-fishing-fronts"><i class="fa fa-check"></i><b>4.2</b> Larger fishing fronts</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="map.html"><a href="map.html"><i class="fa fa-check"></i><b>5</b> Change the base map</a><ul>
+<li class="chapter" data-level="5.1" data-path="map.html"><a href="map.html#load-a-realistic-map"><i class="fa fa-check"></i><b>5.1</b> Load a realistic map</a></li>
+<li class="chapter" data-level="5.2" data-path="map.html"><a href="map.html#download-other-maps"><i class="fa fa-check"></i><b>5.2</b> Download other maps</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="different-behaviours.html"><a href="different-behaviours.html"><i class="fa fa-check"></i><b>6</b> Different behaviours</a><ul>
+<li class="chapter" data-level="6.1" data-path="different-behaviours.html"><a href="different-behaviours.html#strategies"><i class="fa fa-check"></i><b>6.1</b> Strategies</a></li>
+<li class="chapter" data-level="6.2" data-path="different-behaviours.html"><a href="different-behaviours.html#change-destination-strategy"><i class="fa fa-check"></i><b>6.2</b> Change Destination Strategy</a></li>
+<li class="chapter" data-level="6.3" data-path="different-behaviours.html"><a href="different-behaviours.html#gravitational-search-algorithm"><i class="fa fa-check"></i><b>6.3</b> Gravitational Search Algorithm</a></li>
+<li class="chapter" data-level="6.4" data-path="different-behaviours.html"><a href="different-behaviours.html#heatmap-algorithm"><i class="fa fa-check"></i><b>6.4</b> Heatmap algorithm</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="batch.html"><a href="batch.html"><i class="fa fa-check"></i><b>7</b> YAML Scearios and Batch Runs</a><ul>
+<li class="chapter" data-level="7.1" data-path="batch.html"><a href="batch.html#yaml"><i class="fa fa-check"></i><b>7.1</b> YAML</a></li>
+<li class="chapter" data-level="7.2" data-path="batch.html"><a href="batch.html#batch-runs"><i class="fa fa-check"></i><b>7.2</b> Batch Runs</a></li>
+<li class="chapter" data-level="7.3" data-path="batch.html"><a href="batch.html#sample-batch-run"><i class="fa fa-check"></i><b>7.3</b> Sample Batch Run</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="policies.html"><a href="policies.html"><i class="fa fa-check"></i><b>8</b> Policies</a><ul>
+<li class="chapter" data-level="8.1" data-path="policies.html"><a href="policies.html#policy-in-poseidon"><i class="fa fa-check"></i><b>8.1</b> Policy in POSEIDON</a></li>
+<li class="chapter" data-level="8.2" data-path="policies.html"><a href="policies.html#example-setup"><i class="fa fa-check"></i><b>8.2</b> Example Setup</a></li>
+<li class="chapter" data-level="8.3" data-path="policies.html"><a href="policies.html#no-regulations"><i class="fa fa-check"></i><b>8.3</b> No Regulations</a></li>
+<li class="chapter" data-level="8.4" data-path="policies.html"><a href="policies.html#total-allowable-quota"><i class="fa fa-check"></i><b>8.4</b> Total Allowable Quota</a></li>
+<li class="chapter" data-level="8.5" data-path="policies.html"><a href="policies.html#individual-tradeable-quotas"><i class="fa fa-check"></i><b>8.5</b> Individual Tradeable Quotas</a></li>
+<li class="chapter" data-level="8.6" data-path="policies.html"><a href="policies.html#fines"><i class="fa fa-check"></i><b>8.6</b> Fines</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html"><i class="fa fa-check"></i><b>9</b> Changing policies within the simulation</a><ul>
+<li class="chapter" data-level="9.1" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#dynamic-changes"><i class="fa fa-check"></i><b>9.1</b> Dynamic changes</a></li>
+<li class="chapter" data-level="9.2" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#switch-to-quotas-2-years-in-the-simulation"><i class="fa fa-check"></i><b>9.2</b> Switch to quotas 2 years in the simulation</a></li>
+<li class="chapter" data-level="9.3" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#closed-season"><i class="fa fa-check"></i><b>9.3</b> Closed Season</a></li>
+<li class="chapter" data-level="9.4" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#draw-mpas-on-the-fly"><i class="fa fa-check"></i><b>9.4</b> Draw MPAs on the fly</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="applying-poseidon.html"><a href="applying-poseidon.html"><i class="fa fa-check"></i><b>10</b> Applying POSEIDON</a><ul>
+<li class="chapter" data-level="10.1" data-path="applying-poseidon.html"><a href="applying-poseidon.html#flexible-scenario"><i class="fa fa-check"></i><b>10.1</b> Flexible Scenario</a></li>
+<li class="chapter" data-level="10.2" data-path="applying-poseidon.html"><a href="applying-poseidon.html#how-to-use-data-in-poseidon"><i class="fa fa-check"></i><b>10.2</b> How to use data in POSEIDON</a></li>
+<li class="chapter" data-level="10.3" data-path="applying-poseidon.html"><a href="applying-poseidon.html#the-peter-snapper-fishery"><i class="fa fa-check"></i><b>10.3</b> The Peter Snapper Fishery</a></li>
+<li class="chapter" data-level="10.4" data-path="applying-poseidon.html"><a href="applying-poseidon.html#adding-boats-to-the-right-ports"><i class="fa fa-check"></i><b>10.4</b> Adding boats to the right ports</a></li>
+<li class="chapter" data-level="10.5" data-path="applying-poseidon.html"><a href="applying-poseidon.html#adding-knowledge-about-boat-operations"><i class="fa fa-check"></i><b>10.5</b> Adding knowledge about boat operations</a></li>
+<li class="chapter" data-level="10.6" data-path="applying-poseidon.html"><a href="applying-poseidon.html#the-simplest-possible-biology-input"><i class="fa fa-check"></i><b>10.6</b> The simplest possible biology input</a></li>
+<li class="chapter" data-level="10.7" data-path="applying-poseidon.html"><a href="applying-poseidon.html#calibrating-catchability"><i class="fa fa-check"></i><b>10.7</b> Calibrating Catchability</a></li>
+<li class="chapter" data-level="10.8" data-path="applying-poseidon.html"><a href="applying-poseidon.html#validation"><i class="fa fa-check"></i><b>10.8</b> Validation</a></li>
+<li class="chapter" data-level="10.9" data-path="applying-poseidon.html"><a href="applying-poseidon.html#references"><i class="fa fa-check"></i><b>10.9</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references-1.html"><a href="references-1.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://link.springer.com/article/10.1007/s11625-018-0579-9" target="blank">Read about POSEIDON here</a></li>
+<li><a href="https://github.com/CarrKnight/POSEIDON" target="blank">Get POSEIDON here</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">POSEIDON tutorial</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="policies" class="section level1">
+<h1><span class="header-section-number">Chapter 8</span> Policies</h1>
+<div id="policy-in-poseidon" class="section level2">
+<h2><span class="header-section-number">8.1</span> Policy in POSEIDON</h2>
+<p>At its simplest policies are just another scenario parameter. In the default <code>Abstract</code> scenario the parameter of interest is <code>Regulation</code>.</p>
+<p><img src="videos/policy/regulation.png" /><!-- --></p>
+<p>There are (unfortunately) quite a lot of options. Most policies are static but a few are dynamic. Here we show by example only a few static ones.</p>
+</div>
+<div id="example-setup" class="section level2">
+<h2><span class="header-section-number">8.2</span> Example Setup</h2>
+<p>To show the various effects of policies we want to modify slightly the biology and geography of the abstract scenario. In particular:</p>
+<ol style="list-style-type: decimal">
+<li>We want to change the biology initializer to “Split in Half”
+<ul>
+<li>This simply means that now there will be two species of fish, Species 0(red) and Species 1(blue), red fish living in the north part of the map, blue fish lives in the south</li>
+</ul></li>
+<li>We want to set <code>Coastal Roughness</code> in the <code>Map Initializer</code> to 0
+<ul>
+<li>This flattens the coast so that it looks like a straight line. Useful when making comparisons</li>
+</ul></li>
+<li>We want to set <code>Port Position X</code> to 40 and <code>Port Position Y</code> to 25
+<ul>
+<li>This will set the port right there in the middle of the map. Again, useful to compare the effect of different regulations</li>
+</ul></li>
+<li>Save this scenario as <code>split.yaml</code> in some folder. This way we can re-use it when we change policies.</li>
+</ol>
+Here’s a video showing how to do this:<br />
+
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/setup.mkv" type="video/mp4">
+</video>
+</div>
+Here’s a video showing the final product
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/split-setup.mkv" type="video/mp4">
+</video>
+</div>
+</div>
+<div id="no-regulations" class="section level2">
+<h2><span class="header-section-number">8.3</span> No Regulations</h2>
+<p>If we don’t change the <code>Regulation</code> parameters, the fishery is unregulated.<br />
+The result is once again the fishing front, agents start fishing near port and then spread out. Both red and blue fish are caught in approximately equal amounts.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/anarchy.mkv" type="video/mp4">
+</video>
+</div>
+</div>
+<div id="total-allowable-quota" class="section level2">
+<h2><span class="header-section-number">8.4</span> Total Allowable Quota</h2>
+<p>Imagine that we want to target about 500,000 units of red fish caught per year but at the same time protect the blue fish by only catching 100,000 units. The simplest possible way to do so is to add a TAC to the fishery stipulating that whenever either limit is reached the fishery closes for the remainder of the year.<br />
+This is relatively simple to do in POSEIDON:</p>
+<ol style="list-style-type: decimal">
+<li>Load the <code>split.yaml</code> scenario you prepared in the previous section (click on <code>Open Scenario from File</code> button at the bottom of the scenario selector)</li>
+<li>Set <code>Regulation</code> to <code>Multi-TAC</code>, set <code>First Species Quota</code> to 500,000 and <code>Other Species Quota</code> to 100,000</li>
+</ol>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/tac-setup.mkv" type="video/mp4">
+</video>
+</div>
+<p>If we run the model now we will see a few things happen.
+First, the fishery will proceed in “pulses”. Agents will fish until one of the two quota limits is triggered at which point the season closes and all the fishers come to port till the end of year.
+Second, within each pulse the fishery still evolve along a front, eating up both red and blue fish.
+Third, because blue quotas are much lower, only about 100,000 units of red are caught each year: a quite serious waste of quotas.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/tac.mkv" type="video/mp4">
+</video>
+</div>
+<p>The problem is quite obvious: there is no particular incentive for any fisher to target red fish in particular. Agents will just fish whatever is more profitable which tends to be what’s closer.</p>
+</div>
+<div id="individual-tradeable-quotas" class="section level2">
+<h2><span class="header-section-number">8.5</span> Individual Tradeable Quotas</h2>
+<p>The American solution to this problem tends to be to make quotas tradeable. The idea is that if quotas for the rare fish is expensive, agents will try and avoid it as much as possible.
+We can replicate this in POSEIDON:</p>
+<ol style="list-style-type: decimal">
+<li>Change <code>Regulation</code> to <code>Multi-ITQ</code> and set the <code>Quota First Species</code> to 5000 and the <code>Quota Other Species</code> to 1000.
+<ul>
+<li>The ITQ regulation numbers refer to the individual quota allotment given. Since by default there are 100 fishers, the total amount of quotas is the same as the TAC example above</li>
+</ul></li>
+<li>Tick the <code>Use Predictors</code> parameter to <strong>true</strong>
+<ul>
+<li>As explained in the paper, an ITQ system can only work when agents form an expectations of what the value of their quota is. This is not difficult to do but the formulas are turned off by default because they are a computationally expensive. If <code>Use Predictors</code> is not turned on, no agents will participate in the quota market</li>
+</ul></li>
+</ol>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/itq-setup.mkv" type="video/mp4">
+</video>
+</div>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/itq-setup2.mkv" type="video/mp4">
+</video>
+</div>
+<p>The emergent response of the system is more or less what we expect.
+Fishers, especially after a first year where prices are unsettled, learn to avoid the blue areas and focus on the red ones. Notice that strictly speaking the agents do not know where fish live, this is all driven by random exploration and imitation.</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/itq.mkv" type="video/mp4">
+</video>
+</div>
+</div>
+<div id="fines" class="section level2">
+<h2><span class="header-section-number">8.6</span> Fines</h2>
+<p>A similar result can be achieved simply by imposing a fine on catching blue fish.
+To do so in POSEIDON:</p>
+<ol style="list-style-type: decimal">
+<li>Change the <code>Market</code> parameter to <code>Fixed Price Market Array</code> and change its <code>Prices</code> to: “+10,-10”
+<ul>
+<li>Basically <code>Fixed Price Market Array</code> will set the price for each species (per unit caught). “+10” will be the price of red fish, “-10” will be the price of blue fish.</li>
+</ul></li>
+</ol>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/fine-setup.mkv" type="video/mp4">
+</video>
+</div>
+<p>This generates much the same blue avoidance, without the need of a complicated quota market:</p>
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/policy/fine.mkv" type="video/mp4">
+</video>
+</div>
+<p>Notice however that the kind of control is slightly different. With an ITQ you know for sure that never gets caught past their quota regardless of the conditions on the ground.
+With a simple fine you don’t really know until you simulate it how effective it is and how much ends up being caught. This is of course the informational problem of all Pigouvian taxes.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="batch.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="changing-policies-within-the-simulation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": ["tutorial.pdf", "tutorial.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

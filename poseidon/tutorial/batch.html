@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>POSEIDON tutorial</title>
+  <meta name="description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+
+  <meta property="og:title" content="POSEIDON tutorial" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="POSEIDON tutorial" />
+  
+  <meta name="twitter:description" content="This is a basic tutorial on how to use POSEIDON and set it up to explore basic fishery problems. I try to cover everything that does not require changing any of the Java code" />
+  
+
+<meta name="author" content="Ernesto Carrella">
+
+
+<meta name="date" content="2018-09-12">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="different-behaviours.html">
+<link rel="next" href="policies.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-58894263-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Tutorial for POSEIDON</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#installation"><i class="fa fa-check"></i><b>2.1</b> Installation</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#pre-requisites"><i class="fa fa-check"></i><b>2.1.1</b> Pre-requisites</a></li>
+<li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#downloading-poseidon"><i class="fa fa-check"></i><b>2.1.2</b> Downloading POSEIDON</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="getting-started.html"><a href="getting-started.html#starting-poseidon"><i class="fa fa-check"></i><b>2.2</b> Starting POSEIDON</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started.html"><a href="getting-started.html#the-scenario-selection-screen"><i class="fa fa-check"></i><b>2.3</b> The scenario selection screen</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="basic-model-operation.html"><a href="basic-model-operation.html"><i class="fa fa-check"></i><b>3</b> Basic Model Operation</a><ul>
+<li class="chapter" data-level="3.1" data-path="basic-model-operation.html"><a href="basic-model-operation.html#the-first-model-run"><i class="fa fa-check"></i><b>3.1</b> The first model run</a></li>
+<li class="chapter" data-level="3.2" data-path="basic-model-operation.html"><a href="basic-model-operation.html#poseidon-in-motion"><i class="fa fa-check"></i><b>3.2</b> POSEIDON in motion</a></li>
+<li class="chapter" data-level="3.3" data-path="basic-model-operation.html"><a href="basic-model-operation.html#tracking-and-inspecting-agents"><i class="fa fa-check"></i><b>3.3</b> Tracking and Inspecting Agents</a></li>
+<li class="chapter" data-level="3.4" data-path="basic-model-operation.html"><a href="basic-model-operation.html#aggregate-data"><i class="fa fa-check"></i><b>3.4</b> Aggregate Data</a></li>
+<li class="chapter" data-level="3.5" data-path="basic-model-operation.html"><a href="basic-model-operation.html#fishing-fronts"><i class="fa fa-check"></i><b>3.5</b> Fishing Fronts</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html"><i class="fa fa-check"></i><b>4</b> Changing Basic Parameters</a><ul>
+<li class="chapter" data-level="4.1" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html#types-of-parameters"><i class="fa fa-check"></i><b>4.1</b> Types of parameters</a></li>
+<li class="chapter" data-level="4.2" data-path="changing-basic-parameters.html"><a href="changing-basic-parameters.html#larger-fishing-fronts"><i class="fa fa-check"></i><b>4.2</b> Larger fishing fronts</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="map.html"><a href="map.html"><i class="fa fa-check"></i><b>5</b> Change the base map</a><ul>
+<li class="chapter" data-level="5.1" data-path="map.html"><a href="map.html#load-a-realistic-map"><i class="fa fa-check"></i><b>5.1</b> Load a realistic map</a></li>
+<li class="chapter" data-level="5.2" data-path="map.html"><a href="map.html#download-other-maps"><i class="fa fa-check"></i><b>5.2</b> Download other maps</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="different-behaviours.html"><a href="different-behaviours.html"><i class="fa fa-check"></i><b>6</b> Different behaviours</a><ul>
+<li class="chapter" data-level="6.1" data-path="different-behaviours.html"><a href="different-behaviours.html#strategies"><i class="fa fa-check"></i><b>6.1</b> Strategies</a></li>
+<li class="chapter" data-level="6.2" data-path="different-behaviours.html"><a href="different-behaviours.html#change-destination-strategy"><i class="fa fa-check"></i><b>6.2</b> Change Destination Strategy</a></li>
+<li class="chapter" data-level="6.3" data-path="different-behaviours.html"><a href="different-behaviours.html#gravitational-search-algorithm"><i class="fa fa-check"></i><b>6.3</b> Gravitational Search Algorithm</a></li>
+<li class="chapter" data-level="6.4" data-path="different-behaviours.html"><a href="different-behaviours.html#heatmap-algorithm"><i class="fa fa-check"></i><b>6.4</b> Heatmap algorithm</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="batch.html"><a href="batch.html"><i class="fa fa-check"></i><b>7</b> YAML Scearios and Batch Runs</a><ul>
+<li class="chapter" data-level="7.1" data-path="batch.html"><a href="batch.html#yaml"><i class="fa fa-check"></i><b>7.1</b> YAML</a></li>
+<li class="chapter" data-level="7.2" data-path="batch.html"><a href="batch.html#batch-runs"><i class="fa fa-check"></i><b>7.2</b> Batch Runs</a></li>
+<li class="chapter" data-level="7.3" data-path="batch.html"><a href="batch.html#sample-batch-run"><i class="fa fa-check"></i><b>7.3</b> Sample Batch Run</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="policies.html"><a href="policies.html"><i class="fa fa-check"></i><b>8</b> Policies</a><ul>
+<li class="chapter" data-level="8.1" data-path="policies.html"><a href="policies.html#policy-in-poseidon"><i class="fa fa-check"></i><b>8.1</b> Policy in POSEIDON</a></li>
+<li class="chapter" data-level="8.2" data-path="policies.html"><a href="policies.html#example-setup"><i class="fa fa-check"></i><b>8.2</b> Example Setup</a></li>
+<li class="chapter" data-level="8.3" data-path="policies.html"><a href="policies.html#no-regulations"><i class="fa fa-check"></i><b>8.3</b> No Regulations</a></li>
+<li class="chapter" data-level="8.4" data-path="policies.html"><a href="policies.html#total-allowable-quota"><i class="fa fa-check"></i><b>8.4</b> Total Allowable Quota</a></li>
+<li class="chapter" data-level="8.5" data-path="policies.html"><a href="policies.html#individual-tradeable-quotas"><i class="fa fa-check"></i><b>8.5</b> Individual Tradeable Quotas</a></li>
+<li class="chapter" data-level="8.6" data-path="policies.html"><a href="policies.html#fines"><i class="fa fa-check"></i><b>8.6</b> Fines</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html"><i class="fa fa-check"></i><b>9</b> Changing policies within the simulation</a><ul>
+<li class="chapter" data-level="9.1" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#dynamic-changes"><i class="fa fa-check"></i><b>9.1</b> Dynamic changes</a></li>
+<li class="chapter" data-level="9.2" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#switch-to-quotas-2-years-in-the-simulation"><i class="fa fa-check"></i><b>9.2</b> Switch to quotas 2 years in the simulation</a></li>
+<li class="chapter" data-level="9.3" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#closed-season"><i class="fa fa-check"></i><b>9.3</b> Closed Season</a></li>
+<li class="chapter" data-level="9.4" data-path="changing-policies-within-the-simulation.html"><a href="changing-policies-within-the-simulation.html#draw-mpas-on-the-fly"><i class="fa fa-check"></i><b>9.4</b> Draw MPAs on the fly</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="applying-poseidon.html"><a href="applying-poseidon.html"><i class="fa fa-check"></i><b>10</b> Applying POSEIDON</a><ul>
+<li class="chapter" data-level="10.1" data-path="applying-poseidon.html"><a href="applying-poseidon.html#flexible-scenario"><i class="fa fa-check"></i><b>10.1</b> Flexible Scenario</a></li>
+<li class="chapter" data-level="10.2" data-path="applying-poseidon.html"><a href="applying-poseidon.html#how-to-use-data-in-poseidon"><i class="fa fa-check"></i><b>10.2</b> How to use data in POSEIDON</a></li>
+<li class="chapter" data-level="10.3" data-path="applying-poseidon.html"><a href="applying-poseidon.html#the-peter-snapper-fishery"><i class="fa fa-check"></i><b>10.3</b> The Peter Snapper Fishery</a></li>
+<li class="chapter" data-level="10.4" data-path="applying-poseidon.html"><a href="applying-poseidon.html#adding-boats-to-the-right-ports"><i class="fa fa-check"></i><b>10.4</b> Adding boats to the right ports</a></li>
+<li class="chapter" data-level="10.5" data-path="applying-poseidon.html"><a href="applying-poseidon.html#adding-knowledge-about-boat-operations"><i class="fa fa-check"></i><b>10.5</b> Adding knowledge about boat operations</a></li>
+<li class="chapter" data-level="10.6" data-path="applying-poseidon.html"><a href="applying-poseidon.html#the-simplest-possible-biology-input"><i class="fa fa-check"></i><b>10.6</b> The simplest possible biology input</a></li>
+<li class="chapter" data-level="10.7" data-path="applying-poseidon.html"><a href="applying-poseidon.html#calibrating-catchability"><i class="fa fa-check"></i><b>10.7</b> Calibrating Catchability</a></li>
+<li class="chapter" data-level="10.8" data-path="applying-poseidon.html"><a href="applying-poseidon.html#validation"><i class="fa fa-check"></i><b>10.8</b> Validation</a></li>
+<li class="chapter" data-level="10.9" data-path="applying-poseidon.html"><a href="applying-poseidon.html#references"><i class="fa fa-check"></i><b>10.9</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references-1.html"><a href="references-1.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://link.springer.com/article/10.1007/s11625-018-0579-9" target="blank">Read about POSEIDON here</a></li>
+<li><a href="https://github.com/CarrKnight/POSEIDON" target="blank">Get POSEIDON here</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">POSEIDON tutorial</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="batch" class="section level1">
+<h1><span class="header-section-number">Chapter 7</span> YAML Scearios and Batch Runs</h1>
+<div id="yaml" class="section level2">
+<h2><span class="header-section-number">7.1</span> YAML</h2>
+<p>So far we’ve been modifying parameters and scenarios by using the GUI. These scenarios can be saved, modified and loaded as text files too. They follow the <a href="http://yaml.org/start.html">YAML format</a>.</p>
+<p>For example, in the POSEIDON parameter section we can press <code>Save Scenario to File</code> to save our parameters into a single, yaml file.<br />
+You can open it and edit it as a text file (any editor will do except Windows’ notepad; try wordpad or notepad++). It will look something like this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">Abstract:</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="fu">biologyInitializer:</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">    <span class="fu">Diffusing Logistic:</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">      <span class="fu">carryingCapacity:</span><span class="at"> </span><span class="st">&#39;5000.0&#39;</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">      <span class="fu">differentialPercentageToMove:</span><span class="at"> </span><span class="st">&#39;0.001&#39;</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">      <span class="fu">grower:</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">        <span class="fu">Independent Logistic Grower:</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">          <span class="fu">steepness:</span><span class="at"> uniform 0.6 0.8</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">      <span class="fu">maxInitialCapacity:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">      <span class="fu">minInitialCapacity:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">      <span class="fu">percentageLimitOnDailyMovement:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">      <span class="fu">speciesName:</span><span class="at"> Species 0</span></a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">  <span class="fu">cheaters:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">  <span class="fu">departingStrategy:</span></a>
+<a class="sourceLine" id="cb7-15" data-line-number="15">    <span class="fu">Fixed Rest:</span></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">      <span class="fu">hoursBetweenEachDeparture:</span><span class="at"> </span><span class="st">&#39;12.0&#39;</span></a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">  <span class="fu">destinationStrategy:</span></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">    <span class="fu">Imitator-Explorator:</span></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">      <span class="fu">alwaysCopyBest:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20">      <span class="fu">automaticallyIgnoreAreasWhereFishNeverGrows:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">      <span class="fu">automaticallyIgnoreMPAs:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb7-22" data-line-number="22">      <span class="fu">backtracksOnBadExploration:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb7-23" data-line-number="23">      <span class="fu">dropInUtilityNeededForUnfriend:</span><span class="at"> </span><span class="st">&#39;-1.0&#39;</span></a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">      <span class="fu">ignoreEdgeDirection:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb7-25" data-line-number="25">      <span class="fu">ignoreFailedTrips:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb7-26" data-line-number="26">      <span class="fu">maxInitialDistance:</span><span class="at"> -1.0</span></a>
+<a class="sourceLine" id="cb7-27" data-line-number="27">      <span class="fu">objectiveFunction:</span></a>
+<a class="sourceLine" id="cb7-28" data-line-number="28">        <span class="fu">Hourly Profit Objective:</span></a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">          <span class="fu">opportunityCosts:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb7-30" data-line-number="30">      <span class="fu">probability:</span></a>
+<a class="sourceLine" id="cb7-31" data-line-number="31">        <span class="fu">Adaptive Probability:</span></a>
+<a class="sourceLine" id="cb7-32" data-line-number="32">          <span class="fu">explorationProbability:</span><span class="at"> </span><span class="st">&#39;0.2&#39;</span></a>
+<a class="sourceLine" id="cb7-33" data-line-number="33">          <span class="fu">explorationProbabilityMinimum:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb7-34" data-line-number="34">          <span class="fu">imitationProbability:</span><span class="at"> </span><span class="st">&#39;1.0&#39;</span></a>
+<a class="sourceLine" id="cb7-35" data-line-number="35">          <span class="fu">incrementMultiplier:</span><span class="at"> </span><span class="st">&#39;0.02&#39;</span></a>
+<a class="sourceLine" id="cb7-36" data-line-number="36">      <span class="fu">stepSize:</span><span class="at"> uniform 1.0 10.0</span></a>
+<a class="sourceLine" id="cb7-37" data-line-number="37">  <span class="fu">discardingStrategy:</span><span class="at"> No Discarding</span></a>
+<a class="sourceLine" id="cb7-38" data-line-number="38">  <span class="fu">enginePower:</span><span class="at"> normal 5000.0 100.0</span></a>
+<a class="sourceLine" id="cb7-39" data-line-number="39">  <span class="fu">fishers:</span><span class="at"> 100</span></a>
+<a class="sourceLine" id="cb7-40" data-line-number="40">  <span class="fu">fishingStrategy:</span></a>
+<a class="sourceLine" id="cb7-41" data-line-number="41">    <span class="fu">Until Full With Day Limit:</span></a>
+<a class="sourceLine" id="cb7-42" data-line-number="42">      <span class="fu">daysAtSea:</span><span class="at"> </span><span class="st">&#39;5.0&#39;</span></a>
+<a class="sourceLine" id="cb7-43" data-line-number="43">  <span class="fu">fuelTankSize:</span><span class="at"> </span><span class="st">&#39;100000.0&#39;</span></a>
+<a class="sourceLine" id="cb7-44" data-line-number="44">  <span class="fu">gasPricePerLiter:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb7-45" data-line-number="45">  <span class="fu">gear:</span></a>
+<a class="sourceLine" id="cb7-46" data-line-number="46">    <span class="fu">Random Catchability:</span></a>
+<a class="sourceLine" id="cb7-47" data-line-number="47">      <span class="fu">gasPerHourFished:</span><span class="at"> </span><span class="st">&#39;5.0&#39;</span></a>
+<a class="sourceLine" id="cb7-48" data-line-number="48">      <span class="fu">meanCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb7-49" data-line-number="49">      <span class="fu">meanCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.01&#39;</span></a>
+<a class="sourceLine" id="cb7-50" data-line-number="50">      <span class="fu">standardDeviationCatchabilityFirstSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb7-51" data-line-number="51">      <span class="fu">standardDeviationCatchabilityOtherSpecies:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb7-52" data-line-number="52">  <span class="fu">gearStrategy:</span><span class="at"> Never Change Gear</span></a>
+<a class="sourceLine" id="cb7-53" data-line-number="53">  <span class="fu">habitatInitializer:</span><span class="at"> All Sand</span></a>
+<a class="sourceLine" id="cb7-54" data-line-number="54">  <span class="fu">holdSize:</span><span class="at"> </span><span class="st">&#39;100.0&#39;</span></a>
+<a class="sourceLine" id="cb7-55" data-line-number="55">  <span class="fu">literPerKilometer:</span><span class="at"> </span><span class="st">&#39;10.0&#39;</span></a>
+<a class="sourceLine" id="cb7-56" data-line-number="56">  <span class="fu">logbook:</span><span class="at"> No Logbook</span></a>
+<a class="sourceLine" id="cb7-57" data-line-number="57">  <span class="fu">mapInitializer:</span></a>
+<a class="sourceLine" id="cb7-58" data-line-number="58">    <span class="fu">Simple Map:</span></a>
+<a class="sourceLine" id="cb7-59" data-line-number="59">      <span class="fu">cellSizeInKilometers:</span><span class="at"> </span><span class="st">&#39;10.0&#39;</span></a>
+<a class="sourceLine" id="cb7-60" data-line-number="60">      <span class="fu">coastalRoughness:</span><span class="at"> </span><span class="st">&#39;4.0&#39;</span></a>
+<a class="sourceLine" id="cb7-61" data-line-number="61">      <span class="fu">depthSmoothing:</span><span class="at"> </span><span class="st">&#39;1000000.0&#39;</span></a>
+<a class="sourceLine" id="cb7-62" data-line-number="62">      <span class="fu">height:</span><span class="at"> </span><span class="st">&#39;50.0&#39;</span></a>
+<a class="sourceLine" id="cb7-63" data-line-number="63">      <span class="fu">maxLandWidth:</span><span class="at"> </span><span class="st">&#39;10.0&#39;</span></a>
+<a class="sourceLine" id="cb7-64" data-line-number="64">      <span class="fu">width:</span><span class="at"> </span><span class="st">&#39;50.0&#39;</span></a>
+<a class="sourceLine" id="cb7-65" data-line-number="65">  <span class="fu">mapMakerDedicatedRandomSeed:</span><span class="at"> </span><span class="dt">null</span></a>
+<a class="sourceLine" id="cb7-66" data-line-number="66">  <span class="fu">market:</span></a>
+<a class="sourceLine" id="cb7-67" data-line-number="67">    <span class="fu">Fixed Price Market:</span></a>
+<a class="sourceLine" id="cb7-68" data-line-number="68">      <span class="fu">marketPrice:</span><span class="at"> </span><span class="st">&#39;10.0&#39;</span></a>
+<a class="sourceLine" id="cb7-69" data-line-number="69">  <span class="fu">networkBuilder:</span></a>
+<a class="sourceLine" id="cb7-70" data-line-number="70">    <span class="fu">Equal Out Degree:</span></a>
+<a class="sourceLine" id="cb7-71" data-line-number="71">      <span class="fu">allowMutualFriendships:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb7-72" data-line-number="72">      <span class="fu">degree:</span><span class="at"> </span><span class="st">&#39;2.0&#39;</span></a>
+<a class="sourceLine" id="cb7-73" data-line-number="73">      <span class="fu">equalOutDegree:</span><span class="at"> true</span></a>
+<a class="sourceLine" id="cb7-74" data-line-number="74">  <span class="fu">plugins:</span><span class="at"> </span><span class="kw">[</span></a>
+<a class="sourceLine" id="cb7-75" data-line-number="75">    <span class="kw">]</span></a>
+<a class="sourceLine" id="cb7-76" data-line-number="76">  <span class="fu">portPositionX:</span><span class="at"> -1</span></a>
+<a class="sourceLine" id="cb7-77" data-line-number="77">  <span class="fu">portPositionY:</span><span class="at"> -1</span></a>
+<a class="sourceLine" id="cb7-78" data-line-number="78">  <span class="fu">ports:</span><span class="at"> 1</span></a>
+<a class="sourceLine" id="cb7-79" data-line-number="79">  <span class="fu">regulation:</span></a>
+<a class="sourceLine" id="cb7-80" data-line-number="80">    <span class="fu">MPA Only:</span></a>
+<a class="sourceLine" id="cb7-81" data-line-number="81">      <span class="fu">startingMPAs:</span><span class="at"> </span><span class="kw">[</span></a>
+<a class="sourceLine" id="cb7-82" data-line-number="82">        <span class="kw">]</span></a>
+<a class="sourceLine" id="cb7-83" data-line-number="83">  <span class="fu">speedInKmh:</span><span class="at"> </span><span class="st">&#39;5.0&#39;</span></a>
+<a class="sourceLine" id="cb7-84" data-line-number="84">  <span class="fu">startingMPAs:</span><span class="at"> </span><span class="kw">[</span></a>
+<a class="sourceLine" id="cb7-85" data-line-number="85">    <span class="kw">]</span></a>
+<a class="sourceLine" id="cb7-86" data-line-number="86">  <span class="fu">usePredictors:</span><span class="at"> false</span></a>
+<a class="sourceLine" id="cb7-87" data-line-number="87">  <span class="fu">weatherInitializer:</span></a>
+<a class="sourceLine" id="cb7-88" data-line-number="88">    <span class="fu">Constant Weather:</span></a>
+<a class="sourceLine" id="cb7-89" data-line-number="89">      <span class="fu">temperature:</span><span class="at"> </span><span class="st">&#39;30.0&#39;</span></a>
+<a class="sourceLine" id="cb7-90" data-line-number="90">      <span class="fu">windOrientation:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb7-91" data-line-number="91">      <span class="fu">windSpeed:</span><span class="at"> </span><span class="st">&#39;0.0&#39;</span></a>
+<a class="sourceLine" id="cb7-92" data-line-number="92">  <span class="fu">weatherStrategy:</span><span class="at"> Ignore Weather</span></a></code></pre></div>
+<p>This is just the list of all parameters from the gui into a text file.<br />
+There are a few uses for this:</p>
+<ol style="list-style-type: decimal">
+<li>Save parameters for iterative modifications or replications</li>
+<li>Make batch runs</li>
+<li>Machine readable input to interoperate with other software (probably an optimizer)</li>
+<li>Modify parameters for which the GUI is not ready yet (sorry!~). These are things like list of strategies and ports. We will see this more in the Peter Snapper example.</li>
+</ol>
+</div>
+<div id="batch-runs" class="section level2">
+<h2><span class="header-section-number">7.2</span> Batch Runs</h2>
+<p>POSEIDON, as all other agent-based models, contains many stochastic parts. In order to draw conclusions from POSEIDON outputs, the same scenario must be run many times – each run will provide slightly different outcomes. By looking at the distribution of outcomes, you can get a sense of the uncertainty around a result.</p>
+<p>POSEIDON has a batch runner you can use to automate this process. In essence it reads a YAML file, and runs it many times. You can call it by running from terminal (in the POSEIDON directory):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ex">./gradlew</span> batch</a></code></pre></div>
+<p>Or on windows:</p>
+<pre class="posh"><code>gradlew.bat batch</code></pre>
+<p>It is a quite simple graphical interface:
+<img src="videos/batch/batch-runner.png" /><!-- -->
+Its parameters are:</p>
+<ol style="list-style-type: decimal">
+<li><p><code>Columns To Print</code>: a list, subdivided by “,” of all the yearly data sets we want to collect for each simulation. Unfortunately it is case-sensitive and so quite annoying to use. The kind of data collectable depends on each scenario but they the buttons that appear in <code>Yearly Data Set</code> in the <code>Aggregate Data</code> tab of a normal POSEIDON RUN:
+<img src="videos/batch/data-available.png" /><!-- --></p></li>
+<li><code>Heatmap Gatherer Start Year</code>: when this is positive it will collect a heatmap of all the fisher effort from that year till the end of the simulation</li>
+<li><code>Number of Runs</code>: How many times to run the scenario</li>
+<li><code>Output Folder</code>: which directory will store all the results of the batch run</li>
+<li><code>Policy File</code>: an additional input scenario to simulate policy shocks</li>
+<li><code>Random Seed</code>: the random seed defining the first simulation. Copying a previous random seed should generate an exact replica of the simulation including all the stochastic components.</li>
+<li><code>Yaml File</code>: the path of the scenario YAML file to run</li>
+<li><p><code>Years to Run</code>: how many years should each scenario simulate?</p></li>
+</ol>
+</div>
+<div id="sample-batch-run" class="section level2">
+<h2><span class="header-section-number">7.3</span> Sample Batch Run</h2>
+Open the batch runner. Set the runs and years to run to 5 and add “Species 0 Landings” to the list of columns to print.<br />
+
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/batch/batch.mp4" type="video/mp4">
+</video>
+</div>
+Open the YAML file describing the scenario you want to imitate. Here I am using <code>baseline.yaml</code> which is just a file I created by pressing <code>Save Scenario to File</code> from POSEIDON’s scenario selector without modifying any parameter.<br />
+
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/batch/batch2.mp4" type="video/mp4">
+</video>
+</div>
+After pressing <code>Start</code> you will see a very basic progress bar showing how many simulations have completed.
+<div>
+<video width="100%" controls="true"  >
+<source src="./videos/batch/batch3.mp4" type="video/mp4">
+</video>
+</div>
+<p>Once completed you can look in the <code>Output Folder</code> and see a bunch of files:
+<img src="videos/batch/directory.png" /><!-- --></p>
+<p>Each directory contains all the data produced by each simulation, the <code>run$.csv</code> file contain a table of all the selected data columns to print:</p>
+<pre><code>## # A tibble: 5 x 3
+##   `Total Effort` `Average Cash-Flow` `Species 0 Landings`
+##            &lt;dbl&gt;               &lt;dbl&gt;                &lt;dbl&gt;
+## 1        356233.              71605.              737979.
+## 2        218308.              59469.              624133.
+## 3        173664.              53773.              569650.
+## 4        152381.              51758.              550701.
+## 5        165219.              49201.              524677.</code></pre>
+<p>Probably the most important file is the <code>_batch.csv</code> file which contains all the selected columns for all runs in a tidy format:</p>
+<pre><code>## # A tibble: 75 x 4
+##      run  year variable            value
+##    &lt;int&gt; &lt;int&gt; &lt;chr&gt;               &lt;dbl&gt;
+##  1     0     0 Total Effort      356233.
+##  2     0     1 Total Effort      218308.
+##  3     0     2 Total Effort      173664.
+##  4     0     3 Total Effort      152381.
+##  5     0     4 Total Effort      165219.
+##  6     0     0 Average Cash-Flow  71605.
+##  7     0     1 Average Cash-Flow  59469.
+##  8     0     2 Average Cash-Flow  53773.
+##  9     0     3 Average Cash-Flow  51758.
+## 10     0     4 Average Cash-Flow  49201.
+## # ... with 65 more rows</code></pre>
+<p>This makes it easy to plot in R:
+<img src="tutorial_files/figure-html/unnamed-chunk-17-1.png" width="1000" /></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="different-behaviours.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="policies.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": ["tutorial.pdf", "tutorial.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

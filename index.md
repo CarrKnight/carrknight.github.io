@@ -4,7 +4,7 @@ title: Short Bio
 ---
 
 
-My name is Ernesto Carrella. I am a Post-Doc at the  [Oxford University Centre for the Environment](http://www.ouce.ox.ac.uk), working under [Richard Bailey](http://www.richardmbailey.com/) on an agent-based model of fishery management. I earned my Ph.D from the [Department of Computational Social Science] at George Mason University.
+My name is Ernesto Carrella. I am a Post-Doc at the  [Oxford University Centre for the Environment](http://www.ouce.ox.ac.uk), working under [Richard Bailey](http://www.richardmbailey.com/) on an agent-based model of fishery management. I earned my Ph.D from the [Department of Computational Social Science](https://cos.gmu.edu/cds/phd-in-computational-social-science/) at George Mason University.
 
 I build and maintain [POSEIDON](https://github.com/CarrKnight/poseidon), yet another agent-based model of fisheries. I designed POSEIDON with 3 major priorities in mind:
 

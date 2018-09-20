@@ -13,7 +13,7 @@ How to find optimal policies in a complex system? Build an agent-based model and
 Now test your policy levers against the adaptive agents trying to use a smart searching algorithm (we settled on [Bayesian Optimization](https://www.cs.ox.ac.uk/people/nando.defreitas/publications/BayesOptLoop.pdf))
 The model will predict where the pair (policy,adaptive agents) will end up going and we can use it to make regulations that are either robust to adaptation or leverage adaptation to better maximize welfare.
 
-Forthcoming on Sustainability Science; appendix draft available [here]({{ site.baseurl }}poseidon/appendix.html). Code available on GPL license, [here](https://github.com/CarrKnight/POSEIDON)
+Published in 2018 in Sustainability Science ([here](https://link.springer.com/article/10.1007/s11625-018-0579-9)); technical appendix available [here]({{ site.baseurl }}poseidon/appendix.html). Code available on GPL license, [here](https://github.com/CarrKnight/POSEIDON)
 
 
 
@@ -27,7 +27,15 @@ The problem is the Lucas critique: if I just transpose fixed heuristics (from da
 In econ the answer is to focus on optimal decision making at all times. That can't work in fisheries because the dynamic program is intractable.  
 So let's focus on general, adaptive heuristics and see which ones work better and is less brittle.
 
-R&R in Environmental Modelling & Software. Draft available [here]({{ site.baseurl }}/poseidon/algorithms.html). Code available on open source MIT license, [here](https://github.com/CarrKnight/discrete-choosers).
+Accepted with minor revisions in Environmental Modelling & Software. Draft available [here]({{ site.baseurl }}/poseidon/algorithms.html). Code available on open source MIT license, [here](https://github.com/CarrKnight/discrete-choosers).
+
+### Indirect Inference Through Prediction
+
+I wanted to write a paper on indirect inference being so much cooler than the alternatives but it turned out to be heavily dependent on the selection of summary statistics. I wrote a paper on how to choose summary statistics instead.  
+I think it straddles the uncomfortable line between being obvious and having been done already; fortunately it's usually where good papers are.
+
+Pre-print [here]({{ site.baseurl }}poseidon/indirectinference.html) and also on [arXiv](https://arxiv.org/abs/1807.01579); R Markdown code to replicate is [here](https://www.dropbox.com/s/zk0fi8dp5i18jav/indirectinference.Rmd?dl=0).  
+I also wrote a short tutorial with code [here]({{ site.baseurl }}abm/2018/07/13/indirect-inference-tutorial.html).
 
 
 ## Economics and PID Controllers
