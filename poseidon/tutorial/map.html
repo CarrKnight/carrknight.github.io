@@ -25,7 +25,7 @@
 <meta name="author" content="Ernesto Carrella">
 
 
-<meta name="date" content="2018-11-06">
+<meta name="date" content="2018-11-19">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -264,7 +264,7 @@ Let’s do so here by selecting <code>From File Map</code> as the <code>Map Init
 Most of these data sets are <code>tif</code> rasters that need to be converted (and sometimes they need to be reprojected as well).<br />
 The quickest way to get a map into POSEIDON is probably by querying bathymetry from <a href="https://octopus.zoo.ox.ac.uk/beta">OCTOPUS</a>, a great tool from <a href="https://www.linkedin.com/in/marc-wieland/">Marc Weiland</a> when he was at Oxford’s zoology department.</p>
 <p>Imagine wanting depth data in lat-long coordinates for the area between the points (105,-15) and (139,5). Simply copy paste the following address to your browser (or <code>wget</code>):<br />
-<code>https://octopus.zoo.ox.ac.uk/geoserver/wcs?service=WCS&amp;version=1.0.0 &amp;request=GetCoverage &amp;format=geotiff &amp;coverage=context:depth_none_009_gebco &amp;bbox=105,-15,139,5 &amp;crs=EPSG:4326 &amp;resx=0.09</code><br />
+<code>https://octopus.zoo.ox.ac.uk/geoserver/wcs?service=WCS&amp;version=1.0.0 &amp;request=GetCoverage &amp;format=geotiff &amp;coverage=context:depth_none_009_gebco &amp;bbox=105,-15,139,5 &amp;crs=EPSG:4326 &amp;resx=0.09 &amp;resy=0.09</code><br />
 Pay particular attention to <strong>bbox</strong> which is where coordinates are set.</p>
 <p>This will download a <code>geotiff</code> file with the correct lat-long projection(EPSG:4326). We can turn it into csv in R easily, with something like this:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">library</span>(raster)</a>
