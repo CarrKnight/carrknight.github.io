@@ -382,15 +382,23 @@ summary {
 </div>
 
 
+<div id="context" class="section level2">
+<h2>Context</h2>
+<ul>
+<li>This is all <strong>preliminary</strong> and the results may flip later on</li>
+<li>The results are all on a simplified scenario without age/length</li>
+<li>Consider this as a demo exploring what we need to think about to make a comparison meaningful</li>
+</ul>
+</div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>I am experimenting with a rudimentary MSE setup with one species, biomass-only (no age, no length structures) being fished out by 200 identical boats in a simple 20x20 geography.
-I run the fishery without policy for 10 years, then put in policy for the next 20 years and see what happens. The numbers are such that most likely than not the fishery will collapse, without intervention, by year 15.</p>
+I run the fishery without policy for 10 years, then put in policy for the next 20 years and see what happens. The numbers are such that more likely than not the fishery will collapse, without intervention, by year 15 (but lots of variation).</p>
 <p>I thought this would be a good place where to test the coming implementations of MPs from MERA as well as the MSE loop before jumping on the Indonesian scenarios.</p>
 <p>So far I have implemented <code>Itarget</code>, <code>ISlope</code> and <code>IT5</code> policies, both for their TAC and TAE variants.
 Chose them because they were easy and didn’t require a guess on current depletion like DCAC.</p>
 <p>The problem I seem to be having here is one of “conversion loss” between POSEIDON and MERA regarding two components of these simple policies:
-1. <em>Indicator</em>: these policies look at an indicator and its changes to adjust TACs/TAE with it. It looks like however slightly different definition of indicators heavily affect performance.
+1. <em>Indicator</em>: these management procedures look at an indicator and its changes to adjust TACs/TAE with it. However slightly different definition of indicators heavily affect performance.
 2. <em>Effort</em>: in MERA some policies change total allowable effort. In POSEIDON we need to implement this effort reduction somehow; again it looks like different mappings of the concept of “effort” to what is actually being regulated make a large difference in results</p>
 <p>Of course basically these are just the indicator noise and implementation noise of the MSE loop, but I realize now that these are endogenous in POSEIDON and if we want to make comparisons we probably need to figure out what is the closest we can get to MERA’s vision of what implementation will look like.</p>
 </div>
@@ -402,7 +410,7 @@ Chose them because they were easy and didn’t require a guess on current deplet
 <p>The indicator <span class="math inline">\(I\)</span> represents some form of CPUE. In the Butterworth’s simulations (where Islope and ITarget come from) the indicator was biomass with some lognormal shock. As far as I could understand, MERA does the same.</p>
 <p>The problem I have in POSEIDON is that we have a bunch of indicators that could be used.
 We could use CPUE as catches per hour spent fishing (as it was in US West Coast) or catches per hour out (as TNC computes it in Indonesia) or as biomass shocked (as it was in the original paper). I could also use other stuff, like profits per hour out or per trip and so on.</p>
-<p>What I run into however is that all management procedures have wildly different results depending on the indicator, ceteris paribus.
+<p>What I run into however is that the same management procedure have wildly different results depending on the indicator, ceteris paribus.
 So for example for IT I get:</p>
 <caption>
 <span id="tab:itcontrollert">Table 1: </span>Simulated landings and number of collapsed fisheries by year 30 when the total allowable catch is set yearly by an iterative index targeting. Median and average landings are computed across all simulated fisheries from year 10 onwards. Each row represents 715 simulations using a specific indicator
@@ -834,7 +842,7 @@ So for example for IT I get:</p>
     </tr>
   </tfoot>
 </table></div>
-<p>So here I get that if I use as indicator profits per hour out I minimize risks, but if I use profits per trip (which is probably easier to survey for) I double my collapse risk for no benefit. If I could divine biomass, I would get better landings but also higher risk.</p>
+<p>So here I get that if I use profits per hour out as indicator I minimize risks, but if I use profits per trip (which is probably easier to survey for) I double my collapse risk for no benefit. If I could divine biomass, I would get better landings but also higher risk.</p>
 <p>The issue is that these rankings are not really consistent across management procedures.
 Using a PI controller (basically a thermostat) as a management procedure with same indicator options I get:</p>
 <caption>
@@ -1267,7 +1275,7 @@ Using a PI controller (basically a thermostat) as a management procedure with sa
     </tr>
   </tfoot>
 </table></div>
-<p>Now CPUE as computed in Indonesia doubles the risk compared to CPUE per hour fishing, and biomass divination would get us both maximum landings and lowest risk while profits in general are a terrible choice for indicators.</p>
+<p>Now CPUE as computed in Indonesia doubles the risk compared to CPUE per hour fishing, and biomass divination would get us both maximum landings and lowest risk while looking at profits in general is a terrible idea.</p>
 </div>
 <div id="implementation-noise" class="section level2">
 <h2>Implementation noise</h2>
