@@ -2,6 +2,7 @@ name: Ernesto Carrella
 markdown: kramdown
 highlighter: rouge
 baseurl:  
-timezone: America/Chicago
+timezone: 	Asia/Taipei
 description: A few notes on agent based models.
 url: carrknight.github.io
+future: true
