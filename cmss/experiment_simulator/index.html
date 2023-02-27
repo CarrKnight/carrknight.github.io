@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://carrknight.github.io/css/pure.css">
+    <link rel="stylesheet" href="https://carrknight.github.io/css/main.css">
+    <link rel="stylesheet" href="https://carrknight.github.io/css/blog.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,700,0,200" />
+    <link rel="stylesheet" href="./index.css">
+
+    <script src="./index.js"></script>
+
+    <title>Table test</title>
+</head>
+<body>
+
+
+<div id="hotel_table_div" style ="margin: 0 auto; width: 80%" >
+    <h4> Hotels in the experiment: </h4>
+
+    <table id="hotel_table"  class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Average # of guests</th>
+            <th>CV # of guests</th>
+            <th>Average kg of waste per guest</th>
+            <th>CV kg of waste per guest</th>
+            <th>% of guests that dine</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <button id="export-btn" class="btn btn-primary">Export Data
+        <span class="material-symbols-outlined">
+delete
+</span>
+    </button>
+    <p id="export"></p>
+</div>
+
+
+<div id="stimulus_table_div" style ="margin: 0 auto; width: 80%" >
+    <h4> Type of experiments to run: </h4>
+
+    <span class="table-add glyphicon glyphicon-plus"></span>
+    <table id="stimulus_table"  class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Change of food waste, average in %</th>
+            <th>Change of food waste, CV in %</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <button id="export-btn2" class="btn btn-primary">Export Data
+        <span class="material-symbols-outlined">
+delete
+</span>
+    </button>
+</div>
+
+<div style ="margin: 0 auto; width: 80%">
+    <h2> Simulation </h2>
+    <p>
+        We will sample all these hotels for <input id="weekssampled" type="number" value="6" min="1" max="20" /> weeks.<br>
+        Right now the only simulation is the classic, randomize experiment every day for every hotel. Later I will add different options. <br>
+        The data will be analyzed via simple regression to control for number of guests.
+
+
+
+    </p>
+    <p>
+        To run simulation simply press:
+        <button id="run_simulation_btn" class="btn">here
+            <span class="material-symbols-outlined" style="font-size:60px;">
+    rocket_launch
+</span>
+        </button>
+    </p>
+
+    <p>
+        Or we can try running the simulation 1000 times and check the power of our analysis, by pressing here
+        <button id="run_power_btn" class="btn">here
+            <span class="material-symbols-outlined" style="font-size:60px;">
+    dataset
+</span>
+        </button>
+    </p>
+</div>
+<p>
+
+</p>
+<div id="results">
+
+</div>
+
+</body>
+</html>
