@@ -14,9 +14,26 @@
 </head>
 <body>
 
+<div id="intro" style ="margin: 0 auto; width: 80%">
+    <h2> Introduction </h2>
+    <p>This page is a simulator for the experiments we want to run with the hotels for Nordic Choice.
+        We want to make sure that:</p>
+    <ul>
+        <li>We have enough weeks and hotels observed that it&#39;s likely we will observe a significant result</li>
+        <li>We choose the right schedule to randomize experiments in order to avoid spurious results</li>
+    </ul>
+    <p>In practice here we pretend to know the <em>true</em> parameters of the world, then we run simulations and check whether the experiment we have devised could actually discover the true effects.</p>
+
+
+
+</div>
 
 <div id="hotel_table_div" style ="margin: 0 auto; width: 80%" >
     <h4> Hotels in the experiment: </h4>
+    <p>In this <em>editable</em> table you can add/remove hotels or change their
+        basic parameters. These are the average and coefficient of variations
+        for waste of daily guests, the probability that a guest would attend
+        the buffet and average waste per customer.</p>
 
     <table id="hotel_table"  class="pure-table pure-table-bordered">
         <thead>
@@ -43,7 +60,8 @@ delete
 
 <div id="stimulus_table_div" style ="margin: 0 auto; width: 80%" >
     <h4> Type of experiments to run: </h4>
-
+    <p>In this <em>editable</em> table you can change both the number of experimental conditions we are going to test and their <strong>true</strong> effects.<br>Obviously the whole point of the experiments is to discover what the effect is. The point of these simulations however is to discover how the strength of the effect makes it easier or harder to discover.</p>
+    <p>20% (0.2) is what is quoted as the reduction in the old hotel study.</p>
     <span class="table-add glyphicon glyphicon-plus"></span>
     <table id="stimulus_table"  class="pure-table pure-table-bordered">
         <thead>
@@ -65,14 +83,21 @@ delete
 
 <div style ="margin: 0 auto; width: 80%">
     <h2> Simulation </h2>
-    <p>
+    <p id="weekparagraph">
         We will sample all these hotels for <input id="weekssampled" type="number" value="6" min="1" max="20" /> weeks.<br>
+
         Right now the only simulation is the classic, randomize experiment every day for every hotel. Later I will add different options. <br>
-        The data will be analyzed via simple regression to control for number of guests.
+        The data will be analyzed via simple regression to control for number of guests. <br>
+        We may expect different customers different weeks, we can modify the relative presence of guests by <strong>dragging points</strong> in the chart below:
+        <br>
+        <div style="height: 600px; width: 800px;">
+        <canvas id="weekChartContainer" style="height: 200px; width: 300px;">
 
-
+        </canvas>
+</div>
 
     </p>
+
     <p>
         To run simulation simply press:
         <button id="run_simulation_btn" class="btn">here
