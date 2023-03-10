@@ -84,10 +84,22 @@ delete
 <div style ="margin: 0 auto; width: 80%">
     <h2> Simulation </h2>
     <p id="weekparagraph">
+
+        <form id="randomassignmentform">
+            <p> First we need to select the way we are going to 
+                assign hotels to experimental conditions: </p>
+                
+        </form>
+
         We will sample all these hotels for <input id="weekssampled" type="number" value="6" min="1" max="20" /> weeks.<br>
 
-        Right now the only simulation is the classic, randomize experiment every day for every hotel. Later I will add different options. <br>
-        The data will be analyzed via simple regression to control for number of guests. <br>
+        
+        <form id="analysisform">
+            <p> We also need to choose what kind of analysis we are going to run on the data once it is generated: </p>
+                
+        </form>
+
+
         We may expect different customers different weeks, we can modify the relative presence of guests by <strong>dragging points</strong> in the chart below:
         <br>
         <div style="height: 600px; width: 800px;">
