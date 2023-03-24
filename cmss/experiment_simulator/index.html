@@ -91,7 +91,9 @@ delete
                 
         </form>
 
-        We will sample all these hotels for <input id="weekssampled" type="number" value="6" min="1" max="20" /> weeks.<br>
+        We will sample all these hotels for <input id="weekssampled" type="number" value="6" min="1" max="20" /> weeks. <br>
+        Each day, each hotel may fail to record their food waste. We assume this happens with probability of <input type="number" id="narate" min="0" max="1" value="0.1" step="0.01">
+        <br>
 
         
         <form id="analysisform">
