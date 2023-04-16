@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="./index.js"></script>
+
+    <title>Table test</title>
+    <style>
+        /* Style the SVG and the person circles */
+        .person {
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #eee;
+        }
+
+        .tooltip {
+            position: absolute;
+            font-size: 12px;
+            background-color: white;
+            border: 1px solid gray;
+            padding: 8px;
+            pointer-events: none;
+        }
+
+        #svgdiv svg {
+            border: 1px solid black;
+            box-sizing: border-box; /* ensures that the border does not affect the size of the SVG node */
+        }
+
+
+
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body>
+
+<div>
+    <div class="pure-g" id="firstcontainer">
+    <div class="pure-u-1" id="bannerimage">
+        <img class="pure-img" src="buffetsim.jpeg">
+    </div>
+
+    <div class="header pure-u-1" id="header">
+        <h2> Buffet Simulation, Slice 0 </h2>
+    </div>
+
+        <div class="content pure-u-4-5" id="content">
+           <p>
+               This page holds a simple agent-based model of buffet tables and food waste at a random restaurant. <br>
+               It simulates 60 minutes at a very conceptual level, the agents act in purely robotic ways without
+               any particular pretense of realism. However this model is here in order to test what kind of information
+               and behaviour is needed to make this realistic. It is a demo.
+           </p>
+            <p>
+                Right now there are three parameters: how many tables are available in the restaurant,
+                how many food stations (buffet tables with food) are available and after how many minutes a new
+                group show up at reception waiting to be seated. <br>
+                When ready press the submit button.
+            </p>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="pure-g" id="modelcontainer">
+
+    <div class="pure-u-1-5" id="buttonHolder">
+        <span id="time-step-counter"></span>
+<!--        <button id="pause-resume-button"><i id="play-icon" class="fas fa-play fa-3x"></i></button>-->
+    </div>
+    <div class="pure-u-4-5" id="counterHolder">
+
+    </div>
+
+    <div class="pure-u-2-5" id="chart">
+        <canvas id="wastechart"></canvas>
+    </div>
+
+    <div class="pure-u-3-5" id="svgdiv">
+
+    </div>
+
+
+
+</div>
+</div>
+
+</body>
+</html>
