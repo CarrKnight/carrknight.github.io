@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#plot {
+    width: 500px;
+    height: 500px;
+    margin: 20px;
+}
+
+button, select, label {
+    margin: 10px;
+}

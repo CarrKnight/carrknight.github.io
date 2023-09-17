@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Function Optimization for Kids</title>
+</head>
+<body>
+    <h1>Function Optimization Visualizer</h1>
+
+    <label for="functionSelect">Function:</label>
+<select id="functionSelect">
+    <option value="f1">Function 1</option>
+    <option value="f2">Function 2</option>
+    <option value="f3">Function 3</option>
+    <option value="f4">Function 4</option>
+    <option value="f5">Function 5</option>
+
+</select>
+
+    <label for="optimizerSelect">Optimizer:</label>
+<select id="optimizerSelect">
+    <option value="hillClimb">Hill Climbing</option>
+    <option value="simAnneal">Simulated Annealing</option>
+    <option value="geneticAlgorithm">Genetic Algorithm</option>
+</select>
+
+    <button onclick="optimizeStep()">Step Forward</button>
+
+    <div id="plot"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js" integrity="sha512-M7nHCiNUOwFt6Us3r8alutZLm9qMt4s9951uo8jqO4UwJ1hziseL6O3ndFyigx6+LREfZqnhHxYjKRJ8ZQ69DQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="script.js"></script>
+</body>
+</html>
